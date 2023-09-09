@@ -1,0 +1,23 @@
+% Setchain API - 
+\begin{figure}[t!]
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+      \renewcommand{\thealgorithm}{API Hashchain}         
+      \caption{\small API Setchain Hashchain}%
+      \label{alg:api-hashchain}%
+      \small
+      \begin{algorithmic}[1]
+      
+            \Function{\<add>}{$element$}\label{alg:hash_add}
+                \State \textbf{return} \texttt{HashCollector.AddElement($element$)}
+                \Comment {Use the middleware collector component}.
+            \EndFunction
+      
+            \Function{\<get>}{\null}\label{alg:hash_get}
+                	\State \textbf{return} \<abciquery>()
+            \EndFunction
+            
+        \end{algorithmic}
+      \end{algorithm}
+	\end{adjustbox}
+  \end{figure}

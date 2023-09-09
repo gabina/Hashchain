@@ -1,0 +1,23 @@
+% Compresschain API - 
+\begin{figure}[t!]
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+      \renewcommand{\thealgorithm}{API Compresschain}         
+      \caption{\small API Setchain Compresschain}%
+      \label{alg:api-brotli}%
+      \small
+      \begin{algorithmic}[1]
+      
+            \Function{\<add>}{$element$}\label{alg:brotli_add}
+                \State \textbf{return} \texttt{CompressCollector.AddElement($element$)}
+                \Comment {Use the middleware collector component}.
+            \EndFunction
+      
+            \Function{\<get>}{\null}\label{alg:brotli_get}
+                	\State \textbf{return} \<abciquery>()
+            \EndFunction
+            
+        \end{algorithmic}
+      \end{algorithm}
+	\end{adjustbox}
+  \end{figure}

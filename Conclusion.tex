@@ -1,0 +1,101 @@
+\section{Conclusion}\label{sec:conclusion}
+%
+Blockchain technologies are facing the problem of scalability.
+%
+Compared to other transaction-based systems, blockchains are just too slow.
+%
+We have (at least) two possible ways to solve these problems, either we design
+faster consensus algorithms or place clever solutions on top of blockchains.
+%
+One example of the latter is what are called \emph{Layer-2} solutions where we
+have a computing machine on top of the blockchain consuming less resources.
+%
+An example of the former is Setchain.
+
+Setchain presents a faster consensus algorithm based on set-consensus lifting
+the total order of transactions of classic blockchains.
+% and uses another order
+% instead.
+%
+The partial order Setchain uses is no-order, i.e. all elements in an epoch do
+not follow an order.
+%
+However, we can say that elements from one epoch come before or later to another
+epoch.
+%
+In other words, we have a relative order, we can relate elements from different
+epochs, but we cannot relate elements within the same epoch.
+
+Although Setchain is a clever idea, it lacks a real-world implementation.
+%
+The authors presenting Setchain gave a prove-of-concept implementation to
+observe that Setchain is faster than other algorithms in laboratory conditions.
+%
+Implementing and verifying such claims are the goals of this work in progress.
+
+Implementing distributed algorithms is hard, and thus, we took an off-the-shelf
+solution: Tendermint.
+%
+Tendermint offers a real-world implementation of a blockchain-based structure
+presenting a clear separation of the blockchain level primitives and the user
+defined interface.
+
+We presented three implementations of Setchain on top of Tendermint.
+%
+Since the algorithms of Setchain presented in~\cite{Capretto.2022.Setchain}
+employ a set-consensus algorithm, we can not replicate the same algorithms.
+%
+However, we took a slightly different approach trying to get as much as we can
+from what Tendermint can offer.
+%
+Each implementation tries to get closer to an ideal implementation of Setchain
+by exploiting the idea that each epoch is a set of elements.
+%
+The first implementation (see Section~\ref{subsec:vanilla}) presents a naive and
+correct but inefficient implementation of Setchain where Tendermint only
+maintains a grow-only-set.
+%
+The second implementation (see Section~\ref{subsec:compresschain}) improves the
+naive implementation using a compression algorithm: transactions are now a
+(compressed) set of elements.
+%
+Finally, the third algorithm~\footnote{Implementation lacking at the moment of
+writing the document.} (see Section~\ref{subsec:hashchain}) goes beyond the
+second implementation and uses hash functions to reduce network overload.
+
+While reducing network traffic, the use of hash functions requires a way to get
+the elements back.
+%
+To solve this, we designed a \textbf{new} distributed Byzantine-tolerant
+algorithm working as a hash-resolution distributed object.
+%
+Putting both solutions together, we would have a real-world Setchain
+implementation.
+
+Hashchain is the closest solution to Setchain without using a set-consensus
+algorithm.
+%
+Since nodes do not know \emph{a priory} the elements inside a hashed set,
+consensus then consists in choosing what epoch is going to go next.
+%
+However, since in Tendermint we have a mempool and a gossip network, elements
+are gossiped around, and hashes have the biggest set of elements known to the
+node proposing the next epoch.
+
+Our results are exciting but inconclusive.
+%
+On the one hand, we presented three algorithms ready to be deployed implementing
+Setchain specification.
+%
+While on the other hand, we have not yet tested and experimented on the most
+interesting one: Hashchain.
+%
+Leaving the implementation of Hashchain as future work.
+%
+Finally, we also want to run intense tests on each of the implementations
+employing Tendermint deployment systems.
+
+%%% Local Variables:
+%%% TeX-master: "article.tex"
+%%% TeX-PDF-mode: t
+%%% End:

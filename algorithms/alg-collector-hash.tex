@@ -1,0 +1,35 @@
+% Hash Collector - alg3
+\begin{figure}[t!]
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+      \renewcommand{\thealgorithm}{Hash Collector}         
+      \caption{\small Collector implementation of HashChain}%
+      \label{alg:collector-hash}%
+      \small
+      \begin{algorithmic}[1]
+            \State \textbf{Init:} \texttt{batch} $\leftarrow$ \{\}
+      
+            \Function{AddTx}{$transaction$}\label{alg3:add_tx}
+            		\State \texttt{encodedTransaction} $\leftarrow$ \textbf{RLP.Encode}($transaction$)
+				\State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \texttt{encodedTransaction}
+            
+             	\If {\textit{isBigEnough(batch)}}
+             		\State \texttt{compressedBatch} $\leftarrow$  \textbf{Brotli.Compress}(\texttt{batch})
+             		\State \texttt{hash} $\leftarrow$ \textbf{Hash}(\texttt{compressedBatch})
+             		\State \textbf{Save}(\texttt{hash}, \texttt{compressedBatch})
+                		\State \textbf{Tendermint.Broadcast}(\texttt{hash})
+                		\State \textit{reset()}
+                \EndIf
+                	
+                \State \textbf{return}
+            \EndFunction
+            
+            \Function{reset}{\ }\label{alg3:reset}
+            		\State \texttt{batch} $\leftarrow$ \{\}
+                \State \textbf{return}
+            \EndFunction
+        \end{algorithmic}
+      \end{algorithm}
+	\end{adjustbox}
+  \end{figure}
+

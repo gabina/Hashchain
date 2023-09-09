@@ -1,0 +1,61 @@
+% Brotli ABCI - alg1
+\begin{figure}[t!]
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+      \renewcommand{\thealgorithm}{Compresschain ABCI}         
+      \caption{\small ABCI implementation of Compresschain}%
+      \label{alg:abci-brotli}%
+      \small
+      \begin{algorithmic}[1]
+            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}
+
+            \Function{\<CheckTx>}{$batch$}\label{alg:brotli_check_tx}
+                \State \textbf{return} \Call{\<isValidBatch>}{$batch$}
+            \EndFunction
+      
+            \Function{\<DeliverTx>}{$batch$}\label{alg:brotli_deliver_tx}
+				\State \texttt{elements} $\leftarrow$ \Call{\<getElementsFromBatch>}{$batch$}
+				\State \Call{\<newEpoch>}{\texttt{elements}}
+            		
+            		\State \textbf{return}
+            \EndFunction
+            
+            \Function{\<isValidBatch>}{$batch$}\label{alg:brotli_is_valid}
+            		\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{$batch$}
+            		
+            		\Comment{If at least one element in the batch is valid, then the batch is considered valid.}
+            		\For{\texttt{e in} $elements$}
+                    \If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
+                    		\State \textbf{return} \texttt{True}
+                    \EndIf
+                \EndFor
+                \State \textbf{return} \texttt{False}
+            \EndFunction
+            
+            \Function{\<getElementsFromBatch>}{$batch$}\label{alg:brotli_get_element}
+                \State \texttt{decompressedBatch} $\leftarrow$ \texttt{Brotli.Decompress}($batch$)
+                \State \texttt{elements} $\leftarrow$ \texttt{RLP.Decode}(\texttt{decompressedBatch})
+                \State \textbf{return} \texttt{elements}
+            \EndFunction
+            
+            \Function{\<newEpoch>}{$elements$}\label{alg:brotli_new_epoch}
+            		\For{\texttt{e in} $elements$}
+             		\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
+                				\State \texttt{history[epoch]}.AddElement(e)
+                				\Comment{Only add new valid elements.}
+                    	 \EndIf
+                	\EndFor
+                	
+                	\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[epoch]}, \texttt{epoch})
+            		\Comment{Hash epoch (elements and number).}
+                \State \texttt{epochProof} $\leftarrow$  \<Sign>(\texttt{hash}, privateKey)
+                \State \<add>(\texttt{epochProof})
+                	
+                	\State \texttt{epoch} $\leftarrow$ \texttt{epoch} + 1
+                \State \textbf{return}
+            \EndFunction
+        \end{algorithmic}
+      \end{algorithm}
+	\end{adjustbox}
+  \end{figure}
+

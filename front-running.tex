@@ -1,0 +1,12 @@
+\section{Attacks}\label{sec:attack}
+
+Both FSEC and CEC strategies are vulnerable to a kind of front-running attack.
+%
+For FSEC.
+%
+Let's suppose that Alice wants some specific element $a$ to be on the \setchain only if element $b$
+is after $a$. Alice could send element $a$ to the hash collector. After a while and if everything
+goes well, $(Hash_a, Sig_0)$ is in the Hashchain, where $a$ is in $Hash_a$. In order to be in the
+\setchain, the hash has to achieve the \texttt{SIGNATURES\_PER_\HASH} signatures. As Alice only wants
+element $a$ if $b$ is after $a$, she could try to pay 
+ 

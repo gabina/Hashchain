@@ -1,0 +1,99 @@
+% Hash ABCI - alg4
+\begin{figure}[t!]
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+      \renewcommand{\thealgorithm}{Current Epoch Consolidation - Part 1}         
+      \caption{\small ABCI implementation of HashChain - Part 1}%
+      \label{alg:abci-hash1}%
+      \small
+      \begin{algorithmic}[1]
+            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{hashToSignatures} $\leftarrow$ \{\}, \texttt{epochToHash} $\leftarrow$ \{\}, \texttt{hashToBatch} $\leftarrow$ \{\}
+
+            \Function{\<CheckTx>}{$hash, signature$}\label{alg:hash_check_tx}
+            		\Comment{Discuss how the validation is done}
+				\If {\<isValidSignature>($hash, signature$)}
+            			\If {\texttt{hashToBatch}[$hash$] \textbf{exists}}
+            				\State \textbf{return} \Call{\<isValidBatch>}{\texttt{hashToBatch}[$hash$]}
+            			\EndIf
+            		
+            			\Comment{If the node does not have the original batch, it spawns an asynchronous routine that requests the batch.}
+            		
+                		\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
+                		\State \textbf{return True}
+                		\Comment {In case of absence of information, it returns True.}
+                	\Else
+                		\State \textbf{return False}
+                	\EndIf
+            		\EndFunction
+      
+            \Function{\<DeliverTx>}{$hash, signature$}\label{alg:hash_deliver_tx}
+            		\If {\<isValidSignature>($hash, signature$)}
+            			\State \texttt{hashToSignatures}[$hash$] $\leftarrow$ \texttt{hashToSignatures}[$hash$] $\cup$  $signature$
+            			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
+            				\State \texttt{epochToHash[epoch]} $\leftarrow$ $hash$
+            				\State \texttt{epoch} $\leftarrow$ \texttt{epoch} + 1
+            				\If {not \texttt{hashToBatch}[$hash$] \textbf{exists}}
+                				\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
+                			\EndIf
+               	 	\EndIf
+               	 \EndIf
+                \State \textbf{return}
+            \EndFunction
+            
+            \Function{\<Query>}{\null}
+            		\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history})
+            		\For{\texttt{i in (\texttt{lastEpochInHistory, epoch})}}
+            			\State \texttt{hash} $\leftarrow$  \texttt{epochToHash[i]}
+             		\If {\texttt{hashToBatch}[\texttt{hash}] \textbf{exists}}
+                			\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hashToBatch}[\texttt{hash}]}
+            				\For{\texttt{e in elements}}
+             				\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
+                					\State \texttt{history[i]}.AddElement(e)
+                					\Comment{Only add new valid elements.}
+                    	 		\EndIf
+                    	 	\EndFor
+                    	    \State \texttt{epochHash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
+            				%\Comment{Hash epoch (elements and number).}
+                			\State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{epochHash}, privateKey)}
+               			\State \<add>(\texttt{epochProof})
+               		 \Else
+               		 	\State \textbf{break}
+                    	\EndIf
+                	\EndFor
+            		\State \textbf{return} \texttt{history}
+            	\EndFunction
+
+        \end{algorithmic}
+      \end{algorithm}
+	\end{adjustbox}
+  \end{figure}
+  
+  \begin{figure}[t!]
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+      \renewcommand{\thealgorithm}{Current Epoch Consolidation - Part 2}         
+      \caption{\small ABCI implementation of HashChain - Part 2}%
+      \label{alg:abci-hash2}%
+      \small
+      \begin{algorithmic}[1]
+            	\Function{\<revertHash>}{$hash, signature$}\label{alg:hash_revert}
+                \State \texttt{originalBatch} $\leftarrow$ requestHash($hash, signature$)
+                \If {Hash(\texttt{originalBatch}) = $hash$}
+					\State \texttt{hashToBatch}[$hash$]  $\leftarrow$ \texttt{originalBatch}     
+                		\If {\Call{\<isValidBatch>}{\texttt{originalBatch}}}
+                			\State \texttt{mySignature} $\leftarrow$ \<Sign>($hash$, privateKey)
+                			\State \texttt{Tendermint.Broadcast}($hash$, mySignature)
+					\EndIf   
+				\EndIf             	
+                	\State \textbf{return}
+            \EndFunction
+            
+             \Function{\<shouldConsolidateHash>}{$hash$}\label{alg:hash_consolidated}
+            		\State \textbf{return} \textbf{\#}\texttt{hashToSignatures}[$hash$] = \texttt{SIGNATURES\_PER\_HASH}
+            \EndFunction
+
+        \end{algorithmic}
+      \end{algorithm}
+	\end{adjustbox}
+  \end{figure}
+  
