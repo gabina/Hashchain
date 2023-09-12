@@ -1,130 +1,128 @@
-\section{Introduction}
+\chapter{Introduction}
 % What is the problem. Justifiy that the problem is a problem.
 %Blockchains
-\emph{Distributed ledgers} (also known as \emph{blockchains}) were first proposed
-by Nakamoto in 2009~\cite{nakamoto06bitcoin} in the implementation of Bitcoin,
-as a method to eliminate trustable third parties in electronic payment systems.
+Las \textit{bitácoras distribuídas} (también conocidas como blockchains) tomaron
+popularidad con la implementación de Bitcoin, propuesta por Nakamoto en
+2009~\cite{nakamoto06bitcoin}.
+Allí se presentó como un método para eliminar terceras partes confiables en sistemas
+de pago electrónico.
 %
-Modern blockchains incorporate smart
-contracts~\cite{szabo96smart,ethereum}, 
-which are immutable state-full
-programs stored in the blockchain that describe functionality of transactions,
-including the exchange of cryptocurrency.
+Las blockchains modernas incorporan contratos inteligentes~\cite{szabo96smart,ethereum},
+los cuales son programas de estado inmutable alojados en la blockchain. Dichos
+programas describen la funcionalidad de las transacciones, incluyendo el intercambio
+de criptomonedas.
 %
-Smart contracts allow to describe sophisticated functionality, enabling
-many applications in decentralized finances (DeFi)\footnote{As of December 2021, the monetary value locked in DeFi
-  was estimated to be around \$100B, according to Statista
-  \url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
-  decentralized governance,
-Web3, etc.
+Los contratos inteligentes permiten describir funcionalidades sofisticadas, habilitando
+diversas aplicaciones en finanzas descentralizadas (DeFi)\footnote{En diciembre de 2021,
+el valor monetario alojado en DeFi estaba estimado en alrededor de \$100B, de acuerdo a Statista
+\url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
+gobierno decentralizado, Web3, etc.
+%
+El elemento principal de todas las  bitácoras distribuídas es la cadena de bloques en donde
+se encuentran las transacciones.
+%
+La blockchain es un \textit{objeto distribuído} que contiene las transacciones realizadas
+en nombre de los usuarios, empaquetadas en bloques, y toalmente
+ordenadas~\cite{anta2018formalizing,anta2021principles}.
+%
+En implementaciones de mundo real, el objeto blockchain es mantenido por múltiples servidores
+sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
+ataques bizantinos.
+%
 
-The main element of all distributed ledgers is the ``blockchain''.
+Un aspecto clave en la adopción de las tecnologías blockchain es \emph{su rendmiento}, medido
+en términos del número de transacciones por segundo.
 %
-The blockchain is a \emph{distributed object} containing, packed in blocks, the
-totally ordered list of transactions performed on behalf of the
-users~\cite{anta2018formalizing,anta2021principles}.
+Consecuentemente, muchas técnicas para mejorar la escalabilidad de las blockchains
+está siendo desarrollada.
 %
-In real-world implementations, the blockchain object is maintained by multiple
-servers without a central authority, using \emph{consensus algorithms} that are
-resilient to Byzantine attacks.
+Las blockchains actuales requieren de algoritmos de consenso que garanticen que las
+transacciones, empaquetadas en bloques, estén totalmente ordenadas.
+%
+Esta imposición de un orden total puede ser innecesario para algunas aplicaciones.
+
 
 %
-A key aspect of the adoption of blockchain technologies is \emph{their
-performance}~\footnote{Mesuare in terms of the number of transactions per
-second.}.
+Un enfoque prometedor para mejorar la escalabilidad es \textit{Setchain}, un tipo de
+datos concurrente que implementa conjuntos de solo crecimiento distribuídos. A su vez,
+es tolerante a comportamientos bizantinos, y provee barreras o puntos de sincronización
+(llamados épocas).
 %
-Consequently, many techniques to improve the scalability of
-blockchains are being developed.
+\setchain relaja el requerimiento de orden total y, por lo ranto, puede lograr mayor
+rendimiento y escalabilidad.
 %
-Current blockchains require consensus algorithms to guarantee that
-transactions, batched as blocks, are totally ordered.
+Las \setchains se pueden usar para aquellas aplicaciones, como los registros digitales,
+en donde los elementos en la blockchain no necesitan estar ordenados, excepto a través
+de barreras ocasionales.
+
 %
-Imposing a total order, although it is safe, may be unnecessary for some
-applications.
-%
-A promising approach to improve scalability is \emph{Setchain}, a distributed
-concurrent data type that implements Byzantine tolerant distributed grown-only
-sets with barriers (called epochs).
-%
-Setchain relaxes the total order requirement, and thus, can achieve higher
-throughput and scalability.
-%
-Setchains can be used for those applications, like digital
-registries, where different elements in the blockchain need not be
-ordered except across infrequent barriers.
-%
-Several Byzantine distributed algorithms that implement Setchain
-have been proposed but no efficient real-world implementations
-exists.
+
+Distintos algoritmos bizantinos distribuídos que implementan \setchain fueron
+propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
+los requerimientos de una aplicación del mundo real.
 
 %% Motivate the use of tendermint. Why tendermint is relevant
-Nowadays, implementations of distributed ledgers avoid the use of
-\emph{proof-of-work}.
+Hoy en día, las implementaciones de bitácoras distribuídas evitan el uso de
+\emph{pruebas de trabajo}.
 %
-The first distributed ledges implementations (Bitcoin~\cite{nakamoto06bitcoin}
-and Ethereum~\cite{ethereum}) are based on proof-of-work consensus algorithms
-\gabina{Revisar referencia a Ethereum Yellow paper porque parece repetida}
-leading to a known energetic problem~\cite{energy.problem.bitcoin}.
-\martin{Cite energetic problem}
-\marga{puse un paper que calcula la huella de carbon de bitcoin en 2018}
+Las primeras implementaciones de bitácoras distribuídas (Bitcoin~\cite{nakamoto06bitcoin}
+y Ethereum~\cite{ethereum}) están basadas en algoritmos de consenso que funcionan con
+pruebas de trabajo, enfatizando un problema energérico conocido\cite{energy.problem.bitcoin}.
 %
-Other consensus algorithms, as \emph{proof-of-stake}, were proposed trying to
-solve this problem.
+Otros algoritmos de consenso, como aquellos que utilizan \emph{pruebas de apuestas},
+fueron propuestos para intentar desligarse de este problema.
 %
-However, after solving the energetic problem, there was another unsolved
-problem: probabilistic finality.
+Sin embargo, existen otros problemas a resolver: la finalización probabilística.
 %
-Blocks, after being accepted, require confirmation rounds leaving room for the
-network to decide on another branch in the evolution of the ledger.
-%
-\martin{This is a known problem in bitcoin, but I don't remember the name}
+Los bloques, una vez que fueron aceptados, requieren rondas de confirmación, lo que da
+lugar a la red a decidir otra rama en la evolución de la  bitácora.
 
-Tendermint~\cite{Buchman.2018.Tendermint} is a novel and popular
-platform that solves some of the technical problems of previous blockchain implementations,
-i.e energetic problem and probabilistic finality.
+
+Tendermint~\cite{Buchman.2018.Tendermint} es una plataforma novedoza y popular que resuelve
+algunos de los problemas técnicos que implementaciones previas de blockchain presentaban,
+como el problema energético y la finalización probabilística.
 %
-Tendermint presents a clear separation between the low-level basic blockchain
-blocks, such as a gossip protocol and a consensus algorithm, and high-level
-concepts related to the data structure the blockchain maintains.
+Tendermint presenta una separación clara entre las capas de bajo nivel de la blockchain,
+tales como un protocolo \textit{gossip} y un algoritmo de consenso, y los conceptos de alto
+nivel relacionados a la estructura de datos que la blockchain mantiene.
 %
-Moreover, Tendermint is a real-world distributed ledger solution implemented in
-\emph{Go}~\cite{donovan15go}.
+Aún más, Tendermint es una solución robusta a las bitácoras distribuídas implementada
+en \emph{Go}~\cite{donovan15go}.
+
 %
 
 %
 % What is the solution.
 %
-In this work in progress, we propose a family
-of real-world \setchain implementations built on top of the \emph{Tendermint
-blockchain application platform}, with our primary contribution being \textbf{Hashchain}.
+En este trabajo se propone una familia de implementaciones robustas de \setchain,
+construídas sobre la \emph{plataforma de aplicación de blockchain Tendermint},
+siendo la contribución principal \textbf{Hashchain}.
 %
-Hashchain exploits the compression
-power of hash functions to reduce the communication necessary during broadcasts
-and consensus, communicating a fixed-sized hash instead of hundreds or thousands of
-elements.
+Hashchain explota el poder de compresión de las funciones hash para reducir la
+comunicación necesaria durante difusión y consenso, comunicando un hash de tamaño
+fijo en lugar de cientos o miles de elementos.
 %
-The prize to pay is an additional distributed algorithm to obtain
-the set of elements from a hash, guaranteeing tolerance against
-Byzantine servers.
+El precio a pagar es una algoritmo distribuído adicional para obtener el conjunto de
+elementos desde un hash, garantizando tolerancia a servidores bizantinos.
 %
-We follow an incremental approach providing several approximations to the
-final and most complex solution. We present:
-%
+Se sigue un enfoque incremental, proveyendo diversas aproximaciones a la solución
+final y más compleja. Se presentan:
 \begin{enumerate}
-        \item a naive implementation of Setchain,
-        \item an intermediate implementation using a compression algorithm, and
-        \item a solution using hash functions.
+  \item una primera implementación ingenua de Setchain,
+  \item una implementación intermedia utilizando un algoritmo de compresión, y
+  \item una solución usando funciones hash.
 \end{enumerate}
 %
-Each implementation is based on top of Tendermint.
-
-The article is structured as follows: in Section~\ref{sec:prelim}, we present a
-brief description of Setchain and Tendermint; in Section~\ref{sec:impl}, we
-describe three implementations of Setchain on top of Tendermint; and in
-Section~\ref{sec:conclusion}, we conclude our work.
 %
-This article is presented as a work-in-progress and shows partial results, and
-thus, the experimental section is lacking.
+Cada una de las implementaciones está construída sobre Tendermint.
+
+% The article is structured as follows: in Section~\ref{sec:prelim}, we present a
+% brief description of Setchain and Tendermint; in Section~\ref{sec:impl}, we
+% describe three implementations of Setchain on top of Tendermint; and in
+% Section~\ref{sec:conclusion}, we conclude our work.
+% %
+% This article is presented as a work-in-progress and shows partial results, and
+% thus, the experimental section is lacking.
 
 % We prove how Hashchain can implement Setchain correctly.
 
