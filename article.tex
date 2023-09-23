@@ -1,4 +1,4 @@
-\documentclass{book}
+\documentclass[12pt, oneside]{book}
 
 
 \input{preamble}
@@ -11,15 +11,18 @@
 
 
 %\date{\today}
+\titlecontents*{chapter}
 
 \begin{document}
 
 \maketitle
 
+\input{Abstract}
+%\addcontentsline{toc}{chapter}{#1}
+
 \tableofcontents{}
 
-\input{Abstract}
-
+\chapter{Introducción}
 % %% Introduction:
 % %% Introducing the problem to the reader and motivating the work
 \input{Introduction}
@@ -27,8 +30,8 @@
 % %% Preliminaries:
 % % + Blockchain: what blockchain are we working with? A general abstract thing or Tezos?
 % % + Monitoring?
-% \input{Preliminaries}
-
+\input{Preliminaries}
+\end{chapter}
 % %% Model of computation
 % % + Define the model of computation
 % % + Introduce leading example

@@ -1,27 +1,28 @@
-\chapter{Resumen}
+  \chapter*{Resumen}
   %
   %
   % What is the problem. Justifiy that the problem is a problem.
   %
-  Una aspecto clave en la adopción de tecnologías \textit{blockchain} es su rendimiento,
+  Un aspecto clave en la adopción de tecnologías \textit{blockchain} es el rendimiento,
   usualmente medido en términos de número de bloques por segundo.
   %
-  Consecuentemente, muchas técnicas para mejorar la escalabilidad de las blockchains
-  está siendo desarrollada.
+  En consecuencia, diversas técnicas que buscan mejorar la escalabilidad de las blockchains
+  están siendo estudiadas y desarrolladas.
   %
-  Las blockchains actuales requieren de algoritmos de consenso que garanticen que las
+  Las blockchains actuales requieren algoritmos de consenso que garanticen que las
   transacciones, empaquetadas en bloques, estén totalmente ordenadas.
   %
-  Esta imposición de un orden total puede ser innecesario para algunas aplicaciones.
-  
+  Dado que esta imposición de un orden total puede ser innecesaria para algunas aplicaciones,
+  un enfoque prometedor para mejorar la escalabilidad se basa en relajar esta exigencia.
   %
 
-  Un enfoque prometedor para mejorar la escalabilidad es \textit{Setchain}, un tipo de
-  datos concurrente que implementa conjuntos de solo crecimiento distribuídos. A su vez,
+  Bajo esta idea subyacente nace \textit{Setchain}, un tipo de
+  datos concurrente que implementa conjuntos de solo crecimiento distribuídos 
+  (\textit{distributed grown-only sets}). A su vez,
   es tolerante a comportamientos bizantinos, y provee barreras o puntos de sincronización
-  (llamados épocas).
+  (llamados épocas), que dotan a la estructura de un orden parcial.
   %
-  \setchain relaja el requerimiento de orden total y, por lo ranto, puede lograr mayor
+  \setchain relaja el requerimiento de orden total y, de esta forma, busca lograr mayor
   rendimiento y escalabilidad.
   %
   Las \setchains se pueden usar para aquellas aplicaciones, como los registros digitales,
@@ -38,21 +39,21 @@
   % What is the solution.
   %
   En el presente trabajo se propone una familia de implementaciones de \setchain 
-  \textit{de mundo real} construídas sobre la \textit{plataforma de aplicación de
-  blockchain Tendermint}.  
+  \textit{de mundo real} construídas sobre \textit{Tendermint}, una plataforma de
+  aplicación de blockchain.  
   % 
   La mayor contribución es \textit{Haschain}, la cual explota el poder de compresión de las
   funciones hash para reducir la comunicación necesaria durante difusión y consenso,
   comunicando un hash de tamaño fijo en lugar de cientos o miles de elementos.
   %
   El precio a pagar es una algoritmo distribuído adicional para obtener el conjunto de
-  elementos desde un hash, garantizando tolerancia a servidores bizantinos.
+  elementos desde un hash. Esto se realiza garantizando tolerancia a servidores bizantinos.
   %
   En este trabajo se discute una implementación práctica de \hashchain construída enteramente
   sobre Tendermint, una plataforma madura usada en distintos proyectos de blockchain, como
   Cosmos o Tezos.
   % Ver qué se dice sobre las pruebas mas o menos formales que existen
-\end{chapter}
+
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"

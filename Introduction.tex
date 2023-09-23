@@ -1,7 +1,48 @@
-\chapter{Introduction}
+\section{Disclaimer}
+
+% Es por acá, amiga...
+% Usuarias de instagram alrededor de Argentina
+% creyendo saber por dónde va
+
+A lo largo de la historia, el término \textit{bitácora} ha servido para referir a
+distintos objetos relacionados con la orientación, el orden, el registro... Por
+primera vez aparecida en un texto escrito en 1538, la palabra \textit{bitácora}
+oficialmente refiere a un concepto de la navegación: \textit{especie de armario
+inmediato al timón, en el cual se coloca la brújula}. Desde ahí surge también
+el conocido \texit{cuaderno de bitácora}, un libro en el que los marinos, durante
+sus guardias, registraban los datos de lo acontecido, y que se guardaba en el
+interior de la bitácora para preservarlo de los malos tiempos. El concepto
+evolucionó y hoy en día la palabra bitácora usualmente se utiliza para hablar
+de registros metodológicos de un suceso particular, ya sea un viaje, una
+construcción, etc. Naturalmente, también se transformó la forma en que estos
+registros se escriben y dónde se guardan, y existe hoy la noción de \textit{bitácora
+virtual}. En esos casos, son las computadoras, las redes y los muchos protocolos,
+los que permiten el acceso a esos registros mediante internet; la potencia de la
+metáfora garantizando que continúe siendo un concepto de la navegación.
+%
+
+En Ciencias de la Computación, las \textit{bitácoras distribuídas} son un tipo de
+base de datos que se comparte
+alrededor de mútiples lugares, países o instituciones, y que típicamente es de
+acceso público. Los registros pueden ser guardados usando distintas estructuras,
+y solo pueden agregarse cuando los participantes logran un \textit{quorum}. En
+contraste con un sistema centralizado, las bitácoras distribuídas no requieren
+un administrador central y, en consecuencia, no tienen un punto de falla central.
+Un caso particular de bitácora distribuída, en donde los registros se empaquetan
+en forma de bloques, es la \textit{blockchain}. Las blockchains tomaron popularidad
+con la implementación de Bitcoin, un sistema de pago electrónico decentralizado, 
+propuesto por Nakamoto en 2009~\cite{nakamoto06bitcoin}.
+Así, aquello que en sus orígenes fue parte de una herramienta de guía, que mostró
+a los viajeros su rumbo, hoy representa un avance en una dirección que dificilmente se
+pueda considerar certera.
+
+% Agregar alguna cita o reflexión de alguien sobre la humanidad creyendo o queriendo
+% conocer el destino
+
+\section{Presentación y Contribuciones}
 % What is the problem. Justifiy that the problem is a problem.
 %Blockchains
-Las \textit{bitácoras distribuídas} (también conocidas como blockchains) tomaron
+Las blockchains tomaron
 popularidad con la implementación de Bitcoin, propuesta por Nakamoto en
 2009~\cite{nakamoto06bitcoin}.
 Allí se presentó como un método para eliminar terceras partes confiables en sistemas
@@ -18,9 +59,6 @@ el valor monetario alojado en DeFi estaba estimado en alrededor de \$100B, de ac
 \url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
 gobierno decentralizado, Web3, etc.
 %
-El elemento principal de todas las  bitácoras distribuídas es la cadena de bloques en donde
-se encuentran las transacciones.
-%
 La blockchain es un \textit{objeto distribuído} que contiene las transacciones realizadas
 en nombre de los usuarios, empaquetadas en bloques, y toalmente
 ordenadas~\cite{anta2018formalizing,anta2021principles}.
@@ -29,12 +67,11 @@ En implementaciones de mundo real, el objeto blockchain es mantenido por múltip
 sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
 ataques bizantinos.
 %
-
 Un aspecto clave en la adopción de las tecnologías blockchain es \emph{su rendmiento}, medido
 en términos del número de transacciones por segundo.
 %
-Consecuentemente, muchas técnicas para mejorar la escalabilidad de las blockchains
-está siendo desarrollada.
+Consecuentemente, diversas técnicas para mejorar la escalabilidad de las blockchains
+están siendo desarrolladas.
 %
 Las blockchains actuales requieren de algoritmos de consenso que garanticen que las
 transacciones, empaquetadas en bloques, estén totalmente ordenadas.
@@ -62,20 +99,6 @@ propuestos, pero no existía al momento ninguna implementacion eficiente compati
 los requerimientos de una aplicación del mundo real.
 
 %% Motivate the use of tendermint. Why tendermint is relevant
-Hoy en día, las implementaciones de bitácoras distribuídas evitan el uso de
-\emph{pruebas de trabajo}.
-%
-Las primeras implementaciones de bitácoras distribuídas (Bitcoin~\cite{nakamoto06bitcoin}
-y Ethereum~\cite{ethereum}) están basadas en algoritmos de consenso que funcionan con
-pruebas de trabajo, enfatizando un problema energérico conocido\cite{energy.problem.bitcoin}.
-%
-Otros algoritmos de consenso, como aquellos que utilizan \emph{pruebas de apuestas},
-fueron propuestos para intentar desligarse de este problema.
-%
-Sin embargo, existen otros problemas a resolver: la finalización probabilística.
-%
-Los bloques, una vez que fueron aceptados, requieren rondas de confirmación, lo que da
-lugar a la red a decidir otra rama en la evolución de la  bitácora.
 
 
 Tendermint~\cite{Buchman.2018.Tendermint} es una plataforma novedoza y popular que resuelve
