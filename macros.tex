@@ -2,6 +2,7 @@
 \functions{isValidElement,isValidTransaction,getElementFromTransaction,
 getElementsFromBatch,Hash,isValidBatch, AddElement,isReady,revertHash,
 shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
+
 \reservestyle{\setchainOp}{\texttt}
 \setchainOp{add,get,theset[the\_set],epoch,history}
 \reservestyle{\tendermint}{\texttt}
@@ -21,8 +22,8 @@ shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
 \newcommand{\HISTORY}{\<history>}
 \newcommand{\THESET}{\<theset>}
 \newcommand{\epochs}{Setchain\xspace}
-\newcommand{\Get}{\PR{get}}
-\newcommand{\Add}{\PR{add}}
+\newcommand{\Get}{\PR{get}\xspace}
+\newcommand{\Add}{\PR{add}\xspace}
 \newcommand{\BRBdeliver}{\<BRB>.\<Deliver>}
 \newcommand{\BRBbroadcast}{\<BRB>.\<Broadcast>}
 \newcommand{\BABdeliver}{\<BAB>.\<Deliver>}
@@ -30,6 +31,13 @@ shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
 \newcommand{\setchain}{Setchain\xspace}
 \newcommand{\setchains}{Setchains\xspace}
 \newcommand{\hashchain}{Hashchain\xspace}
+
+% ABCI
+\newcommand{\BeginBlock}{\texttt{BeginBlock}}
+\newcommand{\EndBlock}{\texttt{EndBlock}}
+\newcommand{\CheckTx}{\texttt{CheckTx}}
+\newcommand{\Commit}{\texttt{Commit}}
+\newcommand{\DeliverTx}{\texttt{DeliverTx}}
 
 \newcommand{\Hspeed}{H1}
 \newcommand{\Hbetteralg}{H2}

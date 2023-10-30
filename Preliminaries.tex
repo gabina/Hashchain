@@ -4,7 +4,7 @@ En esta sección se presenta una breve descripción de los conceptos fundamental
 más importantes para hacer posible la comprensión y discusión sobre las
 contribuciones de este trabajo.
 
-\subsection{Donde todo comenzó}
+\subsection{Sistemas distribuídos: donde todo comenzó}
 
 La computación distribuída nació a fines de la década de 1970 cuando investigadores y profesionales
 comenzaron a tener en cuenta las características intrínsecas de los sistemas distribuídos físicamente.
@@ -38,6 +38,24 @@ información de una manera u otra. Es interesante notar que el hecho de que las 
 cooperen no significa la asumción de que todas las entidades se comportarán de la forma
 acordada, ya sea por un error (por ejemplo, en la programación o en una red) o por un compartamiento
 malintencionado. Se volverá a este punto en la sección ~\ref{subsubsec:consensus}.
+
+% Two main process failures models are considered in this book:
+% • Crash failures. A process commits a crash failure when it prematurely stops its execution. Until
+% it crashes (if it ever crashes), a process correctly executes its local algorithm.
+% • Byzantine failures. A process commits a Byzantine failure when it does not follow the behav-
+% ior assigned to it by its local algorithm. This kind of failure is also called arbitrary failure
+% (sometimes known as malicious when the failure is intentional). Let us notice that crash failures
+% (which are an unexpected deﬁnitive halt) are a proper subset of Byzantine failures.
+% A simple example of a Byzantine failure is the the following: while it is assumed to send the
+% same value to all processes, a process sends different values to different subsets of processes,
+% and no value at all to other processes. This is a typical Byzantine behavior. Moreover, Byzantine
+% processes can collude to foil the processes that are not Byzantine.
+% From a terminology point of view, let us consider an execution E (an execution is also called a
+% run). The processes that commit failures are said to be faulty in E. The other processes are said to
+% be correct or non-faulty in E. It is not known in advance if a given process is correct or faulty, this is
+% speciﬁc to each execution.
+% Given a process failure model, the model parameter t is used to denote the maximal number of
+% processes that can be faulty in an execution.
 
 % Fuente: Fault-Tolerant Message-Passing Distributed Systems An Algorithmic Approach
 \subsection{Los orígenes de la blockchain}
@@ -132,220 +150,270 @@ se dice que llegaron a un consenso.
 %The validation rules these nodes follow to maintain consensus are
 %called consensus rules. This section describes many of the consensus rules used by Bitcoin Core.
 
-La Figura muestra una versión simplificada de una blockchain. En la sección de datos de un bloque
+La Figura \ref{fig:blockchain} muestra una versión simplificada de una blockchain. En la sección de datos de un bloque
 se agrupan y alojan una o más transacciones nuevas. Copias de cada transacción se hashean, los hashes luego
 se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un único hash: la raíz de un
-\textit{merkle tree}. 
-
+\textit{merkle tree}. En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
 La raíz del merkle tree se aloja en el encabezado del bloque. Cada bloque además contiene el hash del encabezado
 del bloque anterior, encadenándolos. Esto asegura que una transacción no pueda modificarse sin modificar el bloque
 que la contiene y todos los bloques siguientes.
 
-% Agregar imágenes de blockchain y de merkle tree.
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{figures/blockchain.png}
+  \caption{Versión simplificada de la blockchain}
+  \label{fig:blockchain}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.3]{figures/merkle-tree.png}
+  \caption{Merkle tree}
+  \label{fig:merkle-tree}
+\end{figure}
 
 %Las transacciones también están encadenadas. Es decir, cada transacción gasta los \textit{satoshis}\footnote{
 %Satoshi es la unidad mínima de Bitcoin, llamada así por el pseudónimo de su creador, Satoshi Nakamoto. Un bitcoin
 %es equivalente a 100 millones de Satoshis.} previamente recibidos en una o más transacciones previas, por lo
 %que la entrada de una transacción es la salida de una transacción previa.
 
+% Fuente: https://developer.bitcoin.org/devguide/block_chain.html
+
 %\subsection{Blockchain actuales}
 
 \subsection{Algoritmos de consenso}\label{subsubsec:consensus}
+El problema de consenso es uno de los más celebrados en los sistemas de computación distribuída tolerante a fallas.
+%
+Abstrae diversos problemas en donde, de una manera u otra, los procesos deben ponerse de acuerdo.
+%
+
+Los problemas de consenso requieren acuerdo entre un número de procesos para determinar un valor particular.
+%
+Algunos de los procesos pueden fallar o ser no confiables de diversas maneras, por lo que los protocolos de
+consenso deben ser resilientes a fallas.
+%
+Los procesos deben de alguna forma establecer sus valores candidatos, comunicándose entre ellos, y
+poniéndose de acuerdo en un valor específico.
+%
+Los protocolos que resuelven el problema de consenso son diseñados para lidiar con un número limitado de procesos
+que fallan.
+%
+Estos protoclos deben satisfacer un número de requerimientos para ser utilizados.
+%
+A lo largo de la historia se han desarrollado distintos algoritmos de consenso, que funcionan bajo diferentes
+escenarios (cantidad de nodos, cantidad de nodos que pueden fallar, formas en las que pueden fallar, etc.)
+
+%
+
+Si bien a lo largo de este trabajo no se entrará en detalles sobre ningún algoritmo de consenso en particular,
+es pertienente discutir conceptos y nomenclatura básica.
+
 \subsubsection{El problema de los generales bizantinos}
 
-% \subsection{Setchain}
-% \setchain \cite{Capretto.2022.Setchain} is a distributed concurrent data-type
-% that implements Byzantine tolerant distributed grown-only sets with barriers
-% (called epochs).
-% %
-% Barriers impose an order between elements in different epochs but not with
-% elements in the same epoch.
-% %
-% Therefore, \setchain relaxes the total order requirement imposed by blockchains,
-% and thus, can achieve higher throughput and scalability.
-% %
-% \setchain can be used for those applications, like digital
-% registries, where different elements in the blockchain need not be
-% ordered except across infrequent barriers.
+Los sistemas de computación confiables deben lidiar con componentes que, por mal funcionamiento,
+dan información conflictiva a diferentes partes del sistema. La situación puede ser exrepsada abstractamente
+en términos de un grupo de generales de la armada bizantina que acampan con sus tropas alrededor de una
+ciudad enemiga. Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en una plan
+de batalla común. Sin embargo, uno o más de ellos pueden ser traidores, quienes tratarán de confundir a los
+otros. El problema es encontrar un algoritmo que asegure que los generales leales lleguen a un acuerdo.
+Está demostrado que, usando solo mensajes orales, este problema es resoluble si y solo si más de dos tercios
+de los generales son leales.
+La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
+es conocida como tolerancia a fallas bizantinas (BFT por sus siglas en inglés). Si bien la teoría de
+BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
+debido al amplio éxito de tecnologías blockchains como Bitcoin y Ethereum.
 
-% \paragraph*{Setchain API.}
-% %
-% Let \(U\) be a set of elements that client processes can inject into the
-% \setchain.
-% %
-% Moreover, let \isValidElement\ be a function that nodes can use to locally
-% validate elements in \(U\).
-% %
-% A \setchain is a distributed data structure where a collection of server nodes
-% maintain:
-% % \begin{compactitem}
-% \begin{itemize}
-% \item a set $\<theset> \subseteq U$ of elements added;
-% \item a natural number $\<epoch> \in \mathbb{N}$;
-% \item a map $\<history> : [1..\<epoch>] \rightarrow \mathcal{P}(U)$\footnote{$\mathcal{P}(U)$ denotes the
-% power set of $U$} describing sets of elements that have been stamped with an
-% epoch number.
-% \end{itemize}
-% %
-% Server nodes support two operations: \(\<add>\) and \(\<get>\).
-% %
-% Operation \(\<add>\) requests to add an element, while operation \(\<get>\)
-% returns the values maintained by the node~(\(\<theset>,\<history>,\<epoch>\)).
-% %
-% We use dot-notation to invoke these operations, let \(v\) be a server node and
-% \(e\) an element: \(v.\<add>(e),v.\<get>\).
+% Fuente: [10] Lamport, L., Shostak, R., and Marshall, P. The byzantine generals problem.
 
-% % Each server node $v$ supports two operations,
-% % available to any client process:
-% % % \begin{compactitem}
-% % \begin{itemize}
-% % \item $v.\<add>(e)$: requests to add $e$ to $\<theset>$.
-% % \item $v.\<get>()$: returns the values of $\<theset>$, $\<history>$,
-% %   and $\<epoch>$, as perceived by $v$.
-% % \end{itemize}
 
-% When barriers are triggered, nodes maintaining the \setchain collaboratively
-% decide which added elements are stamped with the current epoch and increase the
-% epoch number.
-% %
-% We call these events \emph{epoch increments}.
-% %
-% We assume that periodic synchronization barriers are triggered.
+\subsection{Setchain}
 
-% A typical workflow from the point of the view of a client is as follows: a
-% client invokes $\<add>(e)$ in one (or more) servers to insert a new valid
-% element $e$ in the \setchain.
-% %
-% The element $e$ will be propagated among the servers, and when an
-% epoch increment occurs, the servers will attempt to include it in the
-% new epoch.
-% %
-% After waiting for some time, the client invokes $\<get>$ in one (or
-% more) servers to check that the element has been effectively added and
-% stamped.
+\setchain \cite{Capretto.2022.Setchain} es un tipo de datos concurrente y distribuído que implementa
+conjuntos distribuídos de solo crecimiento, con barreras de sincronización (llamadas épocas), y tolerante
+a comportamiento bizantinos.
+%
+Las barreras imponen un orden entre elementos pertenecientes a diferentes épocas pero no entre elementos
+de la misma época.
+%
+Por lo tanto, \setchain relaja el requerimiento de orden total impuesto por las blockchains y, en consecuencia,
+puede lograr mayor rendimiento y escalabilidad.
 
-% \paragraph*{Properties.}
-% To ensure correctness, \setchain implementations must satisfy certain
-% properties that provide eventual guarantees for elements added and
-% guarantee consistency between correct servers. 
-% %
-% These properties reason about correct servers since Byzantine servers
-% do not provide any guarantee.
+\subsubsection{La interfaz de Setchain}
+Sea \(U\) un conjunto de elementos que los procesos clientes pueden inyectar en la \setchain.
+%
+Sea \isValidElement\ una función que los nodos pueden usar para validar elementos en \(U\)
+localmente.
+%
+Una \setchain es una estructura de datos distribuída donde una colleción de nodos servidores
+mantienen:
+\begin{itemize}
+  \item un conjunto $\THESET \subseteq U$ de elementos agregados;
+  \item un número natural $\EPOCH \in \mathds{N}$;
+  \item una función $\HISTORY : [1..\EPOCH] \rightarrow \mathcal{P}(U)$\footnote{$\mathcal{P}(U)$ denota el conjunto potencia
+  de $U$} que describe los conjuntos de elementos que fueron estampados con un número de época.
+\end{itemize}
 
-% \begin{compactitem}
-%   \item Every valid element added by a correct
-% server is eventually returned in all future gets issued in all correct
-% servers.
-%   \item All valid elements added in a correct server must be eventually
-% be stamped in all correct servers.
-%   \item Once an element is stamped with an epoch, it cannot be unstamped, nor
-% can it be stamped with another epoch.
-% \item Any two correct servers agree on the content of
-% all epochs that both have computed~\footnote{Not all correct servers process epoch increments
-% simultaneously, as some may be more delayed than others.}.
+%
+%Los nodos servidores soportan dos operaciones: \Add y \Get.
+%
+%La operación \Add agrega un elemento, mientras que la operación \Get retorna la terna (\THESET,\HISTORY,\EPOCH) mantenida
+% por el nodo.
+
 % %
-% % Nevertheless,
-% \item Every element that is stamped comes from the result of a client adding the element.
-%   \end{compactitem}
+
+%Se usará notación de punto para invocar estas operaciones. Sea $v$ un nodo servidor, y $e$ un elemento:
+%se notará $v.\Add(e)$ para solicitarle añadir el elemento $e$ al nodo $v$, y $v.\Get$ para pedirle al nodo $v$
+%que retorne la terna en cuestión.
+
+Cada nodo servidor $v$ soporta dos operaciones, disponibles para todos los procesos clientes:
+\begin{itemize}
+  \item $v.\Add(e)$: solicita agregar el elemento $e$ a \THESET.
+  \item $v.\Get()$: retorna los valores de \THESET, \HISTORY,
+    and \EPOCH, según $v$.
+\end{itemize}
+  
+Cuando se impone una nueva barrera de sincronización, los nodos que mantinen la \setchain colaborativamente
+deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
+%
+Estos eventos se llaman \textit{incrementos de época}.
+%
+Se asume que las barreras de sincronización se lanzan periódicamente.
+%
+Un flujo de trabajo típico desde el punto de vista del cliente es como sigue: un cliente invoca $\Add(e)$ en
+uno (o más) servidores para insertar un nuevo elemento válido $e$ en la \setchain.
+% 
+El elemento $e$ será propagado hacia los servidores, y cuando un incremento de época ocurra, los servidores
+intentarán incluirlo en la nueva época.
+%
+Después de esperar cierto tiempo, el cliente invoca \Get en uno (o más) servidores para chequear que el
+elemento fue efectivamente agregado y estampado con una época.
+
+\subsubsection{Propiedades}
+Para asegurar correctitud, las implementaciones de \setchain deben satisfacer ciertas propiedades que
+proveen garantías eventuales para elementos añadidos y garantía de consistencia entre los servidores
+correctos.
+%
+Estas propiedades razonan sobre los servidores correctos, dado que los servidores bizantinos no proveen
+ninguna garantía.
+
+\begin{itemize}
+  \item Cada elemento válido agregado por un servidor correcto eventualmente es retornado en
+  todas las futuras invocaciones a \Get hechas sobre servidores correctos.
+  \item Todos los elementos válidos agregados en un servidor corrector deben eventualmente ser
+  estampados con un número de época en todos los servidores correctos.
+  \item Una vez que un elemento es estampado con una época, no puede ser des-estampado, ni puede
+  ser estampado con otro número de época.
+  \item Dos servidores correctos cualesquieras están se acuerdo en el contenido de todas las épocas
+  que hayan sido computadas~\footnote{No todos los servidores correctos procesan los incrementos de
+  época simultáneamente, dado que algunos pueden estar más retrazados que otros.}.
+  \item Cada elemento que se estampa con una época proviene del resultado de un cliente añadiendo
+  el elemento.
+\end{itemize}
 % \gabina{Epoch proofs are part of the epoch but are not coming directly from the result of a client adding element.}
 
-% \subsection{Tendermint}\label{sec:tendermint}
-% %
-% Tendermint is a state machine replication engine that tolerates Byzantine faults.
-% %
-% It was among the first systems to adapt classical Byzantine Fault Tolerant consensus protocols
-% to the blockchain paradigm, whereby consensus is performed on cryptographic hash-linked batches of
-% transactions (i.e., blocks) in a public, open-membership network.
-% %
-% Tendermint functions as a blockchain middleware that supports the replication of arbitrary
-% applications, written in any programming language~\cite{tendermint.design}.
+\subsection{Tendermint}\label{sec:tendermint}
+Tendermint es un motor de replicación de máquinas de estado que tolera fallas bizantinas.
+%
+Fue uno de los primeros sistemas en adaptar protocolos de consenso clásicos tolerantes a fallas bizantinas
+al paradigma de blockchain, donde el consenso es ejecutado sobre lotes de transacciones vinculados mediante
+hashes criptográficos (es decir, bloques) en una red pública y abierta.
 
-% In Figure~\ref{fig:replication}, we show the overview of replicated state machine architecture.
-% %
-% A replicated state machine replicates a transaction log and resulting state across multiple machines.
-% %
-% Transactions are received from the client, run through the consensus protocol, ordered in the
-% transaction log, and executed against the state.
-% %
-% % In the figure, each , with .
-% %
+%
 
-% \begin{figure}
-%   \centering
-%   \includegraphics[scale=0.25]{figures/replication_engine.pdf}
-%   \caption{Overview of replicated state machine architecture~\cite{Buchman.2018.Tendermint}.
-%     %
-%     Diamonds represent machines.
-%     %
-%     Dotted lines represent communication between machines to carry out the
-% consensus protocol for ordering transactions
-%   }
-%   \label{fig:replication}
-% \end{figure}
+Tendermint funciona como una capa intermedia de blockchain que soporta la replicación de aplicaciones arbitrarias,
+escritas en cualquier lenguaje de programación~\cite{tendermint.design}.
+%
+En la Figura~\ref{fig:replication} se muestra un esquema general de la arquitectura de la replicación de máquinas de
+estado.
+%
+Las transacciones se reciben desde el cliente, quien se comunica, mediante una API, con una (o más) de las máquinas
+en la red.
+%
+Estas transacciones pasan a través del protocolo de consenso, quien es el encargado de ordernar dichas
+transacciones en bloques, mediante una serie de pasos que involucra comunicación entre todas las máquinas
+(señalizada en la figura con líneas punteadas).
+%
+Una vez ordenadas, las transacciones son ejecutadas en cada una de las máquinas, modificando el estado
+de cada una de ellas.
+%
+De esta forma, se replican lotes de transacciones enviadas por los distintos clientes, que son ejecutadas en el mismo
+orden en cada una de las máquinas en la red, resultando en un mismo estado a lo largo de múltiples máquinas.
 
-% %
-
-% Tendermint consists of two chief technical components: a blockchain consensus engine and a
-% generic application interface.
-% %
-% The consensus engine, called Tendermint Core, ensures that the same transactions are recorded
-% on every machine in the same order.
-% %
-% The application interface, called the Application BlockChain Interface (ABCI), enables the
-% transactions to be processed in any programming language.
-% %
-
-% \subsection{Application BlockChain Interface}
-% ABCI is the interface between Tendermint Core
-% % (the \textquotedblleft
-% % consensus engine\textquotedblright)
-% and the replicated application.
-% %
-% A Tendermint node maintains three main ABCI connections with the replicated application.
-% %
-
-% The \textit{consensus connection} is used only when a new block is committed,
-% and communicates all information from the block in a series of 
-% requests: \<BeginBlock>, [\<DeliverTx>, ...], \<EndBlock>, \<Commit>.
-% %
-% That is, when a block is committed in the consensus, Tendermint sends a 
-% list of \<DeliverTx> requests (one for each transaction) sandwiched by 
-% \<BeginBlock> and \<EndBlock> requests, and followed by a \<Commit>.
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.25]{figures/replication_engine.pdf}
+  \caption{Esquema simplificado de la arquitectura de la replicación de máquinas de estado~\cite{Buchman.2018.Tendermint}.
+    %
+    Los diamantes representan máquinas.
+    %
+    Las líneas punteadas representan la comunicación entre máquinas para llevar a cabo el protocolo de consenso para ordernar
+    transacciones.
+  }
+  \label{fig:replication}
+\end{figure}
 
 % %
+Tendermint consiste de dos componentes técnicos principales: un motor de consenso de blockchain, y una interfaz
+de aplicación genérica.
+%
+El motor de consenso, llamado \textit{Tendermint Core}, asegura que las mismas transacciones son registradas en cada
+máquinas en el mismo orden.
+%
+La interfaz de aplicación, llamada \textit{interfaz de aplicación de blockchain} (IABC)\footnote{Proveniente de \textit{Application
+BlockChain Interface} (ABCI) en inglés.}, habilita que las transacciones
+sean procesadas en cualquier lenguaje de programación.
 
-% The \textit{mempool connection} is used by the transaction
-% pool protocol to validate transactions submitted
-% by clients against the application state. 
-% %
-% It is used only for \<CheckTx> requests. Transactions
-% are run using \<CheckTx> in the same order they were received
-% by the validator\footnote{Validator nodes are responsible for committing new blocks in the blockchain. These validators participate in the consensus protocol by broadcasting votes which contain cryptographic signatures signed by each validator's private key.}. If the \<CheckTx> returns OK, the transaction
-% is kept in memory and relayed to other peers in the same order
-% it was received. Otherwise, it is discarded.
-% %
-% It is up to the application to define whether a transaction is valid or not, and
-% the validation is optional. 
+\subsubsection{Application BlockChain Interface}
+La interfaz de aplicación de blockchain es la interfaz entre el Tendermint Core y la aplicación replicada.
+%
+Un nodo de Tendermint mantiene tres conexiones ABCI with la aplicación replicada.
+%
+La \textit{conexión de consenso} se utiliza solo cuando se hace \textit{commit} sobre un nuevo bloque,
+y comunica toda la información del bloque mediante una serie de peticiones: 
+\BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
+%
+Esto significa que, cuando un bloque es acordado meidante consenso, Tendermint envía una petición \BeginBlock
+seguida por una lista de peticiones \DeliverTx (una por cada transacción en el bloque), que finalizan con las
+peticiones \EndBlock y \Commit, en ese orden.
 
-% %
+%
 
-% The \textit{query connection} allows retrieving information
-% from the local instance of the application, used by several
-% Tendermint modules (e.g., peer filtering).
-% %
-% It is used to query the application without engaging consensus. 
-% %It is exposed over the tendermint core rpc, so clients can query
-% %the app without exposing a server on the app itself.
+La \textit{conexión de mempool} es usada por el protocolo de reserva de transacciones \footnote{\textit{Transaction pool protocol}
+en inglés.} para validar las transacciones enviadas por los clientes en relación al estado de la aplicación.
+%
+Esta conexión solo admite peticiones \CheckTx. Las transacciones se chequean (mediante \CheckTx) en el mismo orden
+en que fueron recibidas por el nodo validador\footnote{Los nodos validadores son responsables de hacer commit sobre nuevos
+bloques en la blockchain. Estos validadores participan en el protocolo de consenso mediante la difusión de votos, los
+cuales contienen firmas criptográficas generadas por las claves privadas de cada validador.}.
+%
+Si \CheckTx retorna \textit{OK}, la transacción se mantiene en memoria y se retransmite a otros pares en el mismo orden
+en que fue recibida.
+%
+En caso contrario, se descarta.
+%
+Es parte de la lógica de la aplicación definir cuándo una transacción es válida o no, e incluso la validación es opcional.
+%
+De esta manera, queda claro que Tendermint es agnóstico de la semántica de las transacciones.
 
-% Figure~\ref{fig:abci_flow} shows the flow of messages via consensus and mempool connections.
-% %
+%
 
-% \begin{figure}
-%   \centering
-%   \includegraphics[scale=0.35]{figures/abci_msg_flow.pdf}
-%   \caption{Flow of messages via ABCI~\cite{tendermint.site}.}
-%   \label{fig:abci_flow}
-% \end{figure}
+La \textit{conexión de consulta} permite recuperar información de la instancia local de la aplicación, usada
+por distintos módulos de Tendermint (tales como el módulo de filtrado de pares).
+%
+Se utiliza para consultar la aplicación sin forzar consenso.
+%
+Se expone mediante el servidor RPC\footnote{\textit{Remote Procedure Call} o llamada a procedimiento
+remoto en español.} del Tendermint Core, de modo que los clientes pueden
+consultar el estado de la aplicación sin exponer un servidor de la aplicación en sí mismo. 
+
+La Figura~\ref{fig:abci_flow} muestra el flujo de mensajes mediante las conexiones de consenso y de mempool.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.35]{figures/abci_msg_flow.pdf}
+  \caption{Flujo de mensajes mediante la ABCI~\cite{tendermint.site}.}
+  \label{fig:abci_flow}
+\end{figure}
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"
