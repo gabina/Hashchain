@@ -1,33 +1,38 @@
-\section{Implementations}\label{sec:impl}
+\section{Implementaciones}\label{sec:impl}
 
-In this section, we present a family of real-world \setchain implementations
-built on top of Tendermint.
+En esta sección se presenta una familia de implementaciones de \setchain de mundo
+real construídas sobre Tendermint. 
 %
-In particular, we present three different implementations beginning with a naive
-but trivially correct implementation and ending with a complex algorithm
-implementing Setchain using hash functions.
+En particular, se exponen tres implementaciones diferentes, comenzando con una
+implementación inocente pero trivialmente correcta, y finalizando con una algoritmo
+complejo que implementa \setchain utilizando funciones hash.
 %
-To avoid repetition, function definitions remain the same from one version
-to the next unless said otherwise.
 
-To keep nomenclature consistent, the term \emph{transaction} is always used to
-refer to \emph{Tendermint transactions}, while \emph{element} refers to elements
-to be added to the \setchain.
+Para evitar repeticiones, las definciones de funciones que permanezcan sin cambios
+de una versión a la siguiente, no serán re-escritas. Solo se volverán a presentar
+aquellas funciones para las cuales la definición se vea modificada.
 %
-Depending on the implementation, a single Tendermint transaction may contain one
-or many elements to be added.
+A su vez, con la intención de mantener consistencia en la nomenclatura, el término \textit{transacción}
+se utiliza siempre para referirse a las \textit{transacciones de Tendermint}, mientras
+que \textit{elemento} queda reservado para elementos a agregarse a la \setchain.
+%
+Dependiendo de la implementación, una transacción de Tendermint puede contener uno
+o más elementos a ser agregados.
+
 
 % \subsection{General Considerations about Implementation}\label{subsec:general}
-Correct implementations of \setchain implement two methods~(see
-Section~\ref{sec:prelim}): \<add> and \<get>, and thus, each implementation
-defines both of them.
+Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
+~\ref{sec:prelim}): \Add y \Get y, por lo tanto, cada implementación provee definiciones
+para ambas.
 %
-Tendermint provides two main RPC endpoints: \<broadcastTx> injecting a
-transaction to be committed, and \<abciquery> querying the state of the
-application.
+
+Tendermint provee dos \textit{endpoints} RPC principales: \texttt{Tendermint.Broadcast}
+inyecta una transacción con el objetivo de que se haga \textit{commit} sobre ella, y
+\texttt{Tendermint.Query} que consulta el estado de la aplicación.
 %
+\begin{comment}
 Therefore, from the point-of-view of the \setchain client, we only have two
-methods (\<add> and \<get>).
+methods (\Add and \Get).
 However, we also have two additional ones to communicate with the underlying
 Tendermint network (\<broadcastTx> and \<abciquery>).
 
@@ -697,6 +702,8 @@ epoch proofs can be scheduled periodically, independent of query requests.
 %As mentioned above, Hashchain First Seen Consolidation version uses an idea of grace period in which the hashes are either consolidated or discarded. In this case, we will define the grace period in terms of number of blocks, meaning that if a hash has been seen for the first time in block $B$, and the grace period is $P$ blocks, then on block $B$ + $P$ we will determine if the hash is consolidated (hence, their elements are added to the \setchain), or is discarded. To implement this, we will keep a fixed capacity queue (with capacity $P + 1$), in which the \textit{i}-th element has a list of hashes seen for first time in block $current block - (P - i)$. Notice that the first element of the queue has the list of hashes that were seen for first time in block $current block - P$, meaning that those hashes will be decided in the current block. The last element of the queue has the list of hashes first seen at the current block. Algorithm ~\ref{alg:abci-hash-first-seen} illustrates this behavior.
 
 %\input{algorithms/alg-abci-hash-first-seen}
+\end{comment}
+
 %%% Local Variables:
 %%% TeX-master: "article.tex"
 %%% TeX-PDF-mode: t

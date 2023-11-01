@@ -1,27 +1,26 @@
-\reservestyle{\functions}{\texttt}
-\functions{isValidElement,isValidTransaction,getElementFromTransaction,
-getElementsFromBatch,Hash,isValidBatch, AddElement,isReady,revertHash,
-shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
+%\reservestyle{\functions}{\texttt}
+%\functions{isValidElement,isValidTransaction,getElementFromTransaction,
+%getElementsFromBatch,Hash,isValidBatch, AddElement,isReady,revertHash,
+%shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
 
-\reservestyle{\setchainOp}{\texttt}
-\setchainOp{add,get,theset[the\_set],epoch,history}
-\reservestyle{\tendermint}{\texttt}
-\tendermint{broadcastTx[Tendermint.Broadcast],abciquery[Tendermint.Query]}
-\reservestyle{\abci}{\texttt}
-\abci{CheckTx,DeliverTx,EndBlock,BeginBlock,Query,Commit}
-\reservestyle{\variablesProg}{\texttt}
-\variablesProg{epoch,history,element,transaction,batch}
+%\reservestyle{\setchainOp}{\texttt}
+%\setchainOp{add,get,theset[the\_set],epoch,history}
+%\reservestyle{\tendermint}{\texttt}
+%\tendermint{broadcastTx[Tendermint.Broadcast],abciquery[Tendermint.Query]}
+%\reservestyle{\abci}{\texttt}
+%\abci{CheckTx,DeliverTx,EndBlock,BeginBlock,Query,Commit}
+%\reservestyle{\variablesProg}{\texttt}
+%\variablesProg{epoch,history,element,transaction,batch}
 
 \newcommand{\isValidElement}{\textit{isValidElement}}
 
 
 \newcommand{\PR}[1]{\ensuremath{\textit{#1}}}
 \newcommand{\GS}{\PR{GS}\xspace}
-\newcommand{\EPOCH}{\<epoch>}
-\newcommand{\CURRENT}{\<current>}
-\newcommand{\HISTORY}{\<history>}
-\newcommand{\THESET}{\<theset>}
-\newcommand{\epochs}{Setchain\xspace}
+\newcommand{\EPOCH}{\texttt{epoch}\xspace}
+\newcommand{\CURRENT}{\texttt{current}\xspace}
+\newcommand{\HISTORY}{\texttt{history}\xspace}
+\newcommand{\THESET}{\texttt{the\_set}\xspace}
 \newcommand{\Get}{\PR{get}\xspace}
 \newcommand{\Add}{\PR{add}\xspace}
 \newcommand{\BRBdeliver}{\<BRB>.\<Deliver>}
