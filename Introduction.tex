@@ -6,7 +6,9 @@
 
 A lo largo de la historia, el término \textit{bitácora} ha servido para referir a
 distintos objetos relacionados con la orientación, el orden, el registro... Por
-primera vez aparecida en un texto escrito en 1538, la palabra \textit{bitácora}
+primera vez aparecida en un texto escrito en 1538,
+%% Fuente: El diccionario etimológico de la lengua castellana de Joan Coromines
+la palabra \textit{bitácora}
 oficialmente refiere a un concepto de la navegación: \textit{especie de armario
 inmediato al timón, en el cual se coloca la brújula}. Desde ahí surge también
 el conocido \textit{cuaderno de bitácora}, un libro en el que los marinos, durante
@@ -39,7 +41,7 @@ pueda considerar certera.
 % Agregar alguna cita o reflexión de alguien sobre la humanidad creyendo o queriendo
 % conocer el destino
 
-\section{Presentación y Contribuciones}
+\section{El problema}
 % What is the problem. Justifiy that the problem is a problem.
 %Blockchains
 Las blockchains tomaron
@@ -78,12 +80,11 @@ transacciones, empaquetadas en bloques, estén totalmente ordenadas.
 %
 Esta imposición de un orden total puede ser innecesario para algunas aplicaciones.
 
-
 %
 Un enfoque prometedor para mejorar la escalabilidad es \textit{Setchain}, un tipo de
-datos concurrente que implementa conjuntos de solo crecimiento distribuídos. A su vez,
-es tolerante a comportamientos bizantinos, y provee barreras o puntos de sincronización
-(llamados épocas).
+datos concurrente que implementa conjuntos de solo crecimiento distribuídos,
+proveyendo barreras o puntos de sincronización (llamados épocas). A su vez,
+\textit{Setchain} es tolerante a comportamientos bizantinos.
 %
 \setchain relaja el requerimiento de orden total y, por lo ranto, puede lograr mayor
 rendimiento y escalabilidad.
@@ -98,28 +99,43 @@ Distintos algoritmos bizantinos distribuídos que implementan \setchain fueron
 propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
 los requerimientos de una aplicación del mundo real.
 
+\section{Contribuciones}
+En este trabajo se propone una familia de implementaciones robustas de \setchain,
+construídas sobre la plataforma de aplicación de blockchain \textit{Tendermint}.
+
 %% Motivate the use of tendermint. Why tendermint is relevant
 
+% Fuente: TENDERMINT: BYZANTINE FAULT TOLERANCE IN THE AGE OF BLOCKCHAINS
+% https://docs.tendermint.com/v0.34/introduction/what-is-tendermint.html
 
-Tendermint~\cite{Buchman.2018.Tendermint} es una plataforma novedoza y popular que resuelve
-algunos de los problemas técnicos que implementaciones previas de blockchain presentaban,
-como el problema energético y la finalización probabilística.
+Tendermint~\cite{Buchman.2018.Tendermint} es una plataforma novedoza y popular para la
+replicación segura y consistente de aplicaciones en distintas máquinas.
 %
-Tendermint presenta una separación clara entre las capas de bajo nivel de la blockchain,
+\textit{Segura} en este contexto significa que Tendermint funciona incluso si a lo sumo
+un tercio de las máquinas fallan de formas arbitrarias.
+%
+\texti{Consistente} refiere a que toda máquina correcta verá el mismo lote de
+transacciones y computará el mismo estado.
+%
+Tendermint es un abordaje robusto de las bitácoras distribuídas implementado
+en \emph{Go}~\cite{donovan15go}, que presenta una separación clara entre las
+capas de bajo nivel de la blockchain,
 tales como un protocolo \textit{gossip} y un algoritmo de consenso, y los conceptos de alto
 nivel relacionados a la estructura de datos que la blockchain mantiene.
-%
-Aún más, Tendermint es una solución robusta a las bitácoras distribuídas implementada
-en \emph{Go}~\cite{donovan15go}.
-
-%
 
 %
 % What is the solution.
 %
-En este trabajo se propone una familia de implementaciones robustas de \setchain,
-construídas sobre la \emph{plataforma de aplicación de blockchain Tendermint},
-siendo la contribución principal \textbf{Hashchain}.
+
+La familia de implementaciones que se presenta en este trabajo
+sigue un enfoque incremental, proveyendo diversas aproximaciones
+a la solución final y más compleja; consta de tres variantes:
+\begin{enumerate}
+  \item \textit{Vainilla}, una primera solución básica de \setchain,
+  \item \textit{Compresschain}, una variante intermedia utilizando un algoritmo de compresión, y
+  \item \textit{Hashchain}, la contribución principal de este trabajo, una solución 
+  a \setchain usando funciones hash.
+\end{enumerate}
 %
 Hashchain explota el poder de compresión de las funciones hash para reducir la
 comunicación necesaria durante difusión y consenso, comunicando un hash de tamaño
@@ -128,16 +144,7 @@ fijo en lugar de cientos o miles de elementos.
 El precio a pagar es una algoritmo distribuído adicional para obtener el conjunto de
 elementos desde un hash, garantizando tolerancia a servidores bizantinos.
 %
-Se sigue un enfoque incremental, proveyendo diversas aproximaciones a la solución
-final y más compleja. Se presentan:
-\begin{enumerate}
-  \item una primera implementación ingenua de Setchain,
-  \item una implementación intermedia utilizando un algoritmo de compresión, y
-  \item una solución usando funciones hash.
-\end{enumerate}
-%
-%
-Cada una de las implementaciones está construída sobre Tendermint.
+Cada una de las soluciones está enteramente construída sobre Tendermint.
 
 % The article is structured as follows: in Section~\ref{sec:prelim}, we present a
 % brief description of Setchain and Tendermint; in Section~\ref{sec:impl}, we

@@ -3,8 +3,9 @@
 En esta sección se presenta una familia de implementaciones de \setchain de mundo
 real construídas sobre Tendermint. 
 %
-En particular, se exponen tres implementaciones diferentes, comenzando con una
-implementación inocente pero trivialmente correcta, y finalizando con una algoritmo
+En particular, se exponen tres alternativas diferentes, comenzando con una
+solución inocente pero
+trivialmente correcta, y finalizando con un algoritmo
 complejo que implementa \setchain utilizando funciones hash.
 %
 
@@ -16,13 +17,14 @@ A su vez, con la intención de mantener consistencia en la nomenclatura, el tér
 se utiliza siempre para referirse a las \textit{transacciones de Tendermint}, mientras
 que \textit{elemento} queda reservado para elementos a agregarse a la \setchain.
 %
-Dependiendo de la implementación, una transacción de Tendermint puede contener uno
+Dependiendo de la alternativa sobre la que se esté trabajando, una transacción de
+Tendermint puede contener uno
 o más elementos a ser agregados.
 
 
 % \subsection{General Considerations about Implementation}\label{subsec:general}
 Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
-~\ref{sec:setchain}): \Add y \Get y, por lo tanto, cada implementación provee definiciones
+~\ref{sec:prelim}): \Add y \Get y, por lo tanto, cada solución provee definiciones
 para ambas.
 %
 
