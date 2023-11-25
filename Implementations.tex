@@ -22,110 +22,76 @@ o más elementos a ser agregados.
 
 % \subsection{General Considerations about Implementation}\label{subsec:general}
 Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
-~\ref{sec:prelim}): \Add y \Get y, por lo tanto, cada implementación provee definiciones
+~\ref{sec:setchain}): \Add y \Get y, por lo tanto, cada implementación provee definiciones
 para ambas.
 %
 
 Tendermint provee dos \textit{endpoints} RPC principales: \texttt{Tendermint.Broadcast}
 inyecta una transacción con el objetivo de que se haga \textit{commit} sobre ella, y
-\texttt{Tendermint.Query} que consulta el estado de la aplicación.
-%
-\begin{comment}
-Therefore, from the point-of-view of the \setchain client, we only have two
-methods (\Add and \Get).
-However, we also have two additional ones to communicate with the underlying
-Tendermint network (\<broadcastTx> and \<abciquery>).
-
-%
-% Moreover, let \(U\) be the universe of elements, Setchain implementations
-% provide the following variables:
-% \begin{itemize}
-%   \item the elements added so far \(\<theset> \subseteq U\)
-%   \item the number of current epoch \(\<epoch> \in \mathbb{N}\)
-%   \item a map \(\<history> : [1..\texttt{epoch}] \rightarrow \mathcal{P}(U)\) defining which elements
-% form an epoch.
-% \end{itemize}
-% %
-% Some elements in \(\<theset>\) may not have been assigned an epoch yet.
-
-% along with providing a set \(\<theset> \subseteq U\) of elements added,
-% a natural number \texttt{epoch} $\in \mathbb{N}$; and a map \texttt{history}
-% :$$, that describes the sets of elements that have
-% been stamped with an epoch number ($\mathcal{P}(U)$ denotes the power set of $U$, being
-% $U$ the universe of elements that client processes can inject into the set).
-% Since we are using the Tendermint framework, some names may vary, which will be
-% duly clarified.
-
-Finally, Setchain assumes there is a user-defined predicate defining when an
-element is valid to be in the set.
-%
-In this section, we assume that there is a definition of \(\<isValidElement>\)
-function.
-
-% To inject elements into the \setchain or to query the application state, clients
-% need to communicate with the Tendermint node which runs the \setchain through
-% RPC.
-%
-%
-% \begin{itemize}
-% 	\item \<broadcastTx>, which allows to broadcast transactions.
-%         %
-%         % This is the equivalent to the \texttt{add} operation.
-%         %
-% %         From now on, this endpoint will be abstracted as
-% % \texttt{Tendermint.Broadcast()}.
-% 	\item \<abciquery>, which allows to query the application (in our scenario, the \setchain). This is the equivalent to \texttt{get} operation. We will use it as \\ \texttt{Tendermint.Query()}
-% \end{itemize}
-% In addition, \texttt{epochinc} will not be provided, as the epoch increase will be periodically triggered as part of the normal behavior.
+\texttt{Tendermint.Query} consulta el estado de la aplicación.
 %
 
-Below we give different function definitions for the application running on
-Tendermint to implement \setchain\ specification.
+Por lo tanto, desde el punto de vista del cliente de la \setchain, solo existen dos
+métodos (\Add y \Get).
 %
-As mentioned in the previous section~(see Section~\ref{sec:prelim}), we
-implement each algorithm by defining different instances of the Tendermint ABCI
-and the methods presented as the Setchain API.
+Sin embargo, hay dos métodos adicionales que se utilizan para comunicarse con la
+red de Tendermint subyacente (los ya mencionados \texttt{Tendermint.Broadcast} y
+\texttt{Tendermint.Query}).
+%
 
-\subsection{First Implementation: Vanilla}\label{subsec:vanilla}
+Finalmente, \setchain asume que hay un predicado definido por el usuario que define
+cuándo un elemento es válido para ser admitido en el conjunto.
+%
+En esta sección, dicho predicado se referencia con la función \isValidElement.
+
+%
+A continuación se presentan diferentes definiciones de métodos y funciones de
+modo que la aplicación corriendo sobre Tendermint implemente \setchain.
+
+%
+Como se mencionó en la sección previa ~(ver sección ~\ref{sec:prelim}), para la
+implementación es necesario definir las distintas instancias de Tendermint ABCI
+y los métodos presentados como parte de la API de \setchain.
+
+\section{Primera implementación: vainilla}\label{sec:vanilla}
 
 \input{algorithms/alg-api-vanilla}
-
-In Algorithm~\ref{alg:api-vanilla}, we show the most basic solution to \setchain API
-using Tendermint.
 %
-Clients add elements by
-% indirectly
-invoking function \<broadcastTx>,
-% Adding an element is done by just hitting the Tendermint RPC endpoint to
-% broadcast elements,
-%
-while they can also get the \setchain state by invoking function
-\<abciquery>.
-% involves hitting the query
-% Tendermint RPC endpoint.
-%
-% As mentioned earlier, \texttt{Epochinc} is not part of the \setchain API, since
-% the epoch increase is triggered periodically.
-% An explicit demonstration of how
-% the epoch increase works will be shown soon.
-
+En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
+de \setchain utilizando Tendermint.
 %
 
-To give a complete implementation of Setchain using Tendermint, we also need to
-define our application ABCI~(see Section~\ref{sec:tendermint}).
+Los clientes agregan elementos invocando (indirectamente) a la función
+\texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
+la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}.
 %
-% The \setchain API is not enough to define a new \setchain implementation, as
-% Tendermint needs the ABCI definition too.
+
+Para dar una implementación completa de \setchain utilizando Tendermint, además se
+debe definir la aplicación ABCI (ver sección~\ref{subsec:abci}). 
 %
-Algorithm~\ref{alg:abci-vanilla} shows our ABCI implementation for the first
-naive implementation.
+
+El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
+Vainilla.
 %
-We only define functions \<CheckTx>, \<DeliverTx>, and
-\<EndBlock> from the ABCI, the rest have trivial implementations.
+Solo se definen \CheckTx, \DeliverTx, y \EndBlock; el resto tiene implementaciones
+triviales.
+
 %
-% All the other non-mentioned ABCI functions have trivial implementations.
+El flujo usual de elementos agregados por \Add(e) en esta implementación es el siguiente.
+%
+Primero Tendermint chequea que el elemento $e$ a agregar es válido a través de
+\CheckTx, y si es correcto, entonces insertará el elemento en la mempool.
+%
+Luego de un tiempo, es esperable que el elemento $e$ sea añadido a un bloque de Tendermint,
+y cuando se haga \textit{commit} sobre el bloque en el consenso, Tendermint enviará
+la secuencia correspondiente de pedidos: \BeginBlock para indicar el inicio de un nuevo bloque,
+una lista de llamadas a \DeliverTx por cada transacción agregada, \EndBlock para indicar la
+finalización del bloque, y \Commit para señalizar que el estado puede ser persistido.
+
 
 \input{algorithms/alg-abci-vanilla}
+
+\begin{comment}
 
 The usual flow of elements added by \<add>\((e)\) in the Vanilla implementation
 is: first Tendermint checks that the element \(e\) is valid with \<CheckTx>, and if the
