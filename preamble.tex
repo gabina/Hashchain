@@ -1,16 +1,148 @@
 \usepackage[top = 3.2cm, bottom = 2.2cm, left = 3cm, right = 3cm]{geometry}
-\usepackage[spanish]{babel}
+%\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[pdftex,dvipsnames]{xcolor}
+\usepackage[ruled]{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{mathtools}
+\usepackage{todonotes}
 \usepackage{xspace}
-\usepackage{titletoc}% http://ctan.org/pkg/titletoc
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{ dsfont }
-\usepackage{verbatim} 
 
-\hypersetup{
-    colorlinks,
-    citecolor=black,
-    filecolor=black,
-    linkcolor=black,
-    urlcolor=black
+
+\usepackage{paralist}
+\usepackage{dsfont}
+\usepackage[ligature,reserved,inference]{semantic}
+
+%% Simple diagrams in TikZ
+\usepackage{tikz-cd}
+
+\usepackage{url}
+
+%% math notations
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{proof}
+\usepackage{colortbl}
+
+%% algorithms
+\usepackage[ruled]{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{adjustbox}
+
+%% Ref
+\usepackage{hyperref}
+\usepackage{nameref}
+%%
+
+\usepackage{listings}
+
+
+\newcommand\martin[1]{\todo[backgroundcolor=green!23]{Martín: {#1}}}
+\newcommand\imartin[1]{\todo[inline,backgroundcolor=green!23]{Martín: {#1}}}
+\newcommand\marga[1]{\todo{Marga: {#1}}}
+\newcommand\imarga[1]{\todo[inline]{Marga: {#1}}}
+\newcommand\cesar[1]{\todo{Cesar: {#1}}}
+\newcommand\icesar[1]{\todo[inline]{Cesar: {#1}}}
+\newcommand\gabina[1]{\todo[backgroundcolor=violet!23]{Gabina: {#1}}}
+\newcommand\igabina[1]{\todo[inline,backgroundcolor=violet!23]{Gabina: {#1}}}
+
+% \newtheorem{example}{Example}
+% \newtheorem{property}{Property}
+% \newtheorem{lemma}{Lemma}
+\newtheorem{monitor}{Monitor}
+
+\usepackage{wrapfig}
+
+
+% Boxes and going crazy
+\usepackage{scalerel}
+\usepackage{tikz}
+\usepackage{adjustbox}
+
+\usetikzlibrary{svg.path}
+
+\definecolor{orcidlogocol}{HTML}{A6CE39}
+\tikzset{
+    orcidlogo/.pic={
+        \fill[orcidlogocol] svg{M256,128c0,70.7-57.3,128-128,128C57.3,256,0,198.7,0,128C0,57.3,57.3,0,128,0C198.7,0,256,57.3,256,128z};
+        \fill[white] svg{M86.3,186.2H70.9V79.1h15.4v48.4V186.2z}
+        svg{M108.9,79.1h41.6c39.6,0,57,28.3,57,53.6c0,27.5-21.5,53.6-56.8,53.6h-41.8V79.1z M124.3,172.4h24.5c34.9,0,42.9-26.5,42.9-39.7c0-21.5-13.7-39.7-43.7-39.7h-23.7V172.4z}
+        svg{M88.7,56.8c0,5.5-4.5,10.1-10.1,10.1c-5.6,0-10.1-4.6-10.1-10.1c0-5.6,4.5-10.1,10.1-10.1C84.2,46.7,88.7,51.3,88.7,56.8z};
+    }
 }
+\newcommand\orcidicon[1]{\href{https://orcid.org/#1}{\mbox{\scalerel*{
+                \begin{tikzpicture}[yscale=-1,transform shape]
+                \pic{orcidlogo};
+                \end{tikzpicture}
+            }{|}}}}
+
+\usepackage{hyperref} 
+
+
+\algblockdefx[Upon]{Upon}{EndUpon}%
+[1]{{\bf upon} (#1) {\bf do}}%
+{{\bf end upon}}
+%{\vspace{-\baselineskip}}
+
+\algblockdefx[When]{When}{EndWhen}%
+[1]{{\bf when} (#1) {\bf do}}%
+{{\bf end when}}
+%{\vspace{-\baselineskip}}
+
+
+% Tells algorithmicx not to print an empty line if `noend' is set 
+\makeatletter
+\ifthenelse{\equal{\ALG@noend}{t}}%
+  {\algtext*{EndUpon}}
+  {}%
+\makeatother
+
+
+% Tells algorithmicx not to print an empty line if `noend' is set 
+\makeatletter
+\ifthenelse{\equal{\ALG@noend}{t}}%
+  {\algtext*{EndWhen}}
+  {}%
+\makeatother
+
+
+\mathlig{<-}{\leftarrow}
+\mathlig{==}{\equiv}
+\mathlig{++}{\mathop{+\!\!+}}
+\mathlig{<<}{\langle}
+\mathlig{>>}{\rangle}
+\mathlig{~}{\sim}
+%% Variables in implementation
+\reservestyle{\variables}{\text}
+\variables{epoch,current,history,theset[the\_set],proposal,valid}
+
+%% Old commands
+
+
+\reservestyle{\setops}{\text}
+\setops{add,get,Init,Add,Get,BAdd,EpochInc,Broadcast,Deliver,GetEpoch,Propose,Inform,SetDeliver, SuperSetDeliver, DoStuff[Start],Consensus}
+
+\reservestyle{\structs}{\text}
+\structs{DPO,BAB,BRB,SBC,DSO}
+
+\reservestyle{\stmt}{\textbf}
+\stmt{call,ack,drop,return,assert,wait}
+
+\reservestyle{\mathfunc}{\mathsf}
+\mathfunc{send,receive,sendbrb[send\_brb],sendsbc[send\_sbc], receive}
+
+\reservestyle{\messages}{\texttt}
+\messages{madd[add],mepochinc[epinc]}
+
+\reservestyle{\api}{\texttt}
+\api{apiBAdd,apiAdd,apiGet,apiEpochInc,apiTheSet[{the\_set}],apiHistory}
+
+\reservestyle{\schain}{\texttt}
+\schain{history,epoch,theset[{the\_set}],add,get,epochinc[{epoch\_inc}],getepoch[{get\_epoch}],tobroadcast[{to\_broadcast}], knowledge, pending, sent, received,proposal,Valid}
+
+\reservestyle{\setvars}{\textit}
+\setvars{prop,propset}
+
+\newcounter{backup} % for setting and restoring property,theorem etc to repeat them

@@ -1,42 +1,237 @@
-%\reservestyle{\functions}{\texttt}
-%\functions{isValidElement,isValidTransaction,getElementFromTransaction,
-%getElementsFromBatch,Hash,isValidBatch, AddElement,isReady,revertHash,
-%shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
+% Formatting tricks so we can fit two inference rules side by side
+\renewcommand{\predicatebegin}{\hspace{-.5em}$}
+\renewcommand{\predicateend}{\hspace{-.5em}$}
 
-%\reservestyle{\setchainOp}{\texttt}
-%\setchainOp{add,get,theset[the\_set],epoch,history}
-%\reservestyle{\tendermint}{\texttt}
-%\tendermint{broadcastTx[Tendermint.Broadcast],abciquery[Tendermint.Query]}
-%\reservestyle{\abci}{\texttt}
-%\abci{CheckTx,DeliverTx,EndBlock,BeginBlock,Query,Commit}
-%\reservestyle{\variablesProg}{\texttt}
-%\variablesProg{epoch,history,element,transaction,batch}
+% \mathlig{-x}{\mathbin{\multimap}}
+\mathlig{-x}{\mathbin{-\mspace{-8mu}\times}}
+\newcommand\opfail[1]{\overset{{#1}}{-x}}
+\mathlig{++}{\mathbin{{+}\mspace{-10mu}{+}}}
+\mathlig{->>}{\twoheadrightarrow}
+\mathlig{<-}{\leftarrow}
+%\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\textcolor[HTML]{A6CE39}{\aiOrcid}}}
+
+%\def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
+
+%\newcommand{\mod}{\ensuremath{{\%}}}
+%\newcommand{\tupleof}[1]{\ensuremath{(#1)}}
+\newcommand \tupleof[1] { \left\langle #1 \right \rangle}
+
+% \newcommand{\Mec}[1]{\ensuremath{\textit{#1}}\xspace}
+\newcommand{\Mec}[1]{\textit{#1}\xspace}
+\newcommand{\Monitor}{\Mec{Monitor}}
+
+
+%Types
+\newcommand{\Storage}{\textit{S}}
+\newcommand{\Address}{\mathcal{A}}
+\newcommand{\Tezos}{\mathcal{T}}
+\newcommand{\Gas}{\mathcal{G}}
+\newcommand{\TStorage}{\mathcal{S}}
+\newcommand{\Effect}{\mathcal{E}}
+\newcommand{\From}{\textit{FROM}}
+% \newcommand{\Om}{\textit{OM}}
+\newcommand{\Om}{\textit{TM}}
+\newcommand{\Tm}{\textit{TM}}
+
+\newcommand{\Bool}{\mathds{B}}
+\newcommand{\Nat}{\mathds{N}}
+\newcommand{\Decision}{\mathds{D}}
+
+
+\newcommand{\BcState}{\Sigma}
+\newcommand{\BcContext}{\Delta}
+
+\newcommand{\Sc}{\textit{Sc}}
+\newcommand{\Sch}{\textit{Sch}}
+\newcommand{\St}{\textit{St}}
+\newcommand{\gas}{\textit{gas}}
+%\newcommand{\listof}{\textit{listof}}
+\newcommand{\Fail}{\textit{Fail}}
+\newcommand{\NoFail}{\textit{NoFail}}
+\newcommand{\run}{\textit{Run}}
+
+%Scheduler operations
+\reservestyle{\scheduler}{\textit}
+\scheduler{empty,isEmpty,nxt[next],insertSch,pop,bfs,dfs,mon}
+\newcommand{\init}{\<empty>}
+\newcommand{\isEmpty}{\<isEmpty>}
+\newcommand{\nxt}{\<nxt>}
+\newcommand{\insertSch}{\<insertSch>}
+\newcommand{\pop}{\<pop>}
+
+\reservestyle{\functions}{\texttt}
+\functions{isValidElement,isValidTransaction,getElementFromTransaction,
+getElementsFromBatch,Hash,isValidBatch, AddElement,isReady,revertHash,
+shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
+\reservestyle{\setchainOp}{\texttt}
+\setchainOp{add,get,theset[the\_set],epoch,history}
+\reservestyle{\tendermint}{\texttt}
+\tendermint{broadcastTx[Tendermint.Broadcast],abciquery[Tendermint.Query]}
+\reservestyle{\abci}{\texttt}
+\abci{CheckTx,DeliverTx,EndBlock,BeginBlock,Query,Commit}
+\reservestyle{\variablesProg}{\texttt}
+\variablesProg{epoch,history,element,transaction,batch}
+
+\reservestyle{\txexec}{\texttt}
+\txexec{nogas[no-gas],txsuc[tx-suc],txfail[tx-fail]}
+
+% Operations
+\reservestyle{\operations}{\mathsf}
+\operations{dest,param,money,src}
+
+% New opcode
+\newcommand{\textbfup}[1]{\textup{\texttt{#1}}}
+\reservestyle{\mech}{\textbfup}
+%\mech{first,count,fail,setFail,isSelfOnly,txmem[transaction memory]}
+\mech{first,count,fail,setFail,isSelfOnly,txmem[trmem],bstore,ustore,queue}
+
+%Sets/Types
+\reservestyle{\types}{\textit}
+\types{Addr,SmartContract}
+
+%Monitors
+\newcommand{\Mon}{\textit{mon}}
+\newcommand{\InitMon}{\ensuremath{\Mec{init}^{\Mec{mon}}}\xspace}
+\newcommand{\BeginMon}{\ensuremath{\textit{begin}^{\textit{mon}}}}
+\newcommand{\EndMon}{\ensuremath{\Mec{end}^{\Mec{mon}}}\xspace}
+\newcommand{\TermMon}{\ensuremath{\Mec{term}^{\Mec{mon}}}\xspace}
+\newcommand{\SchMon}{\ensuremath{\textit{Sch}^{\textit{mon}}}}
+\newcommand{\StMon}{\ensuremath{\textit{St}^{\textit{mon}}}}
+\newcommand{\TStorageMon}{\ensuremath{\TStorage^{\textit{mon}}}}
+\newcommand{\GMon}{\TStorageMon}
+
+\newcommand{\MON}{\textit{MON}}
+\newcommand{\TMon}{\ensuremath{\textit{T}^{\textit{mon}}}}
+\newcommand{\RunMon}{\ensuremath{\textit{Run}^{\textit{mon}}}}
+
+%\reservestyle{\monitors}{\mathsf}
+\reservestyle{\monitors}{\mathit}
+\monitors{init,term,begin,end,hookup,fst}
+
+\reservestyle{\infrule}{\textsc}
+\infrule{einit,emon,eterm,efail,failinit,failterm,failop,failtx,
+   opok[op-ok],opfail[op-fail],bfail[op-begin],efail[op-end]}
+
+
+%ABCI
+\newcommand{\BeginBlock}{\<BeginBlock>\xspace}
+\newcommand{\EndBlock}{\<EndBlock>\xspace}
+\newcommand{\CheckTx}{\<CheckTx>\xspace}
+\newcommand{\Commit}{\<Commit>\xspace}
+\newcommand{\DeliverTx}{\<DeliverTx>\xspace}
+
+%Operation memory
+\newcommand{\OpMem}{\Mec{Operation Memory}}
+\newcommand{\opmem}{\<txmem>\xspace}
+\newcommand{\InitOm}{\ensuremath{\textit{init}^{\textit{OM}}}}
+\newcommand{\StOm}{\ensuremath{\textit{St}^{\textit{OM}}}}
+\newcommand{\TOm}{\ensuremath{\textit{T}^{\textit{OM}}}}
+\newcommand{\om}{\textit{om}}
+\newcommand{\RunOm}{\ensuremath{\textit{Run}^{\textit{OM}}}}
+\newcommand{\ScOm}{\ensuremath{\textit{Sc}^{\textit{OM}}}}
+
+%First
+\newcommand{\StFirst}{\textit{St}^{\textit{First}}}
+\newcommand{\TFirst}{\textit{T}^{\textit{First}}}
+\newcommand{\first}{\<first>\xspace}
+\newcommand{\First}{\Mec{First}}
+\newcommand{\RunFirst}{\textit{Run}^{\textit{First}}}
+\newcommand{\ScFirst}{\textit{Sc}^{\textit{First}}}
+
+
+%Count
+\newcommand{\StCount}{\textit{St}^{\textit{Count}}}
+\newcommand{\TCount}{\textit{T}^{\textit{Count}}}
+\newcommand{\countmech}{\<count>\xspace}
+\newcommand{\Count}{\Mec{Count}}
+\newcommand{\RunCount}{\textit{Run}^{\textit{Count}}}
+\newcommand{\ScCount}{\textit{Sc}^{\textit{Count}}}
+
+%Storage Hookup
+\newcommand{\THookup}{\textit{T}^{\textit{Hookup}}}
+\newcommand{\Hookup}{\textit{Hookup}\xspace}
+\newcommand{\RunHookup}{\textit{Run}^{\textit{Hookup}}}
+\newcommand{\ScHookup}{\textit{Sc}^{\textit{Hookup}}}
+\newcommand{\SchHookup}{\textit{Sch}^{\textit{Hookup}}}
+\newcommand{\UnboundedStorageHookup}{\Mec{Unbounded Storage Hookup}}
+\newcommand{\BoundedStorageHookup}{\Mec{Bounded Storage Hookup}}
+
+\newcommand{\unboundedstoragehookup}{unbounded storage hookup\xspace}
+\newcommand{\boundedstoragehookup}{bounded storage hookup\xspace}
+
+
+%Fail/No-Fail Hookup
+\newcommand{\FNFHookup}{\Mec{Fail-NoFail Hookup}}
+\newcommand{\Verdict}{\textit{verdict}}
+\newcommand{\StFNF}{\textit{St}^{\textit{F/NF}}}
+\newcommand{\TFNF}{\textit{T}^{\textit{F/NF}}}
+\newcommand{\RunFNF}{\textit{Run}^{\textit{F/NF}}}
+\newcommand{\ScFNF}{\textit{Sc}^{\textit{F/NF}}}
+
+%The values of F/NF
+\newcommand{\fail}{\textbf{F}\xspace}
+\newcommand{\nofail}{\textbf{NF}\xspace}
+
+\newcommand{\fnfhookup}{fail-no fail hookup\xspace}
+
+
+%First + Fail/NoFail Hookup
+\newcommand{\FNF}{\Mec{F/NF}}
+\newcommand{\FirstFNF}{\textit{First+F/NF}}
+\newcommand{\StFirstFNF}{\textit{St}^{\textit{First+F/NF}}}
+\newcommand{\TFirstFNF}{\textit{T}^{\textit{First+F/NF}}}
+\newcommand{\RunFirstFNF}{\textit{Run}^{\textit{First+F/NF}}}
+\newcommand{\ScFirstFNF}{\textit{Sc}^{\textit{First+F/NF}}}
+
+%Queue Info
+\newcommand{\QueueInfo}{queue info\xspace}
+
+
+%%%
+\makeatletter
+\let\orgdescriptionlabel\descriptionlabel
+\renewcommand*{\descriptionlabel}[1]{%
+  \let\orglabel\label
+  \let\label\@gobble
+  \phantomsection
+  \edef\@currentlabel{#1}%
+  %\edef\@currentlabelname{#1}%
+  \let\label\orglabel
+  \orgdescriptionlabel{#1}%
+}
+\makeatother
+
+%\newcommand{\Abegin}{\ensuremath{A_{\textit{begin}}}\xspace}
+\newcommand{\Abegin}{\ensuremath{A_{\<begin>}}}
+
+\newcommand{\Aend}{\ensuremath{A_{\<end>}}}
+\newcommand{\Ainit}{\ensuremath{A_{\<init>}}}
+\newcommand{\Aterm}{\ensuremath{A_{\<term>}}\xspace}
+\newcommand{\Lenderinit}{\ensuremath{\textit{Lender}_{\<init>}}\xspace}
+\newcommand{\Lenderterm}{\ensuremath{\textit{Lender}_{\<term>}}\xspace}
+
+\newcommand{\partTo}{\rightharpoonup}
+\newcommand{\Addr}{\rightharpoonup}
 
 \newcommand{\isValidElement}{\textit{isValidElement}}
 
 
 \newcommand{\PR}[1]{\ensuremath{\textit{#1}}}
 \newcommand{\GS}{\PR{GS}\xspace}
-\newcommand{\EPOCH}{\texttt{epoch}\xspace}
-\newcommand{\CURRENT}{\texttt{current}\xspace}
-\newcommand{\HISTORY}{\texttt{history}\xspace}
-\newcommand{\THESET}{\texttt{the\_set}\xspace}
-\newcommand{\Get}{\PR{get}\xspace}
-\newcommand{\Add}{\PR{add}\xspace}
+\newcommand{\EPOCH}{\<epoch>}
+\newcommand{\CURRENT}{\<current>}
+\newcommand{\HISTORY}{\<history>}
+\newcommand{\THESET}{\<theset>}
+\newcommand{\epochs}{Setchain\xspace}
+\newcommand{\Get}{\PR{get}}
+\newcommand{\Add}{\PR{add}}
 \newcommand{\BRBdeliver}{\<BRB>.\<Deliver>}
 \newcommand{\BRBbroadcast}{\<BRB>.\<Broadcast>}
 \newcommand{\BABdeliver}{\<BAB>.\<Deliver>}
 \newcommand{\BABbroadcast}{\<BAB>.\<Broadcast>}
 \newcommand{\setchain}{Setchain\xspace}
-\newcommand{\setchains}{Setchains\xspace}
 \newcommand{\hashchain}{Hashchain\xspace}
-
-% ABCI
-\newcommand{\BeginBlock}{\texttt{BeginBlock}\xspace}
-\newcommand{\EndBlock}{\texttt{EndBlock}\xspace}
-\newcommand{\CheckTx}{\texttt{CheckTx}\xspace}
-\newcommand{\Commit}{\texttt{Commit}\xspace}
-\newcommand{\DeliverTx}{\texttt{DeliverTx}\xspace}
+\newcommand{\setchains}{Setchains\xspace}
 
 \newcommand{\Hspeed}{H1}
 \newcommand{\Hbetteralg}{H2}
@@ -44,4 +239,35 @@
 \newcommand{\Hbyzantine}{H4}
 \newcommand{\Hdegrade}{H5}
 
+\newcommand{\Dom}{\PR{Dom}}
+\newcommand{\Propset}{\PR{propset}}
+\newcommand{\Servers}{N}
 
+\newcommand{\byzantineset}{\mathbb{B}}
+\newcommand{\correctset}{\mathbb{C}}
+\newcommand{\Proposal}{\PR{proposal}}
+
+
+\newcommand{\AlgTwo}{Alg.~\ref{DPO-alg-basb}\xspace}
+\newcommand{\AlgThree}{Alg.~\ref{DPO-alg-basb3}\xspace}
+% \newcommand{\AlgTwoSet}{Alg.~\ref{DPO-alg-basb}+set\xspace}
+\newcommand{\AlgTwoSet}{Alg.~\ref{DPO-alg-basb}+set\xspace}
+%\newcommand{\AlgThreeSet}{Alg.~\ref{DPO-alg-basb3}+set\xspace}
+\newcommand{\AlgThreeSet}{Alg.~\ref{DPO-alg3-aggregated}\xspace}
+
+\newcommand{\TXONE}[1]{\ensuremath{\textit{#1}}\xspace}
+\newcommand{\TXTWO}[2]{\ensuremath{\textit{#1}\_\textit{#2}}\xspace}
+\newcommand{\TXTHREE}[3]{\ensuremath{\textit{#1}\_\textit{#2}\_\textit{#3}}\xspace}
+\newcommand{\HaveSubset}{\TXTWO{have}{subset}}
+\newcommand{\GenerateInvalidElems}{\TXTHREE{generate}{invalid}{elems}}
+\newcommand{\HavocNumber}{\TXTWO{havoc}{number}}
+\newcommand{\HavocSubset}{\TXTWO{havoc}{subset}}
+\newcommand{\HavocPartition}{\TXTWO{havoc}{partition}}
+\newcommand{\HavocElement}{\TXTWO{havoc}{element}}
+\newcommand{\Knowledge}{\TXONE{knowledge}}
+\newcommand{\ByzantineKnowledge}{\TXTWO{byzantine}{knowledge}}
+\newcommand{\ValidElements}{\TXTWO{valid}{elements}}
+\newcommand{\EV}{\TXONE{ev}}
+
+\newcommand{\SendBrb}{\TXONE{SendBRB}}
+\newcommand{\Tau}{\mathcal{T}}
