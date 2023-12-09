@@ -652,53 +652,69 @@ way \textquotedblright to place a transaction before another, is usually related
 to payments: either by paying higher transaction fees or by making side payments
 directly to validators.
 
-
 What kind of front-running attacks can happen in the abastraction level of \hashchain?
-Let's suppose a validator $v$ receives a transaction $(h_0, s_0)$. A \textit{speculative}
-validator can sign itself the transaction and broadcast it (the expected behaviour), or
-ignore it. If the validator signs the transaction and broadcast it, then it is colaborating
-for the transaction to be commited. Otherwise, it is not colaborating, and could delay
-(or even avoid) the transaction commitment.
+Let's suppose a validator $v$ receives a transaction $(h_0, s_0)$, where $h_0$ is a hash,
+and $s_0$ a signaure for that hash (the first one). A \textit{speculative} validator can
+sign itself the
+transaction and broadcast it (the expected behaviour), or
+ignore it (a missbehaviour). If the validator signs and broadcasts the transaction,
+then it is colaborating for the hash to be consoidated (and therefore for the elements
+from the hash to be added).
+Otherwise, it is not colaborating, and could delay
+(or even avoid) the hash consolidation.
+
 What is the difference between both epoch consolidation strategies?
 In FSEC strategy, if the transaction does not get the \texttt{SIGNATURES\_PER\_HASH}
-signatures within the grace period, it won't be commited on that round.
-In CEC strategy, the transaction won't be commited until getting
-\texttt{SIGNATURES\_PER\_HASH} signatures.
-At the end of the day, strategies do not seem to have fundamental differences.
+signatures within the grace period, the hash won't consolidate on that round (but it could
+do it in the future).
+In CEC strategy, the hash won't be consoildated until getting
+\texttt{SIGNATURES\_PER\_HASH} signatures, without having any grace period for it.
+
+At this point, strategies do not seem to have fundamental differences.
 However, the interesting point shows up in the other case: when transactions do get
 finally commited.
 
-Let's suppose that $v$ sees transaction $(h_0, s_0)$ and wants to perform a front-running
+Let's suppose that $v$ sees transaction $t_0 = (h_0, s_0)$ and wants to perform a front-running
 attack. In order to do that, it ignores the transaction, but broadcasts its own signed
-transaction $(h_1, s_0)$, hopping that gets commited first.
-Under FSEC behaviour, $h_0$ was first seen, so if it gets commited in this round, it will
-do it surely in an earlier epoch than $h_1$.
+transaction $t_1 = (h_1, s_0)$, hopping that $t_1$ gets stamped with an earilier epoch than $t_0$.
+
+Under FSEC behaviour, $h_0$ was first seen, so if it gets the \texttt{SIGNATURES\_PER\_HASH}
+within the grace period, it will consolidate, and elements will be stamped surely with an earlier
+epoch than $h_1$.
+Notice that this is totally independent on the number of signatures that $h_1$ achieves, and
+how fast it does. $h_1$ could even consolidate before than $h_0$.
+
 On the other hand, under CEC behaviour the situation is basically a race between
 $h_0$ and $h_1$: the one that gets the \texttt{SIGNATURES\_PER\_HASH} signatures first will
-be the first one to be commited.
-After this analysis, we could think that FSEC strategy tries to avoid front-running attacks
-by putting attention to the fact that one transacion was first seen before than another one
-(so that one is probably the legit original transaction).
+be the first one to consolidate, and therefore elements will be stamped with an eairlier epoch.
 
-However, FSEC strategy comes with some non-trivial downsides. As the epoch is determined by
-the moment in which the transaction was seen for the first time, the strategy somehow
-\textit{books} the epoch number for that specific transaction.
-If $v$ wants one transaction $h_0$ to be commited only if can do it before some other 
-transaction $h_1$, $v$ could broadcast the transaction so everyone \textit{books}
+After this analysis, as a general property, we could say that FSEC strategy takes into account
+not only the
+moment in which hashes get consolidated, but also when transactions were first seen.
+At girst glance, we could think that this property is an interesting point to go against
+front-running attacks, as first-seen transactions are probably the legit original transactions.
+
+However, FSEC strategy comes with some non-trivial downsides.
+As the epoch is determined by the moment in which the hash was seen for the first time,
+the strategy somehow \textit{books} the epoch number for that specific transaction.
+If $v$ wants one hash $h_0$ to be consolidated only if can do it before some other 
+hash $h_1$, $v$ could broadcast the transaction so everyone \textit{books}
 the epoch number for it.
-Then, it does not reverse the hash $h_0$ to anyone, because it waits until transaction
-$h_1$ shows up and gets enough signatures. And that point, when it is sure that transaction
-$h_1$ will get commited, then it reverses the hash $h_0$ and hopes the transaction to
-achieve \texttt{SIGNATURES\_PER\_HASH} signatures in the grace period.
-If it is successful, then $v$ would accomplish its goal: transaction $h_0$ is commited in an
-earlier epoch than transaction $h_1$.
-This situation is paticular bad because validator $v$ is able to make something happen in the
-past (transaction $h_0$ commited in epoch $e$) having information from the future (transaction
-$h_1$ commited in epoch $e+n$).
+Then, $v$ should not reverse the hash $h_0$ to anyone, because it has to wait until hash
+$h_1$ shows up and gets enough signatures. And that point, when it is sure that hash
+$h_1$ will get consolidaed, $v$ start reversing the hash $h_0$ to all its pairs, hopping the
+hash to achieve \texttt{SIGNATURES\_PER\_HASH} signatures in the grace period.
+If it is successful, then $v$ would accomplish its goal:
+elements from hash $h_0$ are stamped with an earlier epoch than elements from
+hash $h_1$.
 
-Notice that trying to do something similar under CEC strategy, would be impossible as once
-transaction $h_1$ is commited for sure, then it is commited in an earlier epoc than any
-other transaction not-commited yet.
+This situation is paticular interesting because validator $v$ is able to make something
+happen in the past (elementrs from hash $h_0$ stamped with epoch $e$) having information
+from the future (elements from hash $h_1$ stamped with epoch $e+n$).
+
+Notice that trying to do something similar under CEC strategy would be impossible, as once
+hash $h_1$ is consolidated for sure, then its elements are assigned an earlier epoch than any
+other hash not-consolidated yet.
 
 \input{algorithms/alg-api-hash}
 
