@@ -24,7 +24,7 @@ o más elementos a ser agregados.
 
 % \subsection{General Considerations about Implementation}\label{subsec:general}
 Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
-~\ref{sec:prelim}): \Add y \Get y, por lo tanto, cada solución provee definiciones
+~\ref{sec:prelim}): \Add y \Get, y por lo tanto, cada solución provee definiciones
 para ambas.
 %
 
@@ -47,13 +47,10 @@ cuándo un elemento es válido para ser admitido en el conjunto.
 En esta sección, dicho predicado se referencia con la función \isValidElement.
 
 %
-A continuación se presentan diferentes definiciones de métodos y funciones de
-modo que la aplicación corriendo sobre Tendermint implemente \setchain.
-
-%
-Como se mencionó en la sección previa ~(ver sección ~\ref{sec:prelim}), para la
-implementación es necesario definir las distintas instancias de Tendermint ABCI
-y los métodos presentados como parte de la API de \setchain.
+A continuación se presentan diferentes definiciones de métodos y funciones
+necesarias para que la aplicación corriendo sobre Tendermint implemente \setchain.
+Esto involucra, por un lado, los métodos presentados como parte de la API de
+\setchain y, por el otro, la interfaz de aplicación de blockchain ~(ver sección ~\ref{sec:prelim}).
 
 \section{Primera implementación: vainilla}\label{sec:vanilla}
 
@@ -69,7 +66,7 @@ la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}
 %
 
 Para dar una implementación completa de \setchain utilizando Tendermint, además se
-debe definir la aplicación ABCI (ver sección~\ref{subsec:abci}). 
+debe definir la interfaz ABCI (ver sección~\ref{subsec:abci}). 
 %
 
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
@@ -79,85 +76,62 @@ Solo se definen \CheckTx, \DeliverTx, y \EndBlock; el resto tiene implementacion
 triviales.
 
 %
-El flujo usual de elementos agregados por \Add(e) en esta implementación es el siguiente.
+El flujo usual de elementos agregados al invocar \Add(e) en esta implementación es el siguiente.
 %
-Primero Tendermint chequea que el elemento $e$ a agregar es válido a través de
-\CheckTx, y si es correcto, entonces insertará el elemento en la mempool.
+Comp primer paso, Tendermint chequea que el elemento $e$ a agregar sea válido a través de
+\CheckTx, y si lo es, entonces insertará el elemento en la mempool. En caso contrario,
+lo descartará.
 %
 Luego de un tiempo, es esperable que el elemento $e$ sea añadido a un bloque de Tendermint,
-y cuando se haga \textit{commit} sobre el bloque en el consenso, Tendermint enviará
+y cuando se haga \textit{commit} sobre dicho bloque (como parte del consenso), Tendermint enviará
 la secuencia correspondiente de pedidos: \BeginBlock para indicar el inicio de un nuevo bloque,
-una lista de llamadas a \DeliverTx por cada transacción agregada, \EndBlock para indicar la
-finalización del bloque, y \Commit para señalizar que el estado puede ser persistido.
-
+una lista de llamadas a \DeliverTx por cada transacción agregada (en el orden en que fueron
+consensuadas)\footnote{En esta implementación
+una \textit{transacción} agregada coincide con un \textit{elemento} agregado.},
+\EndBlock para indicar la finalización del bloque, y \Commit para señalizar que el estado
+puede ser persistido.
 
 %\input{algorithms/alg-abci-vanilla}
 
-The usual flow of elements added by \<add>\((e)\) in the Vanilla implementation
-is: first Tendermint checks that the element \(e\) is valid with \<CheckTx>, and if the
-element is valid, then \(e\) is added to the mempool.
-% The call to \texttt{Add(e)} will generate a request to
-% \texttt{CheckTx()} to run validations over the element $e$.
-% %
-% If the element passes the validations, it is inserted to the mempool.
+En esta versión, chequear si una transacción es válida consiste en simplemente chequear
+la validez del elemento, dado que las transacciones contienen un único elemento.
 %
-After a while, $e$ is expected to be added to a Tendermint block, and when the
-block gets committed in the consensus, Tendermint sends first a \<BeginBlock>
-request followed by a list of \<DeliverTx>, an \<EndBlock> request, and finally a
-\<Commit>.
-% requests (one for each transaction in the consented order) sandwiched by
-% \<BeginBlock> and \<EndBlock> requests, and followed by a Commit.
+Puede parecer absurdo definir la función \texttt{getElementFromTransaction()}
+en este caso (dado que es la función identidad). Sin embargo, la decisión de dar
+la definición explícita se basa en enfatizar la diferencia conceptual entre una
+transacción de Tendermint, y los elementos a añadir en la \setchain.
 %
 
-Tendermint invokes function \texttt{CheckTx} to decide
-whether a new transaction should be added to the mempool or discarded.
+El Tendermint core envía peticiones \DeliverTx asíncronamente (pero en orden)
+una vez por cada transacción en el bloque.
 %
-In this version, checking that a transaction is valid consists on simply
-checking the validity of the element, as transactions contain only one
-element.
+Nótese que las transacciones ya fueron ordenadas en el consenso global por el protocolo
+de Temndermint cuando \DeliverTx se ejecuta.
 %
-%Commented the following line as I'm not sure about talking about future implementations
-%in this subsection:
-%However, in the following implementation transaction are not the same as
-%elements.
+Para este algoritmo, la única acción a realizar por parte de la ABCI cuando se recibe una
+transacción es añadir el elemento subyacente a la \setchain siempre y cuando el mismo
+sea válido.
 %
-% It may seem silly to define the \texttt{getElementFromTransaction()} function in
-% this case (given that it has no effect, it is the identity function).
+Siempre es necesario chequear del lado de la ABCI si una transacción es válida.
 %
-% However, the decision to explicitly define such a function is to reinforce the
-% conceptual difference between a Tendermint transaction, and the elements to be
-% added to the \setchain.
+Nótese que un nodo correcto podría chequear la transacción antes de agregarla a la
+mempool,
+y que el resultado de esa validación cambie para el momento en que ésta arriva a la
+ABCI.
+%
+Por otro lado, un nodo bizantino podría añadir transacciones sin chequear
+su validez previamente.
 
 %
 
-%The Tendermint consensus doesnt invoke the deliverTx
-Tendermint core sends \texttt{DeliverTx} requests
-asynchronously (but in order) once per each transaction in the block.
+Tendermint envía peticiones \EndBlock una única vez por bloque, luego de haber
+enviado todas las transacciones dentro del mismo.
 %
-Transactions have already been ordered in the global consensus by
-the Tendermint protocol when \texttt{DeliverTx} is executed.
+En este algoritmo, la finalización de un bloque desencadena un incremento de época
+y, por lo tanto, cada bloque de Tendermint define una época distitna de \setchain.
 %
-For this algorithm, the only thing to do when transactions are delivered is to add
-the underlying element to the \setchain only if it is a valid one.
-% Should we mention Byzantine proposers here?
-We cannot avoid checking if a transaction is valid because it may have been
-valid by the time it was inserted in the mempool but rendered invalid by the
-time is consolidated.
-%
-Additionally, a Byzantine node may add transactions without checking their
-validity.
-% If the element is not valid, the corresponding transaction should have been
-% rejected by the mempool, but may have been included in a block by a Byzantine
-% proposer.
-%
-Tendermint invokes function \texttt{EndBlock} once per block, after delivering
-all transactions inside the block.
-%
-In this algorithn, the end of a block triggers an epoch increment, and thus,
-each Tendermint block defines a different \setchain epoch.
-%
-Finally, when clients request a \texttt{Get}, they call the \<abciquery>
-function.
+Finalmente, cuando los clientes invocan \Get, indirectamente inician una llamada
+a la función the \<abciquery>.
 
 \subsubsection{Elements Membership Proof}\label{subsubsec:membership}
 %
