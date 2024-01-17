@@ -338,25 +338,45 @@ de cada una de ellas.
 %
 De esta forma, se replican lotes de transacciones enviadas por los distintos clientes, que son ejecutadas en el mismo
 orden en cada una de las máquinas en la red, resultando en un mismo estado a lo largo de múltiples máquinas.
+%
+Las figuras azules representan máquinas.
+%
+Las líneas punteadas representan la comunicación entre máquinas para llevar a cabo el protocolo de consenso para ordernar
+transacciones.
 
 \begin{figure}
   \centering
   \includegraphics[scale=0.3]{figures/state-machine-replication.png}
-  \caption{Esquema simplificado de la arquitectura de la replicación de máquinas de estado.
-    %
-    Las figuras azules representan máquinas.
-    %
-    Las líneas punteadas representan la comunicación entre máquinas para llevar a cabo el protocolo de consenso para ordernar
-    transacciones.
-  }
+  \caption{Esquema simplificado de la replicación de máquinas de estado.}
   \label{fig:replication}
+\end{figure}
+
+\subsubsection{Arquitectura de capas de Tendermint}\label{subsec:layers}
+
+La Figura~\ref{fig:tendermint-architecture} presenta la estructura básica de Tendermint como un sistema de capas.
+La subcapa inferior se encarga de la comunicación entre pares, y provee comunicación para los principales
+módulos de la blockchain. Éstos son los módulos que se presentan en la capa inmediata superior: mempool, consenso,
+evidencia, sincronización rápida, y sincronización de estado. Para el presente trabajo, solo serán pertinentes los
+módulos de mempool y de consenso.
+
+Un cliente interactúa con el sistema mediante RPC al enviar transacciones
+que (en caso de ser válidas) son añadidas al módulo de mempool. El cliente en general
+recibe respuestas generadas por el módulo de consenso.
+El módulo de consenso se encarga de ordenar e intermediar la ejecución de las transacciones, por medio de la
+interfaz de aplicación.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.2]{figures/tendermint-layers.png}
+  \caption{Arquitectura de capas de Tendermint.}
+  \label{fig:tendermint-architecture}
 \end{figure}
 
 % %
 Tendermint consiste de dos componentes técnicos principales: un motor de consenso de blockchain, y una interfaz
 de aplicación genérica.
 %
-El motor de consenso, llamado \textit{Tendermint Core}, asegura que las mismas transacciones son registradas en cada
+El motor de consenso, llamado \textit{Tendermint Core}, asegura que las mismas transacciones sean registradas en cada
 máquinas en el mismo orden.
 %
 La interfaz de aplicación, llamada \textit{interfaz de aplicación de blockchain} (IABC)\footnote{Proveniente de \textit{Application
