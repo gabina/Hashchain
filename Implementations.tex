@@ -146,91 +146,99 @@ y, por lo tanto, cada bloque de Tendermint define una época distitna de \setcha
 Finalmente, cuando los clientes invocan \Get, indirectamente inician una llamada
 a la función \<abciquery>, que retorna la \setchain. EXPLICITAR QUÉ PINTA TIENE ESTO.
 
-\subsubsection{Elements Membership Proof}\label{subsubsec:membership}
+\subsubsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %
-Client processes do not know if they are contacting a Byzantine or correct
-process.
+Como se mencionó antes, cuando un proceso cliente utiliza la API de \setchain
+para añadir un elemento, o para recuperar el estado actual de la \setchain,
+se comunica con un nodo parituclar de la red. Es importante notar que, en este
+sentido, un proceso cliente no puede saber si se está contactando con un nodo
+correcto o con un nodo bizantino.
+%Client processes do not know if they are contacting a Byzantine or correct
+%process.
 %
-To ensure that an element is going to be added to the \setchain, the client
-needs to interact with enough servers to guarantee that at least one server is
-correct~\cite{Capretto.2022.Setchain}.
+Para asegurar que un elemento será añadido a la \setchain, el cliente neecesita
+interactuar con suficientes servidores, de modo de garantizar que al menos uno de ellos
+es correcto~\cite{Capretto.2022.Setchain}.
 %
 % An extension to Setchain presented an optimistic client with the following
 % approach.
 %
-Correct servers sign cryptographically a hash of the set of elements in an
-epoch, and insert this hash in the \setchain as an element.
+Los nodos correctos firman criptográficamente un hash del conjunto de elementos
+pertenecientes a una época, e insertan este hash como un elemento en la \setchain.
 %
-We call those hashes epoch proof elements. 
+A esos hashes los llamamos \textit{elementos de prueba de época}.
 %
-Epoch proofs may be implemented using Ed25519~\cite{ed25519} as signature system.
+Estas pruebas de época pueden implementarse utilizando \textit{Ed25519}~\cite{ed25519}
+como sistema de firmas.
 %
-Epoch proofs may contain the epoch number being proved, the validator's public key
-signing, and the signature of the elements in the given epoch (ordered in a well-known
-specific way). 
+Las pruebas de época en principio contienen: el número de época al cual pertenece
+la prueba, la clave pública del validador que firma, y la firma de los elementos 
+de la época dada (ordenados de una forma específica y conocida).
 %
-Clients only perform a single $\<add>(e)$ request to one server, hoping it is a
-correct server.
+De esta manera, los clientes solo ejecutan una única petición $\<add>(e)$ a un
+determinado servidor, esperando que sea correcto. 
 %
-After waiting for some time, clients can invoke a \<get> from a single server
-and checks whether $e$ is in some epoch and there exists enough epoch proofs\footnote{We
-  assume that an upper bound, $f$, in the number of Byzantine servers is
-  known and therefore $f+1$ signatures are required.} to guarantee that at
-least one correct server has signed it.
-% (at least) $f$ + 1 servers.
-Clients are able to verify if epoch proofs are valid by generating the hash of elements
-in the given epoch, and verifying if the signature in the epoch proof element is valid
-for the hash and the public key.
+Luego de esperar cierto tiempo, los clientes pueden invocar  \<get> (también a un
+único nodo) y chequear si el elemento $e$ pertenece a alguna época y existen suficientes
+pruebas para dicha época\footnote{Se asume que una cota superior $f$ de número de servidores
+biantinos es conocida y, por lo tanto, se requieren $f+1$ firmas.}. De este modo, se garantiza
+que al menos un servidor corrector la firmó.
 %
-Validators' public keys need to be publicly known to users.
+Los clientes pueden verificar si las pruebas de época son válidas generando el hash de elementos
+en la época dada, y verificando (a través de la clave pública) si la firma de la prueba es válida
+para el hash obtenido.
 %
-If $e$ is in an epoch with enough epoch proofs, clients can conclude
-that the epoch is correct and $e$ has been successfully inserted and
-stamped.
+Las claves públicas de los validadores necesitan ser públicamente conocidas para los usuarios.
 %
-Note that this requires only one message per \<add> and one message per \<get>.
+Si un elemento $e$ pertenece a una época que tiene suficientes prueas, los clientes pueden
+concluír que la época es correcta y que $e$ fue éxitosamente insertado en la \setchain.
 %
-We implemented this epoch proof mechanism in the definition of \<EndBlock>.
+Nótese que esto solo requiere una llaada a \<add> y una llamada a \<get>.
+%
+Este mecanismo de membrecías de elementos a épocas está implementado en la definición de
+\<EndBlock>.
+%
+Otra opción para implementar los elementos de prueba de época es a través de la librería
+criptográfica de \textit{ethereum}.
+%
+Esta librería provee una función \texttt{Sign} que cacula una firma ECDSA.
+%
+La firma producida se encuentra en el formato $[R || S || V]$, donde $V$ es 0 o 1.
+%
+El valor de $V$ es usualmente llamado \textit{bit de recuperación}, y permite utilizar
+la función \texttt{Ecrecover}, la cua dado un hash y una firma, retorna la clave pública
+(en formato descomprimido) que creó dicha firma.
+%
+De esta forma, los elementos de prueba de época pueden contener el número de época y la firma
+en el formato mencionado arriba, y los clientes pueden usar la función \texttt{Ecrecover} para
+verificar que la firma dada fue de hecho generada por un validador conocido.
+%
+Nótese que las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
+un cliente, y elementos de prueba de época; significando que cada elemento de prueba de época
+pertenece a su vez a una época. Sin embargo, los elementos de pruea de época no necesitan ser
+incluídos como elementos en el hash firmado que es parte de la prueba de época para una época
+dada.
+%
+Consecuentemente, es necesario diferenciar entre elementos regular, y elementos de prueba de época.
+%
+La validez de los elementos regulares se chequea a través de la ya mencionada función
+\texttt{isValidElement}.
+%
+Sin enmbargo, un elemento de prueba de época necesita ser validado de otra manera: verificando la firma.
+%
 
+\subsubsection{Conclusión}
+Si bien la implementación descripta en esta sección implementa \setchain, no está explotando su idea
+principal: relajar el orden total entre los elementos.
 %
-Another option to implement epoch proof elements is using ethereum crypto library.
-%
-This library provides a \texttt{Sign} function that calculates an ECDSA signature.
-%
-The produced signature is in the $[R || S || V]$ format, where $V$ is 0 or 1.
-%
-The $V$ value is usually called recovery bit, and it allows to use the \texttt{Ecrecover}
-function, which takes in a hash and a signature, and returns the uncompressed public key
-that created the given signature.
-%
-This way, epoch proof elements may contain the epoch number and the signature in the format
-mentioned above, and clients may use the \texttt{Ecrecover} function to verify that the given
-signature was indeed generated by a known validator.
-%
-
-%
-Notice that epochs now contain two kind of elements: client regular elements, and epoch
-proof elements; meaning that every epoch proof element belongs to an epoch. However,
-epoch proof elements do not need to be included as elements in the signed hash that is
-part of the epoch proof for the given epoch.
-%
-Consequently, we need to differentiate between regular elements, and epoch proof elements.
-%
-Regular elements are checked for validity using the already mentioned \texttt{isValidElement}
-function.
-%
-However, an epoch proof element needs to be validated in other way: verifying the signature.
-%
-
-While the implementation described in this section implements \setchain, it is
-not exploiting its main idea: to lift the total order between elements.
+Aunque diversos elementos pueden pertenecer a una misma época, significando que no hay orden total
+entre ellos, por detrás, el protocolo de consenso de Tendermint sí está decidiendo un orden total
+entre elementos.
 %
 % and take advantage of the
 % performance improvements that implies.
 %
-Even though several elements may belong to the same epoch, meaning that no total
-order between them could be established, Tendermint consensus protocol is
-running underneath deciding a total order for the elements.
+
 % that then is broken
 % when adding the elements from the same block to a specific epoch.
 
