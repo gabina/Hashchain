@@ -9,7 +9,7 @@ contribuciones de este trabajo.
 La computación distribuída nació a fines de la década de 1970 cuando investigadores y profesionales
 comenzaron a tener en cuenta las características intrínsecas de los sistemas distribuídos físicamente.
 El campo luego emergió como un área de investigación especializada distinta al de redes, al de sistemas
-operativos, y al de computación paralela.
+operativos, y al de computación paralela.~\cite{raynal.dist.systems}
 
 La computación distribuída surge cuando se tiene que resolver un problema en términos de entidades
 distribuídas (usualmente llamadas procesos, nodos, actores, agentes, pares, etc) en donde cada
@@ -19,8 +19,8 @@ Es clave notar que el hecho de que las entidades (y la información que consume 
 estén distribuídas no es una propiedad que se encuentre bajo el control de los programadores, sino 
 que es una imposición dada por las características propias del problema. En la 
 Figura ~\ref{fig:distributed-systems} se expresa esto mediante un punto de vista
-de la arquitectura del sistema, en donde cada par $(p_i, n_i)$ denota una entidad informática $p_i$ y su
-entrada asociada $n_i$.
+de la arquitectura del sistema, en donde cada par $(p_i, in_i)$ denota una entidad informática $p_i$ y su
+entrada asociada $in_i$.
 
 \begin{figure}
   \centering
@@ -31,7 +31,7 @@ entrada asociada $n_i$.
 
 
 Como se ilustra en la Figura ~\ref{fig:distributed-systems}, un sistema distribuído está hecho de una
-colección de unidades de computación (llamdas también unidades informáticas) distribuídas, cada una
+colección de unidades de computación (llamadas también unidades informáticas) distribuídas, cada una
 abstraída a través de la noción de un proceso, interconectada a través de un medio de comunicación.
 Se asume que los procesos cooperan por un objetivo común, lo cual significa que intercambian
 información de una manera u otra. Es interesante notar que el hecho de que las entidades
@@ -65,13 +65,14 @@ de un artículo llamado \textit{Bitcoin: A Peer-to-Peer
 Electronic Cash System}\footnote{Bitcoin: un sistema de dinero electrónico de par a par.}, escrito
 bajo el pseudónimo de Satoshi Nakamoto.
 Nakamoto combinó diversas invenciones previas como
-\textit{b-money} y \textit{HashCash} para crear un sistema de dinero electrónico completamente
+\textit{b-money}~\cite{b.money} y \textit{HashCash}~\cite{hashcash} para crear un sistema de dinero electrónico completamente
 descentralizado que, justamente, no necesita confiar en ninguna autoridad central para la emisión de monedas,
 o la liquidación o validación de las transacciones. 
 La innovación clave en Bitcoin fue el uso de un sistema de cómputo distribuído que lleva
 a cabo una elección global de las nuevas transacciones cada 10 minutos, permitiendo
 a la red descentralizada llegar a un consenso sobre el estado de las mismas. Estas transacciones
-se guardan empaquetadas como bloques en una bitácora distribuída pública conocida como blockchain.
+se guardan empaquetadas como bloques en una bitácora distribuída pública conocida como blockchain.~\cite{mastering.bitcoin}
+%
 Se dice que estas transacciones se encuentran totalmente ordenadas porque es posible determinar para
 dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
 
@@ -80,7 +81,9 @@ dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
 %una debilidad de los sistemas de moneda digital que fue abordado mediante servidores de información centrales.
 
 Bitcoin es una colección de conceptos y tecnologías que forman las bases de un ecosistema de dinero
-digital. Si bien la noción de bitcoin como criptomoneda no es imprescindible para la comprensión de las
+digital.
+%
+Si bien la noción de bitcoin como criptomoneda no es imprescindible para la comprensión de las
 contribuciones de este trabajo, es el primer caso de uso que da particular importancia a la blockchain
 como tal y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
 su funcionamiento.
@@ -92,10 +95,10 @@ de los participantes de la red de bitcoin. Los usuarios se comunican entre ellos
 específico principalmente mediante internet. La pila del
 protocolo bitcoin, disponible como software de código abierto, se puede correr en una amplia gama de
 dispositivos, incluyendo computadoras portátiles y teléfonos inteligentes, haciéndolo una tecnología
-fácilmente accesible.
+de fácil acceso.
 
 Los usuarios pueden transferir bitcoins en la red y hacer básicamente cualquier operación que puede ser
-realizada con monedas tradicionales, incluyendo comprar y vender bienes, enviar dinero a personas u
+realizada con monedas tradicionales: comprar y vender bienes, enviar dinero a personas u
 organizaciones, o extender créditos. Los bitcoins también pueden ser vendidos, comprados, o intercambiados por
 otras monedas en casas de cambio especializadas.
 
@@ -133,17 +136,18 @@ aproximadamente 21 millones de bitcoins.
 
 %Detrás de escena, bitcoin es el nombre de un protocolo, una red de pares, y una innovación de
 %computación distribuída.
-Bitcdoin representa la culminación de décadas de investigación en criptografía
+Bitcoin representa la culminación de décadas de investigación en criptografía
 y sistemas distribuídos, e incluye 4 innovaciones claves funcionando juntas:
 \begin{itemize}
-  \item Una red de par a par descentralizada (el protocolo de bitcoin)
-  \item Una bitácora distribuída pública de transacciones organizadas en bloques (la blockchain)
-  \item Un conjunto de reglas para la validación independiente de transacciones y la emisión de monedas (reglas de consenso)
-  \item Un mecanismo para lograr un consenso global descentralizado en la blockchain (algoritmo de prueba de trabajo)
+  \item Una red de par a par descentralizada (el protocolo de bitcoin).
+  \item Una bitácora distribuída pública de transacciones organizadas en bloques (la blockchain).
+  \item Un conjunto de reglas para la validación independiente de transacciones y la emisión de monedas (reglas de consenso).
+  \item Un mecanismo para lograr un consenso global descentralizado en la blockchain (algoritmo de prueba de trabajo).
 \end{itemize}
 
 \subsubsection{La forma de la blockchain}
 
+La blockchain es la bitácora pública de bitcoin, un registro ordenado y con fecha y hora de las transacciones.
 Cada nodo completo en la red de bitcoin guarda independientemente una blockchain que contiene solo
 bloques validados por ese nodo. Cuando cierta cantidad de nodos tienen los mismos bloques en su propia blockchain
 se dice que llegaron a un consenso. 
@@ -153,21 +157,24 @@ se dice que llegaron a un consenso.
 La Figura \ref{fig:blockchain} muestra una versión simplificada de una blockchain. En la sección de datos de un bloque
 se agrupan y alojan una o más transacciones nuevas. Copias de cada transacción se hashean, los hashes luego
 se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un único hash: la raíz de un
-\textit{merkle tree}. En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
-La raíz del merkle tree se aloja en el encabezado del bloque. Cada bloque además contiene el hash del encabezado
-del bloque anterior, encadenándolos. Esto asegura que una transacción no pueda modificarse sin modificar el bloque
-que la contiene y todos los bloques siguientes.
+\textit{merkle tree}~\cite{merkle.tree}. 
 
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{figures/blockchain.png}
+  \includegraphics[scale=0.4]{figures/blockchain.png}
   \caption{Versión simplificada de la blockchain}
   \label{fig:blockchain}
 \end{figure}
 
+
+En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
+La raíz del merkle tree se aloja en el encabezado del bloque. Cada bloque además contiene el hash del encabezado
+del bloque anterior, encadenándolos. Esto asegura que una transacción no pueda modificarse sin modificar el bloque
+que la contiene y todos los bloques siguientes.~\cite{bitcoin}
+
 \begin{figure}[h]
   \centering
-  \includegraphics[scale=0.3]{figures/merkle-tree.png}
+  \includegraphics[scale=0.35]{figures/merkle-tree.png}
   \caption{Merkle tree}
   \label{fig:merkle-tree}
 \end{figure}
@@ -226,9 +233,9 @@ debido al amplio éxito de tecnologías blockchains como Bitcoin y Ethereum.
 % Fuente: [10] Lamport, L., Shostak, R., and Marshall, P. The byzantine generals problem.
 
 
-\subsection{Setchain}~\ref{sec:setchain}
+\subsection{Setchain}~\label{sec:setchain}
 
-\setchain \cite{Capretto.2022.Setchain} es un tipo de datos concurrente y distribuído que implementa
+\setchain~\cite{Capretto.2022.Setchain} es un tipo de datos concurrente y distribuído que implementa
 conjuntos distribuídos de solo crecimiento, con barreras de sincronización (llamadas épocas), y tolerante
 a comportamiento bizantinos.
 %

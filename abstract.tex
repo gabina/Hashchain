@@ -18,11 +18,13 @@
 
   Bajo esta idea subyacente nace \textit{Setchain}, un tipo de
   datos concurrente que implementa conjuntos de solo crecimiento distribuídos 
-  (\textit{distributed grown-only sets}). A su vez,
+  (\textit{distributed grown-only sets}).
+  %
+  \setchain
   es tolerante a comportamientos bizantinos, y provee barreras o puntos de sincronización
   (llamados épocas), que dotan a la estructura de un orden parcial.
   %
-  \setchain relaja el requerimiento de orden total y, de esta forma, busca lograr mayor
+  De esta forma, relaja el requerimiento de orden total buscando lograr mayor
   rendimiento y escalabilidad.
   %
   Las \setchains se pueden usar para aquellas aplicaciones, como los registros digitales,
