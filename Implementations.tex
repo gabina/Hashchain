@@ -1,37 +1,47 @@
 \section{Implementaciones}\label{sec:impl}
 
 En esta sección se presenta una familia de implementaciones de \setchain de mundo
-real construídas sobre Tendermint. 
+real construídas sobre Tendermint.
 %
 En particular, se exponen tres alternativas diferentes, comenzando con una
-solución inocente pero
-trivialmente correcta, y finalizando con un algoritmo
+solución inocente pero trivialmente correcta, y finalizando con un algoritmo
 complejo que implementa \setchain utilizando funciones hash.
 %
-
 Para evitar repeticiones, las definciones de funciones que permanezcan sin cambios
-de una versión a la siguiente, no serán re-escritas. Solo se volverán a presentar
-aquellas funciones para las cuales la definición se vea modificada.
+de una versión a la siguiente, no serán re-escritas.
+Solo se volverán a presentar aquellas funciones para las cuales la definición se
+vea modificada.
 %
-A su vez, con la intención de mantener consistencia en la nomenclatura, el término \textit{transacción}
-se utiliza siempre para referirse a las \textit{transacciones de Tendermint}, mientras
+A su vez, con la intención de mantener consistencia en la nomenclatura,
+el término \textit{transacción} se utiliza siempre para referirse a las
+\textit{transacciones de Tendermint}, mientras
 que \textit{elemento} queda reservado para elementos a agregarse a la \setchain.
 %
 Dependiendo de la alternativa sobre la que se esté trabajando, una transacción de
-Tendermint puede contener uno
-o más elementos a ser agregados.
-
-
+Tendermint puede contener uno o más elementos a ser agregados.
+%
 % \subsection{General Considerations about Implementation}\label{subsec:general}
 Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
 ~\ref{sec:prelim}): \Add y \Get, y por lo tanto, cada solución provee definiciones
 para ambas.
 %
-
-Tendermint provee dos \textit{endpoints} RPC principales: \texttt{Tendermint.Broadcast}
-inyecta una transacción con el objetivo de que se haga \textit{commit} sobre ella, y
-\texttt{Tendermint.Query} consulta el estado de la aplicación.
+Por su parte, Tendermint provee dos \textit{endpoints} RPC principales.
+Nótese que el cliente siempre se comunica con un nodo particular de la red.
+\begin{itemize}
+  \item \texttt{Tendermint.Broadcast} se utiliza para enviar transacciones.
+  Cuando una transacción es enviada, se chequea si dicha transacción
+  es válida contra la aplicación (mediante la llamada a \<CheckTx>), y en caso
+  afirmativo, se añade
+  a la mempool, se difunde a los otros nodos, y eventualmente se incluye en
+  un bloque.
+  \item \<abciquery> se utiliza para consultar el estado de la
+  aplicación.
+\end{itemize}
 %
+
+% Important: Note the mempool does not provide strong guarantees - just because a tx
+% passed CheckTx (ie. was accepted into the mempool), doesn't mean it will be committed,
+% as nodes with the tx in their mempool may crash before they get to propose.
 
 Por lo tanto, desde el punto de vista del cliente de la \setchain, solo existen dos
 métodos (\Add y \Get).
@@ -50,7 +60,8 @@ En esta sección, dicho predicado se referencia con la función \isValidElement.
 A continuación se presentan diferentes definiciones de métodos y funciones
 necesarias para que la aplicación corriendo sobre Tendermint implemente \setchain.
 Esto involucra, por un lado, los métodos presentados como parte de la API de
-\setchain y, por el otro, la interfaz de aplicación de blockchain ~(ver sección ~\ref{sec:prelim}).
+\setchain y, por el otro, los perteniences a la interfaz de aplicación de
+blockchain ~(ver sección ~\ref{sec:prelim}).
 
 \section{Primera implementación: vainilla}\label{sec:vanilla}
 
@@ -66,7 +77,8 @@ la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}
 %
 
 Para dar una implementación completa de \setchain utilizando Tendermint, además se
-debe definir la interfaz ABCI (ver sección~\ref{subsec:abci}). 
+deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
+(ver sección~\ref{subsec:abci}). 
 %
 
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
@@ -80,15 +92,18 @@ El flujo usual de elementos agregados al invocar \Add(e) en esta implementación
 %
 Comp primer paso, Tendermint chequea que el elemento $e$ a agregar sea válido a través de
 \CheckTx, y si lo es, entonces insertará el elemento en la mempool. En caso contrario,
-lo descartará.
+lo descartará y el flujo de dicho elemento terminará.
 %
-Luego de un tiempo, es esperable que el elemento $e$ sea añadido a un bloque de Tendermint,
-y cuando se haga \textit{commit} sobre dicho bloque (como parte del consenso), Tendermint enviará
-la secuencia correspondiente de pedidos: \BeginBlock para indicar el inicio de un nuevo bloque,
+Si el elemento $e$ llega a la mempool, luego de un tiempo, es esperable que sea añadido a un
+bloque de Tendermint, propuesto como siguiente bloque en la cadena como parte del algoritmo de
+consenso. Una vez que dicho bloque obtiene todos los votos necesarios para ser considerado
+\textit{commited by the network}, Tendermint enviará
+la secuencia correspondiente de pedidos a la aplicación: \BeginBlock para indicar el inicio de
+un nuevo bloque,
 una lista de llamadas a \DeliverTx por cada transacción agregada (en el orden en que fueron
-consensuadas)\footnote{En esta implementación
+consensuadas dentro del bloque)\footnote{En esta implementación
 una \textit{transacción} agregada coincide con un \textit{elemento} agregado.},
-\EndBlock para indicar la finalización del bloque, y \Commit para señalizar que el estado
+\EndBlock para indicar la finalización del bloque, y \Commit para señalizar que el nuevo estado
 puede ser persistido.
 
 %\input{algorithms/alg-abci-vanilla}
@@ -121,9 +136,7 @@ ABCI.
 %
 Por otro lado, un nodo bizantino podría añadir transacciones sin chequear
 su validez previamente.
-
 %
-
 Tendermint envía peticiones \EndBlock una única vez por bloque, luego de haber
 enviado todas las transacciones dentro del mismo.
 %
@@ -131,7 +144,7 @@ En este algoritmo, la finalización de un bloque desencadena un incremento de é
 y, por lo tanto, cada bloque de Tendermint define una época distitna de \setchain.
 %
 Finalmente, cuando los clientes invocan \Get, indirectamente inician una llamada
-a la función the \<abciquery>.
+a la función \<abciquery>, que retorna la \setchain. EXPLICITAR QUÉ PINTA TIENE ESTO.
 
 \subsubsection{Elements Membership Proof}\label{subsubsec:membership}
 %
