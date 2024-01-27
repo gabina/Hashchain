@@ -243,55 +243,52 @@ entre elementos.
 % when adding the elements from the same block to a specific epoch.
 
 
-\subsection{Second Implementation: Compresschain}\label{subsec:compresschain}
+\subsection{Segunda implementación: Compresschain}\label{subsec:compresschain}
 
-To get closer to the specification of Setchain, we propose to pack elements
-together into a batch, reassembling a set, and subsequently compressing it
-prior to transmission.
+Para acercanos a la especificación de \setchain, en esta sección proponemos
+empaquetar elementos en un bache, formando un conjunto y comprimiéndolo
+previamente a su difusión.
 %
-We propose a new implementation, called \emph{Compresschain}, that attempts to
-explore the relaxed order proposed by \setchain, even though we still run
-Tendermint consensus underneath.
+Se propone una implementación nueva, llamada \emph{Compresschain}, que explora
+la relajación de orden propuesta por \setchian, aún corriendo el algoritmo de
+consenso de Tendermint por detrás.
 %
-Instead of immediately broadcasting each element added by clients as a
-Tendermint transaction, a new middleware piece of software called
-\textit{collector} is responsible for collecting elements until reaching a batch
-long enough and broadcast that batch as a transaction.
+En lugar de difundir inmediatamente cada elemento añadido por un cliente como una
+transacción de Tendermint, una nueva pieza intermedia de software llamada \textit{collector}
+es responsable de recolectar elementos hasta llegar a un bache suficientemente grande,
+que es difundido como una única transacción.
+%
+Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo de codificación RLP de
+Ethereum~\cite{ethereum} y el algoritmo de compresión Brotli~\cite{brotli.compressor}
+~\footnote{ Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
 %
 % This means that a new
 % \setchain API version is defined, which uses the new collector component.
 %
 % We define a collector in Algorithm.
 
-Following the current practice of Ethereum, we use Ethereum's Recursive Length
-Prefix~\cite{ethereum} encoding and Brotli
-compression~\cite{brotli.compressor}~\footnote{ Although other compressions
-algorithms can be used if required.}.
-%
 % To achieve a better throughput in
 % terms of size per element broadcasted,  is used.
 %
-Instead of adding elements sent by users into the network, we first collect them
-and encode them using RLP, and once the batch is ready, we compress the batch
-with the Brotli compression algorithm.
+
+En lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
+primero se recolectan y se codifican utilizando RLP y, una vez que el bache está listo,
+se comprime el bache con el agoritmo de compresión Brotli.
 %
-We do not provide any specific criteria to determine when batches are ready.
+Un bache se considera \textit{listo} para ser enviado una vez que o bien alcanza un tamaño máximo,
+o bien una cantidad razonable de tiempo transacurrió desde que el primer elemento llegó. 
 %
-However, we have it depends on a maximum size as well as a reasonable amount of
-time since the first element came in.
+En el Algoritmo ~\ref{alg:collector-brotli} se muestra una implementación posible para un \textit{collector}.
+El Algoritmo~\ref{alg:api-brotli} prsenta una nueva definición para la API de \setchain.
+
 %
-In Algorithm~\ref{alg:collector-brotli}, we show an implementation of a
-collector algorithm, and in Algorithm~\ref{alg:api-brotli}, we present the new
-\setchain API.
+En esta implementación, un cliente que ejecuta \<add> invoca indirectamente el método \texttt{AddElement}
+del \textit{collector}.
 %
-In this implementation, a client requesting an \<add> invokes the
-collector \texttt{AddElement} method.
-%, instead of \<broadcastTx>.
-%
-% Some simplifications were made, as for instance a race condition could occur if
-% several routines add an element to the same collector instance at the same time.
-% %
-% However, that can be easily solved using locks.
+Se realizaron algunas simplificaciones en los algoritmos presentados. Por ejemplo, una condición de carrera
+podría ocurrir si varias rutinas agregan elementos a la misma instancia del \textit{collector} concurrentemente.
+Sin embargo, esto puede resolverse sencillamente gracias al uso de candados.
+
 
 \input{algorithms/alg-api-brotli}
 
@@ -300,52 +297,57 @@ collector \texttt{AddElement} method.
 %
 
 % After the meeting we decided to call isValidElement() locally in the collector, so the following is not true:
-% It is worth mentioning that, as the algorithm shows, the collector adds every element that receives to the batch without running any validation on it. While this clearly allows the batch to contain garbage, making a \textit{CheckTx()} request to the ABCI app for each new element would mean a decrease in performance, as the number of requests would keep constant in the number of elements sent by clients, instead of being constant in the number of batches, as it is desired.
+% It is worth mentioning that, as the algorithm shows, the collector adds every element that receives to the batch
+% without running any validation on it. While this clearly allows the batch to contain garbage,
+% making a \textit{CheckTx()} request to the ABCI app for each new element would mean a decrease in
+% performance, as the number of requests would keep constant in the number of elements sent by clients,
+% instead of being constant in the number of batches, as it is desired.
 
 %
-To complete our definition, we provide the expected ABCI of Compresschain~(see
-Algorithm~\ref{alg:abci-brotli}).
+Para completar nuestra definición, se provee la definición del ABCI de Compresschain en el
+Algoritmo~\ref{alg:abci-brotli}.
 %
-% There are some main differences as regards the previous \setchain implementation.
-
+Existen varias diferencias con respecto a la implementación previa de \setchain.
 %
 \input{algorithms/alg-abci-brotli}
 
-The main difference with the Vainilla implementation is that transactions
-contain potentially more than one element, because transactions are 
-compressed batches of elements.
+La diferencia principal con la implementación Vainilla radica en que las transacciones contienen
+potencialmente más de un elemento de usuario. Esto se da porque las transacciones en este contexto
+son baches comprimidos de elementos.
 %
-Moreover, to retrieve the elements inside transactions, we need to decompress
-the batch first, and once the original batch is recovered, it has to be
-RLP-decoded to get the original elements sent by the clients.
-%
-% Those original transactions corresponds to the elements to be added to
-% the \setchain. \textit{getElementsFromTransaction()} function shows that
-% behavior.
+Más aún, para recuperar elementos dentro de las transacciones, se necesita primero descomprimir
+el bache y, una vez que se tiene el bache original, debe RLP-decodificarse para así obtener los elementos
+originales enviados por los clientes.
 
-Using Compresschain, Tendermint transactions may contain both valid
-and invalid elements.
-%
-We need to define a new criteria to define when a transaction is
-considered valid.
-%
-The function \<isValidBatch>~(in Algorithm~\ref{alg:abci-brotli})
-implements this new criteria, allowing transactions to be considered valid if at
-least one element on it is valid.
-%
-The choice of this criteria is related to the fact that someone sending invalid
-elements~\footnote{Elements may be valid at the moment clients send them, but
-invalid when blocks are commited.} to a node should not prevent valid
-elements sent to the same node from being added to the \setchain.
-%
-However, as it is illustrated in function \<DeliverTx>, only valid
-elements are added to the \setchain, while invalid ones are simply discarded.
+Aquellos elementos son los que deben ser agregados a la \setchain. La función \textit{getElementsFromTransaction()}
+muestra este comportamiento.
 
-Finally, in Compresschain, blocks do not delimit epochs, and thus, we do not
-give a definition to function \<EndBlock>.
+En la definición de Compresschain, las transacciones de Tendermint pueden contener tanto elementos válidos
+como inválidos.
 %
-In this case, we define epochs as transactions: each batch of elements defines an
-epoch.
+
+Se necesita definir un nuevo criterio para determinar cuándo una transacción (es decir, un bache de elementos
+comprimido) se considera válida.
+
+%
+La función <isValidBatch>~(en el Algoritmo~\ref{alg:abci-brotli}) implementa este nuevo criterio, permitiendo
+a las transacciones ser consideradas válidas si al menos uno de sus elementos es válido.
+%
+La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos~\footnote{
+Los elementos pueden ser válidos al momento en que los clientes los envían, pero ser inválidos una vez que
+los bloques fueron consensados.} a un nodo no debería privar a los elementos válidos envíados al mismo nodo de
+ser añadidos a la \setchain.
+
+%
+Sin embargo, como se ilustra en la función \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
+mientras que los inválidos simplemente se descartan.
+%
+Finalmente, en Compresschain, los bloques no delimitan épocas por lo que no se peresenta una definición para
+la función \<EndBlock>.
+
+%
+En este caso, las épocas se definen como transacciones: cada bache de elementos define una época.
+
 % %
 % definition was given in this case, as the block does not
 % delimit the epoch anymore, but the epoch is defined by all the elements
@@ -355,132 +357,131 @@ epoch.
 
 % To dicuss: if epochs are defined by batches, then epochs are generated by the same node.
 % This is a new setchain property and may be undesirable. 
-\subsection{Third Implementation: HashChain}\label{subsec:hashchain}
+\subsection{Tercera implementación: HashChain}\label{subsec:hashchain}
 %
-Hashchain aligns with the underlying concept introduced in Compresschain;
-however, it uses hash functions rather than Brotli compression.
+Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
+funciones hash en lugar de compresión en Brotli.
+
 %Hashchain follows a similar idea introduced in Compresschain but employing hash
 %functions instead of Brotli compression.
 %
-While the compression power of hash functions may be enormous, as those
-functions map data of arbitrary size to fixed-size values, hashes are
-irreversible, meaning that a non-trivial method to recover the original batch of elements
-has to be provided.
+Mientras que el poder de compresión de funciones hash puede ser enorme, dado que las funciones
+mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles. Esto
+significa que un método no trivial para recuperar el bache original de elementos debe proveerse.
+
 %
-The implementation of Hashchain involves two aspects: a Tendermint blockchain of
-hashes and a distributed inverse function retrieving batches from hashes.
+La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes,
+y una estrategia distribuída para invertir hashes y obtener los baches originales.
 %
 % We shouldn't mention "consolidated hashes" before explaining it:
 %Therefore, we now have to maintain an inverse function for the consolidated
 %hashes.
 
-Often in this section we will take the liberty of referring to \textit{elements
-in a hash H} for those elements belonging to a batch $B$, such that
-$Hash(B) = H$.
+A menudo en esta sección nos tomaremos la libertad de utilizar la expresión \textit{elementos en un hash H}
+para referirnos a aquellos elementos pertenecientes al bache $B$, tal que $Hash(B) = H$.
 
-Instead of using the compression collector as in Compresschain (see
-Algorithm~\ref{alg:collector-brotli}), we now use a \emph{hash
-collector}, where elements are batched and then hashed. 
+En lugar de usar el \textit{collector} de Compresschain (ver Algoritmo ~\ref{alg:collector-brotli}),
+ahora utilizamos un \textit{hash collector}, que construye un bache de elementos para luego hashearlo
+antes de introducirlo a la red de Tendermint.
 %
-Hashed batches are then added to the Tendermint network as transactions and
-shared across the whole network, in a manner analogous to the approach employed
-for compressed batches in Compresschain.
+Los baches hasheados son difundidos como transacciones y compartidos a través de toda la red, de forma
+análoga al enfoque empleado para los baches comprimidos en Compresschain.
 
-\subsubsection{Distributed Algorithm for Hash Reversal}
+\subsubsection{Algoritmo distribuído para la inversión de hashes}
 
-While the hash collector adopts a concept similar to the compression collector,
-the ABCI side of Hashchain is considerably more complex.
+Como ya se mencionón, el \textit{hash collector} adopta un concepto similar al \textit{compression collector}
+de Compresschain. Sin embargo, la definición de la ABCI para Hashchain es considerablemente más compleja.
 %
-In this scenario, \<CheckTx> as well as \<DeliverTx> receive hashes as a transaction.
+En este escenario, tanto \<CheckTx> como \<DeliverTx> reciben hashes como transacciones.
 %
-The computer running the \setchain is not immediately able to translate
-hashes into their original batch of elements, owing to the irreversible
-nature of hashes.
+Una máquina corriendo la \setchain no puede traducir inmediatamente hashes para obtener su bache de elementos
+original, debido a la naturaleza irreversible de un hash.
 %
-The absence of the original batch of elements renders both \<CheckTx> incapable
-of verifying the elements in the transaction and \<DeliverTx> unable to
-add elements to the \setchain.
+La ausencia del bache original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
+en la transacción, y que \<DeliverTx> no pueda añadir elementos a la \setchain.
 %
 
-At this juncture, our distributed algorithm for hash reversal comes into play.
-%
-We need to communicate with a Tendermint node that knows the hash
-(initially, only its creator).
-%
-To distribute the information about who knows the data of a hash, transactions
-contain not only the hash of the batch but also a signature.
-%
-Signatures accompanying hashes indicate that a specific Tendermint
-validator (the one signing the hash) claims to know the hash, hence,
-if it is a correct node, it has the original batch of elements.
-%
-Then, transactions are represented by a tuple $(h, s)$, where $h$ denotes
-the hash value and $s$ represents the signature obtained by signing $h$ with
-the private key of the node that knows the hash.
-%
-Thanks to the signature, we can communicate with the node claiming to know the
-data, and get the original batch, if the node behaves properly.
-%
-We can run the process of requesting hashes asynchronously to avoid potential
-delays.
-
+En este punto, nuestro algoritmo distribuído para la inversión de hashes entra en juego.
 %
 
-After leaving the hash collector, hashes are expected to be checked against
-\<CheckTx> to be either added to the mempool or discarded.
+La idea principal es comunicarnos con un nodo de Tendermint que conoce el hash (inicialmente, solo su creador).
 %
-To determine the validity of a hash, we need to check the elements in it.
+Para distribuír la información sobre quiénes conocen los datos de un hash, las transacciones contienen
+no solo el hash del bache, pero además una firma.
 %
-Similar to Compresschain, hashes are considered valid if at least one element
-in the hash is valid.
+Las firmas que acompañan los hashes indican que un validador específico de Tendermint
+(quien firma el hash) afirma conocer el hash y, por lo tanto, si es un nodo correcto,
+tiene el bache original de elmentos.
 %
-At the point \<CheckTx> runs, we cannot ensure that the original batch of
-elements is known for the given instance.
+De esta forma, las transacciones se representan con una tupla $(h, s)$, donde $h$ denota
+el valor del hash y $s$ representa la firma obtenida al firmar $h$ con la clave privada
+del nodo que conoce el hash.
 %
-Hashchain is optimistic in the sense that in the event of impossibility
-to run the transaction check due to the absence of the original batch,
-\<CheckTx> considers hashes as valid transactions with the hope that
-their batches will be sent later on.
+Gracias a la firma es posible comunicarse con el nodo que afirma conocer los datos, y obtener
+el bache original (si el nodo se comporto apropiadamente).
+%
+El proceso de petición de hashes se corre de forma asíncrona para evitar potenciales
+retrasos.
 
 %
-The optimistic nature of Hashchain entails notable consequences.
+Después de dejar el colector, se espera que los hashes sean chequeados contra \<CheckTx>
+para o bien ser añadidos a la mempool o bien ser descartados.
+
 %
-As the default behaviour for \<CheckTx> is to return \texttt{True},
-we can have transactions in the blockchain without having the elements
-but just the hash of the elements.
+Para determinar la validez de un hash se necesita chequear los elementos en él.
+
 %
-Moreover, a transaction may be committed without anyone having
-previously checked it, but passing the check because of the optimistic
-behavior.
+Similar a Compresschai, los hashes son considerados válidos si al menos un elemento
+en el hash es válido.
 %
-For example, this is likely the case of the first time a new hash shows
-up in the blockchain.
+Para un nodo dado, en el punto en que \<CheckTx> corre, no podemos asegurar que el
+bache original de elementos sea conocido.
+
+%
+Hashchain es optimista en el sentido de que, ante la imposibilidad de correr el chequeo
+de las transacciones, debido a la ausencia del bache original, \<CheckTx> considera a los
+hashes como transacciones válidas con la esperanza de que sus baches originales sean enviados
+y conocidos más tarde. 
+
+%
+La naturaleza optimista de Hashchain tiene consecuencia notables.
+%
+Como el comportamiento por defecto de  \<CheckTx> es retornar \texttt{True},
+se pueden tener transacciones en la blockchain sin conocer los elementos de éstas
+(solo conociendo los hashes).
+
+%
+Aun más, una transacción puede terminar siendo parte de la blockchain sin que nadie
+la haya chequeado previamente, pero pasando el chequeo por el comportamiento optimista.
+
+%
+De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
+en la blockchain (fue consensuado sin que los nodos hayan chequeado realmente los elementos
+del bache.)
 
 %
 
 %Therefore, we need a way to extract the elements inside the transactions and
 %provide the user a uniform view, that of a Setchain.
-Therefore, we need to define the criteria by which a hash residing within the
-blockchain is safe to be part of the \setchain.
+Por lo tanto, necesitamos definir un criterio para determinar cuándo es seguro
+que los elementos en un hash que está en la blockchain sean parte de la \setchain.
+
 % the HashChain living in
 % Tendermint, and the \setchain we want to build.
 %
-To achieve that, we define a natural number \texttt{SIGNATURES\_PER\_HASH}
-defining the number of signatures a hash has to possess to be considered a batch
-of elements to be added to the \setchain.
+Para lograr eso, se define un número natural \texttt{SIGNATURES\_PER\_HASH} que establece
+el número de firmas que un hash tiene que tener para que los elementos del bache asociado a él
+sean considerados elementos a añadir a la \setchain.
+
 %
-We are only interested in hashes signed by at least
-\texttt{SIGNATURES\_PER\_HASH} nodes, and we call them
+Estamos únicamente interesados en hashes firmados por al menos \texttt{SIGNATURES\_PER\_HASH}
+nodos, y los llamamos \textit{hashes consolidados}.
+
+\texttt{SIGNATURES\_PER\_HASH} es definido de una manera tal que se garantiza que si un hash
+consolidó entonces al menos un nodo correcto conoce el bache original del cual proviene.
+
 %
-% A hash for which the ABCI has seen \texttt{SIGNATURES\_PER\_HASH} or more
-% signatures, it is said to be a
-\textit{consolidated hashes}.
-%
-\texttt{SIGNATURES\_PER\_HASH} is defined in such a way that a consolidated hash
-is guaranteed to be known by at least one correct node.
-%
-The elements of consolidated hashes are the candidates to belong to the
-Setchain.
+Los elementos de hashes consolidados son los candidatos a pertenecer a la \setchain.
 
 %Following the same criteria as in Compresschain, we consider a transaction to
 %be valid if we can get the data and validate at least one of its elements.
@@ -488,28 +489,27 @@ Setchain.
 % With this in mind, whenever the ABCI gets the revert of a hash, it runs the
 % validation against it, and
 %Moreover, if at least one element in the batch is valid, the node verifying the
-Whenever a node asks for the revert of hash, if at least one element in the batch
-is valid, the node signs the hash, and broadcast the hash along with its own signature.
-%
-By broadcasting the hash and its signature, the node announces to the network
-that they know the data behind that hash.
-%
-This way, valid batches will eventually consolidate, meaning their elements will
-be added to the \setchain.
+Cuando un nodo pregunta por la inversión de un hash, si al menos un elemento en el bache
+es válido, el nodo firma el hash (con sus propia clave privada), y difunde el hash junto
+con su propia firma.
 
-For all this to work, we need to keep track of how many signatures a hash has,
-as well as a map from hashes to batches.
 %
-Each time \<DeliverTx> gets a transaction, we check the
-signature for validity.
+Al difundir el hash y su firma, el nodo anuncia a la red que conoce el bache detrás de ese hash.
 %
-If the signature is valid and new for the given hash, we increase the
-\textit{signatures per hash} counter.
+De esta forma, los baches válidos eventualmente consolidarán, significando que sus elementos
+serán añadidos a la \setchain.
+
+Para que esto funcione, se necesita mantener un registro de cuántas firmas tiene un hash,
+así como también un mapeo de hashes a baches.
 %
-In addition, each time we revert a hash, we check the correctness of the
-original batch (i.e $hash = Hash(originalBatch)$).
-In case of success, the map from hashes to
-batches is updated with the new discovery.
+Durante la ejecución de \<DeliverTx> se chequea la validez de la firma.
+%
+Si la firma es válida y nueva para el hash en cuestión, se incrementa el contador de
+\texttt{firmas por hash}.
+%
+Además, cada vez que un hash es invertido, se chequea la correctitud del bache original
+(es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hash a baches
+es actualiado con el nuevo descubrimiento.
 
 %The first time a hash is passed around, other nodes would see the new hash and
 %try to get the data from other servers.
@@ -528,13 +528,15 @@ batches is updated with the new discovery.
 % Something we discussed with Marga: when the collector creates a hash h and signs it, and broadcast (h, s) every call to CheckTx(h, s) will be true, as no one is expected to have the reverse of h the first time they see it. Because of that, (h, s) in the hashchain doesn't mean that there is at least one good valid element in the h. h could be full of garbage
 % A client could contact every collector node with the same elements, and every collector would broadcast (h, sn), with n being the n-collector. This could cause that hash h consolidates, without anyone really having checking elements in h. Is that bad? not too bad, only an empty epoch would occur. Possible fixes: collector hashes elements + pubkey, chain of signatures
 
-\subsubsection{Epoch Consolidation}\label{subsubsec:consolidation}
+\subsubsection{Consolidación de épocas}\label{subsubsec:consolidation}
 
-In this implementation, epochs are defined by all the elements in a hash, similar to
-Compresschain implementation.
+En esta implementación, las épocas se definen por todos los elementos en un hash, similar
+a la implementación de Compresschain.
+
 %
-In other words, elements from the same consolidated hash belong to the same
-epoch.
+En otras palabras, los elementos que provienen del mismo hash consolidado pertenecen a la
+misma época.
+
 %
 %Now we have to be more careful when adding elements to the setchain, elements
 %may appear several times depending on how nodes form batches and
@@ -546,42 +548,44 @@ epoch.
 
 %
 
-In this paper, we present two alternatives to assign an epoch to a consolidated
-hash.
+En este trabajo se presentan dos alternativas para asignar una época a un hash consolidado.
+
 %
-The first one is called \textit{Current Epoch Consolidation} (CEC), meaning that
-once a hash consolidates, all their underlying elements are added to the current
-epoch (i.e the epoch in which the \texttt{SIGNATURES\_PER\_HASH}-th signature
-has been seen).
+La primera se llama \textit{Consolidación de época actual} (CEC), que significa que 
+una vez que un hash consolida, todos sus elementos subyacentes son añadidos a la época actual
+(es decir, a la época en el cual la firma número \texttt{SIGNATURES\_PER\_HASH} es vista).
 %
-The second one, \textit{First Seen Epoch Consolidation} (FSEC) assigns the epoch
-according to when the hash has been seen for the very first time, once
-consolidated.
+La segunda estrategia, \textit{Consolidación de época de primera vista} (FSEC) asigna la época
+de acuerdo a cuándo el hash fue visto por privera vez. La asignación de época se lleva
+a cabo una vez que el hash consolidó. 
+
 %
-Transactions (hashes in this case) in Tendermint blocks are totally
-ordered, so both strategies can determine which hash occurs or
-consolidates first, and all correct nodes will agree on it.
+Las transacciones (hashes en este caso) en los bloques de Tendermint están totalmente ordenadas,
+por lo tanto ambas estrategias pueden determinar cuál hash ocurrió o consolidó primero, y
+todos los nodos correctos estarán de acuerdo en eso.
 
 %
 
-In Figure~\ref{fig:consolidation_epoch}, we show an example of these two different
-strategies to assign an epoch to a consolidated hash when
-\texttt{SIGNATURES\_PER\_HASH} is 3.
+En la Figura~\ref{fig:consolidation_epoch} se muestra un ejemplo de estas dos estrategias para asignar
+un número de época a un hash que consolidó cuando \texttt{SIGNATURES\_PER\_HASH} es 3.
+
 %
-Hash $j$ is the first hash in block $m$, and hash $k$ is the hash that first
-consolidates (getting its third signature).
+El hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que primero consolida
+(es decir, el primero en obtener su tercera firma).
+
 %
-On one hand, current Epoch Consolidation strategy assigns the epoch as soon as the hash
-consolidates, stamping elements from hash $k$ with epoch $a$ first, and then
-elements from hash $j$ with epoch $a+1$.
+Por un lado, la estrategia de consolidación de época actual asigna la época tan pronto como
+el hash consolida, estampando los elementos en el hash $k$ con época $a$ primero, y luego
+a los elementos en el hash $j$ con la época $a+1$.
+
 %
-On the other hand, First Seen Epoch Consolidation implementation does not assign the
-epoch to hash $k$ just when it consolidates, because hash $j$ has been seen for first
-time before hash $k$.
+Por el otro lado, la consolidación de época de primera vista no asigna la época al hash $k$
+apenas éste consolida, porque el hash $j$ fue visto por primera vez antes que $k$.
 %
-As hash $j$ consolidates right after hash $k$, elements from hash $j$ are
-stamped with epoch $a$, and then elements from hash $k$ are stamped with epoch
-$a+1$.
+Dado que el hash $j$ consolida justo después que el hash $k$, los elementos del hash $j$ son
+estampados
+con la época $a$, y los elementos del hash $k$ son estampados con la época $a+1$. 
+
 
 \begin{figure}
   \centering
