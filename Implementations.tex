@@ -594,41 +594,40 @@ con la época $a$, y los elementos del hash $k$ son estampados con la época $a+
   \label{fig:consolidation_epoch}
 \end{figure}
 
-First Seen Epoch Consolidation variant grants hashes a grace period in which
-they can be either consolidated or rejected.
+La variante de consolidación de época de primera vista le otorga a los hashes un período
+de gracia en el cual pueden o bien consolidarse o bien ser descartados.
 %
+Dicho período de gracia es necesario, examinemos por qué.
 % The grace period is necessary, let
 % us briefly examine why.
-Assuming no grace period at all, if a hash $j$ occurs for
-first time before hash $k$, once consolidated, elements from hash $j$ would be
-stamped with epoch $E$, while elements from hash $k$ would be stamped with epoch
-$F$ \textgreater \ $E$.
+Suponiendo que no existe período de gracia tal, si un hash $j$ apareciera por primera vez
+antes que el hash $k$, una vez que consolidados, los elementos provenientes del hash $j$
+serían estampados con la época $E$, mientras que los elementos del hash $k$ serían estampados
+con una época $F$ \textgreater \ $E$.
 %
-Hence, let $j$ be a hash first seen at a given moment such
-that, once consolidated, it would be assigned the epoch $E$.
+Sea $j$ un hash que fue visto por primera vez en un momento tal que, una vez consolidado,
+se le asignaría la época $E$.
 %
-If hash $j$ never achieves the \texttt{SIGNATURES\_PER\_HASH} signatures to
-consolidate, a newer hash $k$ (a hash first seen after $j$) would not be able to
-consolidate, as its underlying elements could not be stamped with an epoch $F$
-\textgreater \ $E$, if epoch $E$ was not defined yet.
+Si el hash $j$ nunca logra obtener las \texttt{SIGNATURES\_PER\_HASH} firmas para
+consolidar, un hash $k$ más nuevo (es decir, un hash que fue visto por primera vez
+después de $j$) no podría consolidad, dado que sus elementos subyacentes no podrían ser
+estampados con una época $F$ \textgreater \ $E$, si la época $E$ no fue definida aún.
 %
-In Figure~\ref{fig:grace_period}, we show an example of this.
+En la Figura~\ref{fig:grace_period} se muestra un ejemplo de esto.
 %
-We conclude that a grace period is necessary to guarantee the successful evolution of
-the hashchain, as hashes $k$ and $l$ (and even $o$ and $q$) are not able to
-consolidate until $j$ consolidates or gets rejected.
-
-
-It is worth noting that the crucial aspect to consolidation in FSEC lies in the
-occurrence of all \texttt{SIGNATURES\_PER\_HASH} signatures within a window
-equivalent to the duration of the grace period.
+Se concluye entonces que un período de gracia es necesario para garantizar la evolución
+éxitosa de la \hashchain. De este modo, los hashes $k$ y $l$ (e incluso $o$ y $q$) no
+pueden consolidarse hasta que $j$ consolide o sea rechazada.
 %
-Hashes that are initially rejected can consolidate in the future as long as
-they reach the \texttt{SIGNATURES\_PER\_HASH} signatures within the grace period.
+Vale la pena notar que el aspecto crucial en la consolidación de FSEC radica en la ocurrencia
+de las \texttt{SIGNATURES\_PER\_HASH} firmas dentro de una ventana equivalente a la duración
+del período de gracia.
 %
-Hashes achieving the \texttt{SIGNATURES\_PER\_HASH}-th signature after
-the grace period will not undergo consolidation in the current round;
-however, they can do it in the future.
+Los hashes que son inicialmente rechazados pueden consolidar en el futuro siempre y cuando
+consigan las \texttt{SIGNATURES\_PER\_HASH} firmas dentro del período de gracia.
+%
+Los hashes que logran las \texttt{SIGNATURES\_PER\_HASH} firmas terminado el período de gracia
+no consolidarán en la ronda actual; sin embargo, pueden hacerlo en el futuro.
 
 \begin{figure}
   \centering
@@ -641,126 +640,137 @@ however, they can do it in the future.
 % Do not use this because we want a proof that specific elements belong to a specific epoch.
 %Client processes do not know if they are contacting a Byzantine or correct process. The general idea of a client protocol that wants to ensure that an element is going to be added to the \setchain is to interact with enough servers to guarantee that some are correct. To guarantee contacting at least one correct server, the client needs to send f + 1 messages. However, each element added to the \setchain comes from a consolidated hash. That means that we already have \textbf{SIGNATURES\_PER\_HASH} validator's signatures for that hash. Those signatures may act as a proof for the batch of elements that really belongs to the \setchain. If that proof is added to the epoch as an extra element, a client sending an element, waiting for a while, and then requesting a Get to only one server (hoping it is correct server) may be sure that its element belongs to the \setchain because the epoch comes along a proof of their elements. 
 
-\subsubsection{Front-running attacks}
-In the context of blockchains, a front-running attack refers to a situation where
-a malicious actor exploits advanced knowledge of pending transactions to gain an
-unfair advantage. Because pending transactions are public, a malicious user can
-observe a victim's incoming transaction, craft a new transaction and then find a way
-to place it before that of the victim. On the Ethereum network, this \textquotedblleft
-way\textquotedblright to place a transaction before another, is usually related
-to payments: either by paying higher transaction fees or by making side payments
-directly to validators.
+\subsubsection{Ataques front-running}
+En el contexto de las blockchains, un ataque de front-running refiere a una situación en donde
+un actor malicioso explota conocimiento sobre transacciones pendientes para obtener una ventaja
+desleal. Debido a que las transacciones pendientes son públicas, un usuario malicioso puede
+observar las transacciones que le llegan a una víctima, construír una nueva transacción y luego
+encontrar una forma de ubicarla antes que la transacción de la víctima. En la red Ethereum, esta
+\textquotedblleft forma \textquotedblright de colocar una transacción antes de otra es usualmente
+llevada a cabo mediante pagos: o bien pagando impuestos de transacción (transacction fees) más altos
+que la víctima, o haciendo pagos directos a ciertos validadores.
+%
+Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
+Supongamos que un validador $v$ recibe una transacción $(h_0, s_0)$, donde $h_0$ es un hash,
+y $s_0$ una firma de aquel hash (la primera). Un validador especulador puede firmar él mismo la
+transacción y difundirla (el comportamiento esperando), o puede ignorarla (un posible comportamiento
+malicioso). Si el validador la firma y la difunde, entonces está colaborando para que el hash
+consolide (y, por lo tanto, los elementos provenientes de él se agreguen a la  \hashchain).
+En caso contrario, no contribuirá a que el hash consolide, potencialmente causando retrasos
+o incluso evitando la consolidación.
+%
 
-What kind of front-running attacks can happen in the abastraction level of Hashchain?
-Let's suppose a validator $v$ receives a transaction $(h_0, s_0)$, where $h_0$ is a hash,
-and $s_0$ a signaure for that hash (the first one). A \textit{speculative} validator can
-sign itself the
-transaction and broadcast it (the expected behaviour), or
-ignore it (a missbehaviour). If the validator signs and broadcasts the transaction,
-then it is collaborating for the hash to be consolidated (and therefore for the elements
-from the hash to be added).
-Otherwise, it won't contribute, potentially causing a delay or even preventing the
-consolidation of the hash.
+Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
+%
+En la estrategia FSEC, si una transacción no obtiene las \texttt{SIGNATURES\_PER\_HASH} firmas
+dentro del período de gracia, el hash no consolidará en aquella ronda (pero podría hacerlo
+en el futuro).
+%
+En la estrategia CEC, el hash no consolidará hasta obtener las \texttt{SIGNATURES\_PER\_HASH} firmas,
+sin tener ningún período de gracia para ello.
+%
+En este punto, las estrategias no parecen tener diferencias fundamentales. Sin embargo, el aspecto
+interesante se da en el escenario alternativo: cuando las transacciones finalmente son añadidas a la
+\setchain.
+%
 
-What is the difference between both epoch consolidation strategies?
-In FSEC strategy, if the transaction does not get the \texttt{SIGNATURES\_PER\_HASH}
-signatures within the grace period, the hash won't consolidate on that round (but it could
-do it in the future).
-In CEC strategy, the hash won't be consoildated until getting
-\texttt{SIGNATURES\_PER\_HASH} signatures, without having any grace period for it.
-
-At this juncture, strategies appear to lack fundamental differences. However, the
-intriguing aspect becomes apparent in the alternative scenario: when transactions are
-ultimately committed.
-
-Let's suppose that $v$ sees transaction $t_0 = (h_0, s_0)$ and wants to perform a front-running
-attack. In order to do that, it ignores the transaction, but broadcasts its own signed
-transaction $t_1 = (h_1, s_0)$, hoping that $t_1$ ends up stamped with an earilier epoch than $t_0$.
-
-Under FSEC behaviour, $h_0$ was first seen, so if it gets the \texttt{SIGNATURES\_PER\_HASH}
-signatures within the grace period, it will consolidate, and elements will be stamped surely with an earlier
-epoch than $t_1$.
-Note that this is entirely independent of the number of signatures that $h_1$ achieves, and the
-speed at which it does so. $h_1$ could even consolidate (reach the \texttt{SIGNATURES\_PER\_HASH}-th
-siganture) before than $h_0$.
-
-On the other hand, under CEC behaviour the situation is basically a race between
-$h_0$ and $h_1$: the one that gets the \texttt{SIGNATURES\_PER\_HASH} signatures first will
-be the first one to consolidate, and therefore elements will be stamped with an eairlier epoch.
-
-It is noted that FSEC strategy takes into account
-not only the
-moment in which hashes get consolidated, but also \textit{when} transactions were first seen.
-This property gives an inherent advantage to the transactions that were first seen.
-Upon initial examination, we might consider this characteristic as a valuable aspect in
-mitigating front-running attacks, as transactions observed first are likely the legit
-and original ones.
+Supongamos que $v$ vee una transacción $t_0 = (h_0, s_0)$ y quiere ejecutar un ataque de front-running.
+Para lograrlo, ignora la transacción, pero difunde su propia transacción firmada $t_1 = (h_1, s_0)$,
+esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
+%
+Bajo el comportamiento FSEC, $h_0$ fue vista por primera vez antes, por lo que si logra las
+\texttt{SIGNATURES\_PER\_HASH} firmas dentro del período de gracia, consolidará, y los elementos
+en el hash serán estampados con una época menor a la de $t_1$.
+%
+Notemos que esto es completamente independiente del número de firmas que $h_1$ logre, y la velocidad
+a la cual lo haga. $h_1$ podría incluso consolidar (llegar a su firma \texttt{SIGNATURES\_PER\_HASH})
+antes que $h_0$.
+%
+Por el otro lado, bajo el comportamiento CEC la situación es básicamente una carrera entre $h_0$ y
+$h_1$: el primero en obtener las \texttt{SIGNATURES\_PER\_HASH} firmas será el primero en consolidar y,
+por lo tanto, sus elementos serán estamapdos con una época más temprana.
+%
+Como ya se mencionó, 
+la estrategia FSEC toma en consideración no solo el momento en el cual los hashes consolidan, sino
+también el momento en que las transacciones fueron vistas por primera vez.
+%
+En principio, esta característica se puede considerar un aspeco valioso en la mitigación de ataques
+de front-running, dado que las transacciones observadas primero son probablmente las legítimas y
+originales.
 %At girst glance, we could think that this property is an interesting point to go against
 %front-running attacks, as first-seen transactions are probably the legit original transactions.
+Sin embargo, la estrategia FSEC viene con algunos apesctos negativos no triviales.
+%
+Como la época es determinada por el momento en el cual el hash fue visto por primera vez, 
+la estrategia de alguna manera \textit{reserva} el número de época para la transacción específica.
+Si $v$ quiere que un hash $h_0$ consolide únicamente is puede hacerlo antes que otro hash
+$h_1$ (y no necesita conocer los elementos de $h_1$ desde antes), $v$ podría hacer lo siguiente.
+%
+Primero, difunde la transacción de modo que todos los validadores reservan el número de época para ella.
+%
+Luego, $v$ no revierte el hash $h_0$ a nadie, porque quiere esperar hasta que el hash $h_1$ aparezca
+y obtenga suficientes firmas.
+%
+Una vez que esto sucede, y es seguro que el hash $h_1$ consolidará, $v$ comienza a revertir su hash
+$h_0$ a todos sus pares, esperando que el hash logre las \texttt{SIGNATURES\_PER\_HASH} firmas
+dentro del período de gracia.
+Si es exitoso, luego $v$ habría cumplido su objetivo: los elementos del hash $h_0$ serían estampados
+con una época menor que los elementos provenientes del hash $h_1$.
+%
 
-However, FSEC strategy comes with some non-trivial downsides.
-As the epoch is determined by the moment in which the hash was seen for the first time,
-the strategy somehow \textit{books} the epoch number for that specific transaction.
-If $v$ wants one hash $h_0$ to be consolidated only if can do it before some other 
-hash $h_1$ (and does not need to know elements from $h_1$ in advance),
-$v$ could do the following. First, it broadcasts the transaction so
-everyone \textit{books}
-the epoch number for it.
-Then, $v$ should not reverse the hash $h_0$ to anyone, because it has to wait until hash
-$h_1$ shows up and gets enough signatures.
-Once that happens, and it is sure that hash
-$h_1$ will get consolidated, $v$ start reversing the hash $h_0$ to all its pairs, hoping the
-hash to achieve \texttt{SIGNATURES\_PER\_HASH} signatures in the grace period.
-If it is successful, then $v$ would accomplish its goal:
-elements from hash $h_0$ are stamped with an earlier epoch than elements from
-hash $h_1$.
+Esta situación es particularmente interesante porque el validador $v$ puede hacer algo
+suceder en el pasado (elemento del hash $h_0$ se estampan con época $e$) teniendo información
+del futuro (elementos del hash $h_1$ se estampan con época $e+n$). 
+%
 
-This situation is paticular interesting because validator $v$ is able to make something
-happen in the past (elementrs from hash $h_0$ stamped with epoch $e$) having information
-from the future (elements from hash $h_1$ stamped with epoch $e+n$).
+Es interesante notar que intentar hacer algo similar bajo el esquema CEC sería imopsible, dado
+que una vez que el hash $h_1$ consolidó, sus elementos son estampados con un número de época menor
+a cualquier hash que aún no consolidó.
+%
 
-Notice that trying to do something similar under CEC strategy would be impossible, as once
-hash $h_1$ is consolidated for sure, then its elements are assigned an earlier epoch than any
-other hash not-consolidated yet.
+Volvamos a este ataque con un ejemplo. Supongamos que hay un juego de apuesta simple en donde
+las apuestas y el resultado final se publican en la \hashchain. El juego es sencillo: los usuarios
+pueden votar por A o por B. Se sabe que el resultado ganador (A o B) se publica en determinado momento,
+y todo aquel que haya votado por el resutlado ganador recibirá el premio.
+%
+Si $v$ es un validador que quiere ganar este juego haciendo trampa, podría votar tanto por A
+como por B justo antes del momento en el que se sabe que la compañía publicará el resultado ganador.
+%
+Dado que $v$ difundió dos transacciones (una votando por A, y otra votando por B) antes de que la
+transacción con el resultado ganador aparezca, todos los validadores reserverán un número de época
+anterior al del resultado. Después de esto, $v$ no revertirá el hash asociado con estas transacciones
+hasta que esté seguro de cuál es el resultado ganador (que efectivamente será añadido a la \hashchain).
+%
+Una vez que se asegura el resultado ganador, solo dará a conocer la inversa del hash que contiene la apuesta
+por el resultado ganador. Si obtiene las firmas necesarias durante el período de gracia,
+sus transacciones serían estampadas con un número de época anterior que la transacción de los resultados,
+y por lo tanto, $v$ ganaría el juego haciendo trampa.
 
-Let's go back to this downside with an example. Suppose there is a simple betting game where bets and
-final results are recorded using Hashchain. The game is straightforward: users can
-bet on A or B. Around a specific time, it is known that the winning result (either A or B)
-will be publicly disclosed, and everyone who bet on the winner will be paid.
-
-If $v$ is a validator who wants to win this bet by cheating, they could bet on both
-A and B just before the time they know the company will publish the winning result.
-As $v$ submits both transactions (betting on A and betting on B) before the transaction
-with the result appears, all validators will reserve an epoch number lower than that
-of the result. After this, $v$ does not reverse the hash associated with these transactions
-until they are sure of the winning result and know that this result will be posted on
-the Hashchain (the respective hash reachs enough signatures).
-Once they are certain, they only reverse the hash containing the bet for
-the winning value. If they obtain the necessary signatures during the grace period,
-their transaction would be stamped with an epoch number lower than that of the result,
-and thus, $v$ would win the bet by cheating.
 
 \input{algorithms/alg-api-hash}
 
-\subsubsection{Implementation details}\label{subsubsec:details}
+\subsubsection{Detalles de implementación}\label{subsubsec:details}
 
-We do not define a new collector for Hashcahin since it is similar to the one
-define for Compresschain where the only difference is the use of hash functions.
-%
+No definimos un nuevo \texttt{collector} para \hashchain dado que es similar al definido
+para \compresschain, con la única diferencia del uso de funciones hash.
+
 % No collector piece for Hashchain appears as it is similar to the already
 % presented collector for Brotli, employing hash functions instead of Brotli
 % compression.
-We define the Setchain API in Algorithm ~\ref{alg:api-hashchain}.
+Se define la API de \setchain en el Algoritmo ~\ref{alg:api-hashchain}.
+
 % shows how a new collector is
 % used now in order to add elements to the \setchain.
 
-Finally, as regards the ABCI, we show a possible implementation for Hashchain
-with Current Epoch Consolidation strategy in Algorithm~\ref{alg:abci-hash1} and ~\ref{alg:abci-hash2}. It is
-noteworthy that within the algorithm, the function \<Query> initiates the construction
-of \<history>, in addition to broadcasting epoch proofs. Although this approach is employed
-for clarity, a node that receives infrequent query requests may experiment delays in
-generating the epoch proofs. As a result, the process of constructing \<history> and
-epoch proofs can be scheduled periodically, independent of query requests.
+Finalmente, en relación a la definición de la ABCI, se muestra una posible implementación para
+\hashchain utilizando la estrategia de consolidación de época actual en el Algoritmo ~\ref{alg:abci-hash1}
+y ~\ref{alg:abci-hash2}.
+
+Es nootorio que en el algoritmo la función \<Query> inicia la construcción de \<history>, además de
+la difusión de pruebas de época. Aunque este enfoque es empleado para claridad, a nodo que recive consultas
+no muy frecuentemente podría experimentar retrazos en la generación de pruebas de época.
+Como resultado, el proceso de contrucción de \<history> y las pruebas de época podrían ser ejecutadas
+periódicamente mediante planificación, independientemente de la petición de consultas.
 
 \input{algorithms/alg-abci-hash}
 %As mentioned above, Hashchain First Seen Consolidation version uses an idea of grace period in which the hashes are either consolidated or discarded. In this case, we will define the grace period in terms of number of blocks, meaning that if a hash has been seen for the first time in block $B$, and the grace period is $P$ blocks, then on block $B$ + $P$ we will determine if the hash is consolidated (hence, their elements are added to the \setchain), or is discarded. To implement this, we will keep a fixed capacity queue (with capacity $P + 1$), in which the \textit{i}-th element has a list of hashes seen for first time in block $current block - (P - i)$. Notice that the first element of the queue has the list of hashes that were seen for first time in block $current block - P$, meaning that those hashes will be decided in the current block. The last element of the queue has the list of hashes first seen at the current block. Algorithm ~\ref{alg:abci-hash-first-seen} illustrates this behavior.
