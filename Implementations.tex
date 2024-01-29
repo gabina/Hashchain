@@ -250,7 +250,7 @@ empaquetar elementos en un bache, formando un conjunto y comprimiéndolo
 previamente a su difusión.
 %
 Se propone una implementación nueva, llamada \emph{Compresschain}, que explora
-la relajación de orden propuesta por \setchian, aún corriendo el algoritmo de
+la relajación de orden propuesta por \setchain, aún corriendo el algoritmo de
 consenso de Tendermint por detrás.
 %
 En lugar de difundir inmediatamente cada elemento añadido por un cliente como una
@@ -752,7 +752,7 @@ y por lo tanto, $v$ ganaría el juego haciendo trampa.
 \subsubsection{Detalles de implementación}\label{subsubsec:details}
 
 No definimos un nuevo \texttt{collector} para \hashchain dado que es similar al definido
-para \compresschain, con la única diferencia del uso de funciones hash.
+para Compresschain, con la única diferencia del uso de funciones hash.
 
 % No collector piece for Hashchain appears as it is similar to the already
 % presented collector for Brotli, employing hash functions instead of Brotli
