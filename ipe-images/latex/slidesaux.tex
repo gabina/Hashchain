@@ -1,0 +1,116 @@
+\newcommand{\VERT}{\phantom{|}}
+
+\newcommand{\cemph}[1]{\textcolor{red}{\emph{#1}}}
+
+%%% For LOLA
+\newcommand{\IN}[1]{\textcolor{darkblue}{#1}}
+\newcommand{\OUT}[1]{\textcolor{darkred}{#1}}
+\newcommand{\DOM}[1]{\textcolor{darkgreen}{#1}}
+\newcommand{\STRM}[1]{\textcolor{darkorange}{#1}}
+\newcommand{\Input}{\IN{input}\xspace}
+\newcommand{\Output}{\OUT{output}\xspace}
+\newcommand{\Trigger}{\OUT{trigger}\xspace}
+\newcommand{\Dbool}{\ensuremath{\text{\DOM{bool}}}\xspace}
+\newcommand{\DboolThree}{\ensuremath{\text{\DOM{bool3}}}\xspace}
+\newcommand{\DboolFour}{\ensuremath{\text{\DOM{bool4}}}\xspace}
+\newcommand{\Dint}{\ensuremath{\text{\DOM{int}}}\xspace}
+\newcommand{\Dset}{\ensuremath{\text{\DOM{set}}}\xspace}
+\newcommand{\Delem}{\ensuremath{\text{\DOM{elem}}}\xspace}
+\newcommand{\Keyword}[1]{\texttt{#1}\xspace}
+\newcommand{\IFkw}{\Keyword{if}}
+\newcommand{\THENkw}{\Keyword{then}}
+\newcommand{\ELSEkw}{\Keyword{else}}
+\newcommand{\IFk}{\ensuremath{\Keyword{if}\;\;}}
+\newcommand{\THENk}{\ensuremath{\THENkw}\;\;}
+\newcommand{\ELSEk}{\ensuremath{\ELSEkw\;\;}}
+
+\newcommand{\sbool}{\textsf{bool}}
+\newcommand{\sint}{\textsf{int}}
+\newcommand{\sset}{\textsf{set}}
+\newcommand{\ssetT}{\textsf{sestt}}
+\newcommand{\selem}{\textsf{elem}}
+\newcommand{\req}{\textit{req}}
+\newcommand{\resp}{\textit{resp}}
+\newcommand{\evresp}{\textit{evresp}}
+\newcommand{\granted}{\textit{granted}}
+\newcommand{\ok}{\textit{ok}}
+\newcommand{\nreq}{\textit{nreq}}
+\newcommand{\nresp}{\textit{nresp}}
+\newcommand{\good}{\textit{good}}
+\newcommand{\AlwaysGood}{\textit{G\_good}}
+\newcommand{\END}{\textit{end}}
+\newcommand{\pending}{\textit{pending}}
+\newcommand{\reqid}{\textit{reqid}}
+\newcommand{\respid}{\textit{respid}}
+%\newcommand{\pending}{\textit{pending}}
+\newcommand{\Int}{\text{Int}}
+
+\newcommand{\hs}[1]{\hspace{#1cm}}
+\newcommand{\mhs}{\hspace{0.5cm}}
+\newcommand{\lsp}{\vspace{0.3cm}}
+
+\newcommand{\StreamName}[1]{\textsf{#1}}
+\newcommand{\Exp}[1]{\StreamName{E}_{\StreamName{#1}}}
+
+\newcommand{\first}{\StreamName{first}}
+\newcommand{\control}{\StreamName{control}}
+\newcommand{\initial}{\StreamName{init}}
+\newcommand{\last}{\StreamName{last}}
+\newcommand{\test}[1]{\StreamName{test}_{\StreamName{#1}}}
+\newcommand{\strFalse}{\StreamName{false}}
+\newcommand{\strTrue}{\StreamName{true}}
+\newcommand{\step}{\StreamName{step}}
+\newcommand{\uniform}{\StreamName{uniform}}
+
+
+\newcommand{\unique}{\StreamName{unique}}
+\newcommand{\init}{\StreamName{initial}}
+\newcommand{\transition}{\StreamName{transition}}
+\newcommand{\accepting}{\StreamName{accepting}}
+
+\newcommand{\prevEq}{\mathit{prev}_{\leq}}
+\newcommand{\prev}{\mathit{prev}}
+
+\newcommand{\cgreen}[1]{\textcolor{darkgreen}{#1}}
+\newcommand{\cred}[1]{\textcolor{darkred}{#1}}
+\newcommand{\cblue}[1]{\textcolor{darkblue}{#1}}
+\newcommand{\corange}[1]{\textcolor{darkorange}{#1}}
+\newcommand{\cmag}[1]{\textcolor{darkmagenta}{#1}}
+\newcommand{\cmgreen}[1]{\textcolor{midgreen}{#1}}
+\newcommand{\cmred}[1]{\textcolor{midred}{#1}}
+\newcommand{\cmblue}[1]{\textcolor{midblue}{#1}}
+
+% \newcommand{eventex}{
+% \begin{tikzpicture}
+
+% \matrix[column sep = 0.5em, draw] (m) {
+%   \node[anchor = east] (m-1-2) {Event stream \texttt{e}};
+%     \& \timing[name=m-2-3] at (0,-0.15) {ZZZ \n{0} Z \n{7} ZZZZ \n{2} ZZ \n{2} ZZZ \n{15} ZZ}; \\ 
+  
+%   \node[anchor = east] (m-1-3) {Signal \texttt{s}};  
+%     \& \timing[name=m-2-2] at (0,-0.15) {4D{0}N(x1)4D{7}5D{2}2D{15}};\\
+    
+%   \node[anchor = east] (end-inputs) {Event stream \texttt{e2}}; 
+%     \& \timing[name=m-2-3] at (0,-0.15) {ZZZZ \n{7} ZZZZ \n{2} ZZZZZ \n{15} ZZ}; \\  \\[0.5em]
+% };
+% \end{tikzpicture}
+% }
+
+\newcommand{\Time}{\ensuremath{\mathbb{T}}\xspace}
+% \newcommand{\delay}{\ensuremath{\textit{delay}}\xspace}
+\newcommand{\shift}{\ensuremath{\textit{shift}}\xspace}
+\newcommand{\within}{\ensuremath{\textit{within}}\xspace}
+
+
+\newcommand{\op}[1]{\operatorname{#1}}
+\newcommand{\peek}{\op{peek}}
+%\newcommand{\pop}{\op{pop}}
+%\newcommand{\last}{\op{last}}
+\newcommand{\tim}{\op{time}}
+% \newcommand{\Val}{\op{value}}
+\newcommand{\emit}{\op{emit}}
+\newcommand{\dequeue}{\op{dequeue}}
+\newcommand{\progress}{\op{progress}}
+
+\newcommand{\plotwidth}{32mm}
+\newcommand{\plotheight}{20mm}

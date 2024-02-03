@@ -1,0 +1,119 @@
+\newcommand{\Terms}{\mathcal{T}}
+
+
+%
+\newcommand{\Str}{\mathcal{S}} \newcommand{\StrDesc}{\Rightarrow}
+\newcommand{\StrReaches}{\StrDesc^*} \newcommand{\Desc}{\mapsto}
+\newcommand{\DirDesc}{\rightarrow}
+%
+\newcommand{\RecDesc}{\twoheadrightarrow}
+\newcommand{\AnyDesc}{\rightsquigarrow}
+\newcommand{\AlphaDesc}{\dasharrow}
+\newcommand{\ALPHADesc}[1]{\stackrel{#1}\dasharrow}
+\newcommand{\Reaches}{\AnyDesc^*}
+\newcommand{\Class}[1]{\ensuremath{[#1]}}
+\newcommand{\EqSite}[2]{#1\equiv_{\Reactors}#2}
+\newcommand{\LiveP}{\textsc{Live-P}\xspace}
+\newcommand{\SchemaP}{\textsc{Schema-P}\xspace}
+\newcommand{\BadP}{\textsc{Bad-P}\xspace} \newcommand{\INVname}{\phi}
+\newcommand{\INV}{\ensuremath{\INVname}\xspace}
+%
+\newcommand{\INVnext}[2]{\ensuremath{\INVname_{#1}^{({#2})}}}
+\newcommand{\INVclause}[1]{\ensuremath{\INVname[#1]}}
+\newcommand{\INVnextclause}[3]{\ensuremath{\INVname_{#1}^{({#2})}[#3]}}
+\newcommand{\React}[1]{\text{react}(#1)} \newcommand{\bisim}{\approx}
+\newcommand{\Await}{\mathbf{await}} \newcommand{\When}{\mathbf{when}}
+\newcommand{\Do}{\mathbf{do}} \newcommand{\Dec}{\texttt{--}}
+\newcommand{\Inc}{\texttt{++}} \newcommand{\Width}{6em}
+\newcommand{\Type}[1]{\hspace{-0.2em}:\hspace{-0.2em}#1} %
+\newcommand{\LHeight}{\textit{lh}} \newcommand{\Height}{\textit{h}}
+\newcommand{\owise}{\text{otherwise}}
+\newcommand{\EmptyP}{\textsc{Empty-P}\xspace}
+\newcommand{\AdequateP}{\textsc{Adequate-P}\xspace}
+\newcommand{\BasicP}{\textsc{Basic-P}\xspace}
+\newcommand{\BasicPRec}{\textsc{BasicRec-P}\xspace}
+\newcommand{\EfficientP}{\textsc{Efficient-P}\xspace}
+\newcommand{\kEfficientP}{\ensuremath{k}\textsc{-Efficient-P}\xspace}
+\newcommand{\jEfficientP}{\ensuremath{j}\textsc{-Efficient-P}\xspace}
+\newcommand{\Proc}{\mathcal{P}}
+\newcommand{\WaitOnConnection}{\emph{WaitOnConnection}\xspace}
+\newcommand{\WaitOnReactor}{\emph{WaitOnReactor}\xspace}
+\newcommand{\process}{task\xspace}
+\newcommand{\emprocess}{\emph{task}\xspace}
+\newcommand{\processes}{tasks\xspace}
+\newcommand{\emprocesses}{\emph{tasks}\xspace}
+\newcommand{\subprocess}{sub-task\xspace}
+\newcommand{\emsubprocess}{\emph{sub-task}\xspace}
+\newcommand{\subprocesses}{sub-tasks\xspace}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+\newcommand{\AllocName}{\textit{alloc}}
+\newcommand{\Alloc}[1]{\textit{alloc\textup{(}[#1]\textup{)}}}
+\newcommand{\AllocBigger}[1]{\textit{alloc.bigger\textup{(}#1\textup{)}}}
+\newcommand{\AllocInc}[1]{\textit{alloc.inc\textup{(}#1\textup{)}}}
+\newcommand{\AllocDec}[1]{\textit{alloc.dec\textup{(}#1\textup{)}}}
+\newcommand{\p}[1]{\ensuremath{a[#1]}}
+%
+\newcommand{\Pplus}[1]{\ensuremath{A[#1]}}
+\newcommand{\pnext}[2]{\ensuremath{a'_{#1}[#2]}}
+\newcommand{\Pplusnext}[2]{\ensuremath{A'_{#1}[#2]}} %
+\newcommand{\En}[2]{\mathit{En}_{#1}(#2)} %
+\newcommand{\In}[2]{\mathit{In}_{#1}(#2)} %
+\newcommand{\Out}[2]{\mathit{Out}_{#1}(#2)} %
+\newcommand{\Pres}[1]{\mathit{pres}({#1})}
+\newcommand{\Log}[1]{\mathit{log}\;#1}
+\newcommand{\EnNm}{\ensuremath{\mathit{En}}}
+\newcommand{\EnName}{\EnNm\xspace} 
+%
+\newcommand{\InNm}{\ensuremath{\mathit{In}}}
+\newcommand{\InName}{\InNm\xspace} 
+%
+\newcommand{\OutNm}{\ensuremath{\mathit{Out}}}
+\newcommand{\OutName}{\OutNm\xspace}
+%
+\newcommand{\StateSpace}{\ensuremath{\mathcal{S}}}
+\newcommand{\phiStates}{\ensuremath{\INV\text{-states}}\xspace}
+\newcommand{\phiState}{\ensuremath{\INV\text{-state}}\xspace}
+\newcommand{\AlgName}{\textsc{Minimal}}
+\newcommand{\Alg}[2]{\ensuremath{\AlgName(#1,#2)}}
+
+%
+
+\newcommand{\LangInf}{\Lang_\text{inf}} %
+\newcommand{\ArrowType}{\SelectTips{cm}{}} %
+
+
+
+ \newcommand{\SetCategory}{\mathcal{S}\textit{et}}
+
+
+\newcommand{\RLTL}{RLTL\xspace}
+\newcommand{\LTL}{LTL\xspace}
+\newcommand{\MuCalculus}{\ensuremath{\mu\text{-calculus}}}
+%
+\newcommand{\nuTL}{\ensuremath{\nu\text{TL}}}
+
+\newcommand{\semInf}[1]{\Lang_\omega(#1)}
+\renewcommand{\sem}[1]{\Lang(#1)}
+\newcommand{\Aut}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\AutA}{\Aut{A}}
+
+\newcommand{\Prop}{\textit{Prop}}
+
+
+\newcommand{\PreL} [1]{\ensuremath{\!\!\phantom{.}^{-}#1}}
+\newcommand{\PostL}[1]{\ensuremath{#1^{-}}}
+\newcommand{\PreR} [1]{\ensuremath{\phantom{.}^{+}#1}}
+\newcommand{\PostR}[1]{\ensuremath{#1^{+}}}
+\newcommand{\NoMove}[1]{{\ensuremath{#1^{0}}}}
+\newcommand{\BasicProp}{\Bool(\Prop)}
+\newcommand{\BminusProp}{\PostL{\Bool}(\Prop)}
+\newcommand{\Segment}[3]{(#1,#2,#3)}
+\newcommand{\Inv}[1]{\ensuremath{#1^{-1}}}
+%\newcommand{\Segment}[3]{#1[#2,#3]}
+\newcommand{\Pointed}[2]{(#1,#2)}
+%\newcommand{\Pointed}[2]{#1^{#2}}
+\newcommand{\NotFirst}{\ensuremath{\mathit{notfirst}}}
+\newcommand{\First}{\ensuremath{\mathit{first}}}
+
+\newcommand{\modelsLTL}{\models_{\textsc{LTL}}}
+

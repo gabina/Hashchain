@@ -1,0 +1,88 @@
+%\tikzstyle{every picture}+=[remember picture]
+\begin{figure}[t!]
+%\begin{tikzpicture}
+%  \node (tmp) at (0,0){%
+  \begin{adjustbox}{minipage=[t]{\columnwidth}}
+    \begin{algorithm}[H]
+         \caption{\small Single server implementation.}%
+        \label{alg:sequential}%
+              \small
+              \begin{algorithmic}[1]
+                \State \textbf{Init:} $\<epoch> \leftarrow 0,$
+                \hspace{2em}
+                $\<history> \leftarrow \emptyset$\label{seq:history} 
+%                $\<theset> \leftarrow \emptyset,$\label{seq:theset}
+%                \State \textbf{Init:} $\<history> \leftarrow \emptyset$\label{seq:history}
+                % Box begins
+%                \tikz{\node(tmp1){};}
+                \State \textbf{Init:} $\<theset> \leftarrow \emptyset$\label{seq:theset}
+                % Box ends
+                \Function{\<Get>}{~}
+                  \State \textbf{return} $(\<theset>, \<history>, \<epoch>)$
+ %               \tikz{\node(tmp2){};}
+                \EndFunction
+                \Function{\<Add>}{$e$}
+                  \State \textbf{assert} {\(valid(e)\)}
+                  \State \(\<theset> <- \<theset> \cup \{e\}\)
+%                  \State \<return> \<ack>
+                \EndFunction
+%                \Function{\<GetEpoch>}{~}
+%                  \State \textbf{return} $\<epoch>$
+%                \EndFunction
+                %% Box begins
+                \Function{\<EpochInc>}{$h$}
+%                \tikz{\node(tmp3){};}
+                    \State \textbf{assert} $h \equiv \<epoch> + 1$
+                    \State \(\textit{proposal} <- \<theset> \setminus \bigcup_{k=1}^{\<epoch>} \<history>(k)\)
+                    \State $\<history> \leftarrow \<history> \cup \{\langle h, \textit{proposal} \rangle\}$
+                    \State $\<epoch> \leftarrow \<epoch> + 1$
+ %                   \State \(\<pending> <- \emptyset\)
+%                    \State \<return> \<ack>
+%                \tikz{\node(tmp4){};}
+                \EndFunction
+                %% Box ends
+              \end{algorithmic}
+            \end{algorithm}
+      \end{adjustbox}%};
+%    \path(tmp1-|tmp.west) -- +(1.2ex,-0.5em)node(tmpa){};
+%    \path(tmp2-|tmp.east) -- +(-0.75ex,-0.75em)node(tmpb){};
+%    \draw[red, thick](tmpa) rectangle (tmpb);
+%    \path(tmp3-|tmp.west) -- +(1.2ex,0.5em)node(tmpc){};
+%    \path(tmp4-|tmp.east) -- +(-0.75ex,-0.5em)node(tmpd){};
+%    \draw[red, thick](tmpc) rectangle (tmpd);
+%  \end{tikzpicture}
+  \end{figure}
+% %%%%%%%%%%%%%%%%%%%%
+% \begin{algorithm}[H]
+%   \caption{\small Single server implementation. Assuming non Byzantine client.}%
+%         % \label{DPO-alg0}%
+%         \begin{algorithmic}[1]
+%           \State \textbf{Init:} $\<epoch> \leftarrow 0$
+%           \State \textbf{Init:} $\<history> \leftarrow \emptyset$
+%           % Box begins
+%           \State \textbf{Init:} $\<theset> \leftarrow \emptyset$
+%           % Box ends
+%           \Function{\(\<Get>\)}{~}
+%             \State \textbf{return} $(\<theset>, \<history>)$
+%           \EndFunction
+%           \Function{\(\<Add>\)}{$e$}
+%             \State \textbf{assert} {\(valid(e)\)}
+%             \State \(\<theset> <- \<theset> \cup \{e\}\)
+%             \State \Return \(ack\)
+%           \EndFunction
+%           \Function{\(\<GetEpoch>\)}{~}
+%             \State \textbf{return} $\<epoch>$
+%           \EndFunction
+%           %% Box begins
+%           \Function{\(\<EpochInc>\)}{~}
+%               \State \textbf{assert} $h \equiv \<epoch> + 1$
+%               \State \(proposal <- \<theset> \setminus \bigcup_{\langle H , E \rangle \in \<history>}{E}\)
+%               \State $\<history> \leftarrow \<history> \cup h \times proposal$
+%               \State \(\<pending> <- \emptyset\)
+%               \State \Return \(ack\)
+%           \EndFunction
+%           %% Box ends
+%         \end{algorithmic}
+%       \end{algorithm}\vspace{-2em}
+% \end{figure}
+%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,38 @@
+% \begin{figure}[t!]
+  \begin{algorithm}[H]
+    % \caption{\small Correct client protocol for DPO (for Alg.~\ref{DPO-alg-basb} and~\ref{DPO-alg-basb3}).}
+    \label{DPO}
+    \small
+    \begin{algorithmic}[1]
+      \Function{\<DPO>.\<Add>}{$e$}
+      \State \<call> \<Add>\((e)\) in \(f+1\) different servers.
+      %	\State \textbf{wait } response $ACK$ from 1 server.
+%      \State \<return> \<ack>
+      \EndFunction
+      \Function{\<DPO>.\<Get>}{~}
+      \State \<call> \<Get>\(()\) in at least \(3f+1\) different servers.
+        % \Comment{add identifier.}
+      % \State \<wait> \(2f+1\) resp $s.(\THESET, \HISTORY,\<epoch>)$ % from \(2f+1\) different servers.
+      \State $S \leftarrow \{ e | e\in{}s.\THESET \text{ in at least } f+1 \text{ servers } s \}$% \text{ different }\}\)
+      \State $H \leftarrow \emptyset$
+      \State $i \leftarrow 1$
+      \State $\Servers \leftarrow \{ s : s.\<epoch> \geq i \}$
+      \While {$\exists E: |\{s: s.\<history>(i) = E \}| \geq f+1$}~\label{DPO-bwhile}
+        \State $H \leftarrow H \cup \{ \langle i, E \rangle \} $
+        %\Comment{remove byzantine}
+        \State $\Servers \leftarrow \Servers \setminus \{ s : s.\<history>(i)\neq E\}$ 
+        \State $\Servers \leftarrow \Servers\setminus \{s: s.\<epoch>=i\}$         
+        \State $i \leftarrow i+1$
+% ent{remove slow server}
+      \EndWhile~\label{DPO-ewhile}
+      \State \<return> $(S, H, i-1)$
+      \EndFunction
+		    \Function{\<DPO>.\<EpochInc>}{$h$}
+			\State \<call> \<EpochInc>\((h)\) in \(f+1\) different servers.
+		%	\State \textbf{wait } response $ACK$ from 1 server.
+%			\State \<return> \<ack>
+			\EndFunction
+    \end{algorithmic}
+  \end{algorithm}
+%   \vspace{-2em}
+% \end{figure}

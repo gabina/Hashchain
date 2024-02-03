@@ -1,0 +1,140 @@
+\pdfobjcompresslevel0
+\usepackage{fancyvrb}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{cesar-llncs}
+\input{theories}
+\usepackage{xspace}
+\usepackage{amssymb}
+%\input{vpl-macros}
+\input{macros}
+\input{slidesaux}
+\usepackage{mathtools}
+\usepackage[ligature,reserved]{semantic}
+\input{solidity-highlighting.tex}
+\usepackage{paralist}
+\usepackage{multicol}
+
+\newcommand{\Hspeed}{H1}
+\newcommand{\Hbetteralg}{H2}
+\newcommand{\Hagr}{H3}
+\newcommand{\Hbyzantine}{H4}
+\newcommand{\Hdegrade}{H5}
+
+\algblockdefx[Upon]{Upon}{EndUpon}%
+[1]{{\bf upon} (#1) {\bf do}}%
+{{\bf end upon}}
+\algblockdefx[When]{When}{EndWhen}%
+[1]{{\bf when} (#1) {\bf do}}%
+{{\bf end when}}
+\mathlig{<-}{\leftarrow}
+\mathlig{==}{\equiv}
+\mathlig{<<}{\langle}
+\mathlig{>>}{\rangle}
+%% Variables in implementation
+\reservestyle{\variables}{\text}
+\variables{epoch,current,history,theset[the\_set],pending, tobroadcast[to\_broadcast]}
+
+\reservestyle{\setops}{\text}
+\setops{add,get,Init,Add,Get,BAdd,EpochInc,Broadcast,Deliver,GetEpoch,Propose,SetDeliver}
+
+\reservestyle{\structs}{\text}
+\structs{DPO,BAB,BRB,SBC,DSO}
+
+\reservestyle{\stmt}{\textbf}
+\stmt{call,ack,drop,return,assert,wait}
+
+\reservestyle{\messages}{\texttt}
+\messages{madd[add],mepochinc[epinc]}
+
+\reservestyle{\api}{\texttt}
+\api{apiBAdd,apiAdd,apiGet,apiEpochInc,apiTheSet[{the\_set}],apiHistory}
+
+\reservestyle{\schain}{\texttt}
+\schain{history,epoch,theset[{the\_set}],add,get,epochinc[{epoch\_inc}],getepoch[{get\_epoch}],
+Fast, Slow, Basic, Central}
+
+\newcommand{\Servers}{N}
+
+\usepackage{color, colortbl}
+
+ \usepackage{tikz-timing}
+ \usetikzlibrary{matrix, shapes.misc, decorations, decorations.pathreplacing, automata, fit}
+ \tikzset{
+ 	ampersand replacement=\&, % alternative to using fragile frames
+ 	event/.style = {draw, cross out, inner sep = 1pt,xshift=0.75pt},
+ 	event label/.style = {font = \tiny, label distance = -2pt}  
+ }
+
+\usepackage{listings}
+\lstset{
+	%  extendedchars=true,
+	%  inputencoding=utf8
+	basicstyle=\small\ttfamily,
+	%  stringstyle=
+	%  keywordsyle={[2]\underbar},
+	commentstyle=\rmfamily\it,
+	extendedchars=true,
+	keepspaces=true, 
+	columns=flexible,
+%	frame=tlrb,
+	keywordstyle=\ttfamily\bfseries
+}
+\lstdefinestyle{long}{}
+\lstdefinestyle{inline}{   
+	basicstyle=\ttfamily\footnotesize,
+	numbers=none,
+	xleftmargin=2em,
+	aboveskip=0.3ex,
+	belowskip=0ex,
+	%  belowcaptionskip=0em,
+	%  lineskip=0em
+}
+\lstdefinelanguage{tessla}{
+	keywords={on, if, fun, define, yield, out, trigger, while, window, and, in},
+	keywordstyle=\ttfamily\color{darkblue}\bfseries,
+	classoffset=1,
+	morekeywords={EStream,VStream,Int,Bool},  
+	%  keywordstyle=\ttfamily\bfseries,
+	keywordstyle=\underline,
+	classoffset=0,
+	comment=[l]{--}
+}
+\definecolor{StriverBlue}{RGB}{42, 0, 255}
+\definecolor{StriverGreen}{RGB}{0, 155, 0}
+\definecolor{StriverRed}{RGB}{155, 0, 0}
+\definecolor{StriverOrange}{RGB}{255, 183, 68}
+\definecolor{StriverYellow}{RGB}{155, 155, 45}
+\lstdefinelanguage{Striver}
+{
+    basicstyle=\ttfamily,
+    keywordstyle=[1]\color{StriverYellow},
+    keywordstyle=[2]\color{StriverBlue},
+    keywordstyle=[3]\bfseries,
+%    keywordstyle=[4]\itshape,
+    keywordstyle=[4]\color{StriverBlue},
+    keywordstyle=[5]\color{StriverOrange},
+    keywordstyle=[6]\color{StriverGreen},
+    keywordstyle=[7]\color{StriverRed},
+%    otherkeywords = {
+%    <~,<<,~>,>>,shift,macro,:=,const,input,output,true,false,ticks,define,outside,notick,U,delay,at,||,&&,+,-,==,!,!=,if,let,in then,else,char,int,bool,unit,Time,_eps,void},
+    otherkeywords = {
+    <~,<<,~>,>>,:=||,&&,+,-,==,!,!=},
+    morekeywords = [1]{<~,<<,~>,>>},
+    morekeywords = [2]{shift,macro, :=, input,const, output, ticks, define},
+    morekeywords = [3]{outside, notick, true, false},
+    morekeywords = [4]{if, then, else},
+    morekeywords = [5]{char, int, bool, unit, Time, _eps, void},
+    morekeywords = [6]{U, delay, ||, &&, +, -, !, !=, ==, at},
+    morekeywords = [7]{let, in},
+}
+\lstdefinestyle{pseudo}{language={},%
+ % basicstyle=\normalfont,%
+ % keywordstyle=\normalfont\bfseries,%
+  morecomment=[l]{//},%
+  morekeywords={for,to,while,do,if,then,else,and,or,not},%
+  mathescape=true,%
+  columns=fullflexible
+}

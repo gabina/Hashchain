@@ -1,0 +1,10 @@
+Run ipe with the following environment variable values:
+IPELATEXDIR=./latex
+IPESTYLES=./styles
+For example,
+$ IPELATEXDIR=./latex IPESTYLES=./styles /Applications/Ipe.app/Contents/MacOS/ipe slides.ipe
+
+alias setipe='export IPELATEXDIR=`pwd`/latex ; export IPESTYLES=`pwd`/styles'
+setipe
+ipe
+

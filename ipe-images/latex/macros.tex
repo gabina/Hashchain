@@ -1,0 +1,709 @@
+%%%% LTL Symbols %%%%%
+\makeatletter
+\DeclareFontFamily{OMX}{MnSymbolE}{}
+\DeclareSymbolFont{MnLargeSymbols}{OMX}{MnSymbolE}{m}{n}
+\SetSymbolFont{MnLargeSymbols}{bold}{OMX}{MnSymbolE}{b}{n}
+\DeclareFontShape{OMX}{MnSymbolE}{m}{n}{
+    <-6>  MnSymbolE5
+   <6-7>  MnSymbolE6
+   <7-8>  MnSymbolE7
+   <8-9>  MnSymbolE8
+   <9-10> MnSymbolE9
+  <10-12> MnSymbolE10
+  <12->   MnSymbolE12
+}{}
+\DeclareFontShape{OMX}{MnSymbolE}{b}{n}{
+    <-6>  MnSymbolE-Bold5
+   <6-7>  MnSymbolE-Bold6
+   <7-8>  MnSymbolE-Bold7
+   <8-9>  MnSymbolE-Bold8
+   <9-10> MnSymbolE-Bold9
+  <10-12> MnSymbolE-Bold10
+  <12->   MnSymbolE-Bold12
+}{}
+
+\let\llangle\@undefined
+\let\rrangle\@undefined
+\DeclareMathDelimiter{\llangle}{\mathopen}%
+                     {MnLargeSymbols}{'164}{MnLargeSymbols}{'164}
+\DeclareMathDelimiter{\rrangle}{\mathclose}%
+                     {MnLargeSymbols}{'171}{MnLargeSymbols}{'171}
+\makeatother
+
+% \newcommand{\mymid}{\mathbin{\mid}}
+% \newcommand{\Power}[3]{{#2}\!\mymid\!{#1}\rangle\!\rangle{#3}}
+% \newcommand{\WeakPower}[3]{{#2}\mymid\!{#1}\rangle{#3}} %warning: not dual power!!
+% \newcommand{\PowerSub}[3]{{#2}\mymid{#1}\rangle\!\rangle{#3}}
+% \newcommand{\WeakPowerSub}[3]{{#2}\mymid{#1}\rangle{#3}} %warning: not dual power!!
+
+\newcommand{\Always}{\LTLsquare}
+%\newcommand{\Always}{\mathbf{G}}
+\newcommand{\Event}{\LTLdiamond}
+\newcommand{\Eventually}{\Event}
+\newcommand{\Next}{\LTLcircle}
+\newcommand{\PrevLTL}{\LTLcircleminus}
+\newcommand{\Previously}{\Prev}
+\newcommand{\PrevNoFirst}{\LTLcircletilde}
+\newcommand{\Before}{\PrevNoFirst}
+\newcommand{\HasAlwaysBeen}{\LTLsquareminus}
+\newcommand{\SoFar}{\HasAlwaysBeen}
+\newcommand{\Once}{\LTLdiamondminus}
+\newcommand{\Since}{\mathbin{\mathcal{S}}}
+\newcommand{\BackTo}{\mathbin{\mathcal{B}}}
+\newcommand{\WeakPrev}{\LTLcircletilde}
+\newcommand{\UNTIL}{\mathbin{\mathcal{U}}}
+\newcommand{\WaitFor}{\mathbin{\mathcal{W}}}
+
+
+%\newenvironment{proposition}{\theoremlike{Proposition}}{\par\medskip}
+
+\newcommand{\val}[1]{\ensuremath{[\![ #1 ]\!]}}
+
+\newcommand{\der}[1]{\ensuremath{\;\;{\mathop{{ %
+            \longrightarrow}}\limits^{{#1}}}\!}\;\;} %
+
+\newcommand{\Der}[1]{\ensuremath{\rightarrow_{#1}}} %
+\newcommand{\notDer}[1]{\ensuremath{\not\rightarrow_{#1}}} %
+%\newcommand{\notDer}[1]{\ensuremath{\;\;\not\rightarrow_{#1}\;\;}} %
+
+
+\newcommand \tpl[1]{\langle #1 \rangle}
+
+
+\newcommand{\LTL}{\textsf{LTL}\xspace}
+\newcommand{\ForSpec}{\textsf{ForSpec}\xspace}
+
+\newcommand{\SVA}{\textsf{SVA}\xspace}
+\newcommand{\VLTL}{\textsf{VLTL}\xspace}
+\newcommand{\RLTL}{\textsf{RLTL}\xspace}
+%\newcommand{\RE}{\textsf{RE}\xspace}
+\newcommand{\NVPA}{\textsf{NVPA}\xspace}
+\newcommand{\VPA}{\textsf{VPA}\xspace}
+\newcommand{\NFA}{\textsf{NFA}\xspace}
+\newcommand{\VPL}{\textsf{VPL}\xspace}
+\newcommand{\CARET}{\textsf{CaRet}\xspace}
+\newcommand{\VPLs}{\textsf{VPL}s\xspace}
+\newcommand{\VRL}{\textsf{VRL}\xspace}
+\newcommand{\VRE}{\textsf{VRE}\xspace}
+\newcommand{\EMSO}{\textsf{MSO$_{\mu}$}\xspace}
+\newcommand{\MSO}{\textsf{MSO}\xspace}
+\newcommand{\FO}{\textsf{FO}\xspace}
+\newcommand{\EFO}{\textsf{FO}$_{\mu}$\xspace}
+\newcommand{\XML}{\textsf{XML}\xspace}
+%\newcommand{\ETL}{\textsf{ETL}\xspace}
+\newcommand{\PDL}{\textsf{PDL}\xspace}
+\newcommand{\AJA}{\textsf{AJA}\xspace}
+\newcommand{\AJT}{\textsf{AJT}\xspace}
+\newcommand{\SAJA}{\textsf{SAJA}\xspace}
+\newcommand{\MAJA}{\textsf{MAJA}\xspace}
+\newcommand{\AFA}{\textsf{AFA}\xspace}
+\newcommand{\AVPA}{\textsf{AVPA}\xspace}
+\newcommand{\PSL}{\textsf{PSL}\xspace}
+
+\newcommand{\NWTL}{\textsf{NWTL}\xspace}
+\newcommand{\NWTLPLUS}{\textsf{NWTL}$^{+}$\xspace}
+
+
+\newcommand{\TWOEXPTIME}{\textsf{2-EXPTIME}\xspace}
+\newcommand{\EXPTIME}{\textsf{EXPTIME}\xspace}
+\newcommand{\PTIME}{\textsf{PTIME}\xspace}
+
+\newcommand{\WM}{\ensuremath{\mathit{WM}}}
+\newcommand{\MR}{\ensuremath{\mathit{MR}}}
+\newcommand{\MC}{\ensuremath{\mathit{MC}}\xspace}
+\newcommand{\SWM}{\ensuremath{\mathit{MWM}}\xspace}
+\newcommand{\Pu}{\ensuremath{\mathcal{P}}}
+\newcommand{\Lang}{\ensuremath{\mathcal{L}}}
+\newcommand{\Au}{\ensuremath{\mathcal{A}}}
+\newcommand{\Gam}{\ensuremath{\mathcal{G}}}
+\newcommand{\Tu}{\ensuremath{\mathcal{T}}}
+\newcommand{\Stratum}{\ensuremath{\mathcal{S}}}
+\newcommand{\RejMain}{\ensuremath{\bot_\MainStates}}
+\newcommand{\RejSec}{\ensuremath{\bot_\SecStates}}
+
+%%%%
+%%%% The following three macros are confusing with MainStates and SecStates
+%%%%
+\newcommand{\Msubst}{$M$-substitution\xspace} % M-substitution CHANGE FONT
+\newcommand{\Mclosure}{$M$-closure\xspace}    %
+\newcommand{\Sclosure}{$S$-closure\xspace}    %
+
+\newcommand{\Region}{\ensuremath{\mathcal{R}}}
+
+%\newcommand{\MainStates}{\ensuremath{\textit{M}}}
+%\newcommand{\MainStates}{\ensuremath{M}}
+\newcommand{\MainStates}{\ensuremath{\mathsf{M}}}
+%\newcommand{\SecStates}{\ensuremath{\textit{S}}}
+%\newcommand{\SecStates}{\ensuremath{S}}
+\newcommand{\SecStates}{\ensuremath{\mathsf{S}}}
+%\newcommand{\FamStratum}{\ensuremath{\mathfrak{F}}}
+\newcommand{\FamStratum}{\ensuremath{\mathsf{F}}}
+\newcommand{\Acc}{\ensuremath{\textit{Acc}}}
+\newcommand{\Inf}{\ensuremath{\textit{Inf}}}
+\newcommand{\SF}{\ensuremath{\textit{SF}}}
+\newcommand{\Model}{\ensuremath{\textit{X}}}
+
+
+
+\newcommand{\Stilde}{\widetilde{\Sigma}\xspace}
+\newcommand{\Scall}{\Sigma_{\mathit{call}}}
+\newcommand{\call}{{\mathit{call}}}
+\newcommand{\ret}{{\mathit{ret}}}
+\newcommand{\intA}{{\mathit{int}}}
+\newcommand{\Sret}{\Sigma_{\mathit{ret}}}
+\newcommand{\Sint}{\Sigma_{\mathit{int}}}
+
+\newcommand{\Nat}{\mathbb{N}}
+
+
+
+\newcommand{\SubstOp}[1]{\mathrel{\curvearrowleft_{#1}}}
+\newcommand{\SubstBox}{\SubstOp{\Box}}
+\newcommand{\MClos}[2]{#1^{\SubstOp{#2}}}
+\newcommand{\LangClos}{\MClos{\Lang}{\Box}}
+\newcommand{\SClos}[2]{{#1}^{\circlearrowleft_{#2}}}
+\newcommand{\SClosure}[1]{\SClos{#1}{\Box}}
+\newcommand{\LangSClos}{\SClos{\Lang}{\Box}}
+
+\newcommand{\caller}{\mathsf{c}}
+\newcommand{\down}{\mathsf{+}}
+\newcommand{\abs}{\mathsf{a}}
+\newcommand{\absExt}{\mathsf{ea}}
+\newcommand{\PosBool}{\ensuremath{\mathcal{B}^{+}}}
+
+%\newcommand{\dirUp}{\ensuremath{\uparrow}}
+\newcommand{\dirUp}{\ensuremath{\leftarrow}}
+%\newcommand{\dirDown}{\ensuremath{\downarrow}}
+\newcommand{\dirDown}{\ensuremath{\rightarrow}}
+%\newcommand{\dirUpAbs}{\ensuremath{\uparrow^{\abs}}}
+\newcommand{\dirUpAbs}{\ensuremath{\curvearrowleft}}
+%\newcommand{\dirDownAbs}{\ensuremath{\downarrow_{\abs}}}
+\newcommand{\dirDownAbs}{\ensuremath{\curvearrowright}}
+%\newcommand{\dirDownAbsExt}{\ensuremath{\downarrow_{\absExt}}}
+%\newcommand{\dirDownAbsExt}{\ensuremath{\curvearrowright_{\mkern-15.2mu\raisebox{.30em}{$\phantom{.}_{\bullet}$}}}}
+\newcommand{\dirDownAbsExt}{\ensuremath{\curvearrowright_{\mkern-8.5mu{\bullet}}}}
+%\newcommand{\dirUpAbsExt}{\ensuremath{\uparrow^{\absExt}}}
+%\newcommand{\dirUpAbsExt}{\ensuremath{\curvearrowleft_{\mkern-30.2mu\raisebox{.30em}{$\phantom{.}_{\bullet}$}}}}
+\newcommand{\dirUpAbsExt}{\ensuremath{\phantom{.}_\bullet{\mkern-8.2mu\curvearrowleft}}}
+
+\newcommand{\DIR}{\textit{DIR}}
+\newcommand{\Trans}{\texttt{t}}
+\newcommand{\Moves}{\textit{Moves}}
+%\newcommand{\dir}{\textit{dir}}
+\newcommand{\SUCC}{\mathsf{succ}}
+\newcommand{\NULL}{\mathsf{\bot}}
+\newcommand{\acc}{\textit{acc}}
+\newcommand{\rej}{\textit{rej}}
+\newcommand{\rank}{\textit{rank}}
+\newcommand{\widt}{\textit{width}}
+
+\newcommand{\DefinedAs}{\,\stackrel{\text{def}}{=}\,}
+
+%\newcommand{\DefOR}{\ensuremath{\;\;\;\big|\;\;\;}}
+\newcommand{\DefORmini}{\ensuremath{\;\big|\;}}
+
+\newcommand{\details}[1]{}
+
+%%%%%% Temporal Modalities %%%%%%%%%%%%%%
+
+\newcommand{\true}{\ensuremath{\textup{\texttt{true}}}}
+\newcommand{\false}{\ensuremath{\textup{\texttt{false}}}}
+\newcommand{\Power}[3]{\mathrel{{#1}|{#2}\rrangle{#3}}}
+\newcommand{\Norm}[1]{\ensuremath{\|{#1}\|}}
+\newcommand{\WeakPower}[3]{\mathrel{{#1}|{#2}\rangle{#3}}}
+\newcommand{\PastPower}[3]{\mathrel{{#1}\llangle{#2}|{#3}}}
+\newcommand{\PastWeakPower}[3]{\mathrel{{#1}\langle{#2}|{#3}}}
+%\newcommand{\Next}{\ensuremath{\bigcirc}}
+\newcommand{\Seq}{\ensuremath{;}}
+%\newcommand{\Previous}{\ensuremath{{\mathrlap{\bigcirc}\,\minus\,}}}
+\newcommand{\Previous}{\Prev}
+%\newcommand{\until}{{\sf U}}
+\newcommand{\until}{\Until}
+%\newcommand{\since}{{\sf S}}
+\newcommand{\since}{\Since}
+%\newcommand{\sometimes}{\lozenge}
+%\newcommand{\always}{\square}
+\newcommand{\always}{\Always}
+
+\newcommand{\comp}[1]{\ensuremath{\overline{#1}}} % complement automaton
+\newcommand{\dual}[1]{\ensuremath{\widetilde{#1}}} % dualization
+
+\newcommand{\Outcm}{c\,b\,r}
+\newcommand{\UOutcm}{\underline{\Outcm}}
+
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    %\setlength{\footnotewidth}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\textheight}{21cm}%
+   \setlength{\topmargin}{0cm}
+   \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }
+  \item[]}{\end{list}}
+
+
+\newcommand{\push}{\textit{push}}
+\newcommand{\Regions}{\ensuremath{\textit{REG}}}
+\newcommand{\pop}{\textit{pop}}
+%\newcommand{\pending}{\ensuremath{\texttt{pending}}}
+
+\newcommand{\Bu}{\ensuremath{\textsf{B}}}
+\newcommand{\Co}{\ensuremath{\textsf{C}}}
+
+\newcommand{\alphaANY}{\ensuremath{\alpha_{\mathit{ONE}}}}
+
+%%%% ATTENTION HERE: DON'T USE OLD DEFINITION IN FSTTCS CLASS iS treated as a section %%%%
+\newcommand{\myparagraph}[1]{\paragraph{\textup{\textbf{#1}}}}
+%\newcommand{\myparagraph}[1]{\noindent\textbf{#1}}
+
+\newcommand{\myparagraphApp}[1]{\vspace{0.5em}\noindent\textup{\textbf{#1}}}
+
+\newcommand{\qin}{\ensuremath{q_{\textit{in}}}}
+
+% MINE
+\newcommand{\striver}{\textsf{Striver}\xspace}
+
+\newcommand{\tessla}{TeSSLa\xspace}
+
+\newcommand{\reserved}[1]{\ensuremath{\mathit{#1}}\xspace}
+\newcommand{\Syntax}[1]{\keyword{#1}}
+
+
+\newcommand{\wakeUpTicks}{\reserved{ticks^*}}
+\newcommand{\ticks}{\reserved{ticks}}
+
+\newcommand{\caseof}[1]{\mathtt{case}~#1~\mathtt{of}}
+%\newcommand{\IF}{\mathtt{if}}  %% Defined in algorithmic
+%\newcommand{\THEN}{\mathtt{then}}
+%\newcommand{\ELSE}{\mathtt{else}}
+%\newcommand{\ELSIF}{\mathtt{elsif}}
+
+\newcommand{\IfThenElse}[3]{\mathtt{if}~#1~\mathtt{then}~#2~\mathtt{else}~#3}
+
+\newcommand{\IntoP}{\mathrel{\rightharpoondown}}
+
+
+\newcommand{\Vc}[1]{\ensuremath{\langle #1 \rangle}}
+
+\newcommand{\default}{\reserved{default}}
+\newcommand{\lift}{\reserved{lift}}
+\newcommand{\delay}{\keyword{delay}}
+\newcommand{\SHIFT}{\keyword{shift}}
+
+%\newcommand{\at}{\keyword{delayLast}}
+\newcommand{\at}{\keyword{at}}
+
+\newcommand{\PrevVal}{\reserved{valprev}}
+%\newcommand{\Prev}{\reserved{tprev^{\leftarrow}}}
+%\newcommand{\Prev}{\reserved{prev}}
+%\DeclareMathOperator*{\prevOp}{\reserved{prev}}
+\DeclareMathOperator{\prevOp}{\reserved{prev}}
+\DeclareMathOperator{\succOp}{\reserved{succ}}
+%\newcommand{\Prev}{\ensuremath{\ensuremath{\reserved{prev}}\limits{\leq}}}
+\newcommand{\Prev}{\ensuremath{\prevOp\limits_{<}}}
+\newcommand{\PrevEqVal}{\reserved{valprev_\circ}}
+%\newcommand{\PrevEq}{\reserved{tprev}}
+%\newcommand{\PrevEq}{\reserved{prev_\circ}}
+\newcommand{\PrevEq}{\ensuremath{\prevOp\limits_{\leq}}}
+\newcommand{\Succ}{\ensuremath{\succOp\limits_{>}}}
+\newcommand{\SuccEqVal}{\reserved{valsucc_\circ}}
+%\newcommand{\SuccEq}{\reserved{tsucc}}
+%\newcommand{\SuccEq}{\reserved{succ_\circ}}
+\newcommand{\SuccEq}{\ensuremath{\succOp\limits_{\geq}}}
+
+\newcommand{\PrevS}{\Syntax{\ll}}
+%\newcommand{\PrevEqS}{\Syntax{<\sim}}
+%\newcommand{\PrevEqS}{\Syntax{<\text{\raisebox{10ex}{$\sim$}}}}
+%\newcommand{\PrevEqS}{\ensuremath{\mathrel{\ooalign{$<$\cr\hidewidth\raise{20ex}\hbox{$\sim$}\cr}}}}
+\newcommand{\PrevEqS}{\ensuremath{\mathrel{\ooalign{$<$\cr\hidewidth\raisebox{-1.2ex}{$\sim$}\cr}}}}
+\newcommand{\SuccS}{\Syntax{\gg}}
+%\newcommand{\SuccEqS}{\Syntax{\sim>}}
+\newcommand{\SuccEqS}{\ensuremath{\mathrel{\ooalign{$>$\cr\hidewidth\raisebox{-1.2ex}{$\sim$}\cr}}}}
+\newcommand{\setS}[1]{\Syntax{\{} #1 \Syntax{\}}}
+\newcommand{\valS}[1]{\textsf{(}#1\textsf{)}}
+\newcommand{\Ticks}{\keyword{ticks}}
+\newcommand{\ticksS}{\keyword{ticks}}
+\newcommand{\Union}{\mathrel{\textsf{U}}}
+%\newcommand{\delaySym}{\Syntax{delay}}
+%\newcommand{\delayS}[1]{\delaySym{}(#1)}
+\newcommand{\delayS}[1]{\delay{}(#1)}
+%\newcommand{\atSym}{\Syntax{at}}
+%\newcommand{\atS}[1]{\atSym{}(#1)}
+\newcommand{\atS}[1]{\at{}(#1)}
+
+
+\newcounter{Problem} \setcounter{Problem}{0}
+
+\newcommand{\Prob}{\addtocounter{Problem}{1}\noindent\paragraph{\textbf{Problem
+      \#\theProblem}}}
+
+\newcommand{\Abs}[1]{\ensuremath{#1^\#\xspace}}
+
+\newcommand{\LET}{\mathtt{let}}
+\newcommand{\MAX}{\ensuremath{\mathit{max}}}
+%\newcommand{\DefOr}{\ensuremath{\hspace{1em}\big|\hspace{1em}}}
+
+
+\newcommand{\tprev}{\ensuremath{t_{\textit{prev}}}}
+
+\newcommand{\Tstar}{\ensuremath{\mathbb{T}^*}\xspace}
+
+\newcommand{\dom}{\ensuremath{\mathit{dom}}}
+
+%%%%%%%%%%% FROM ANOTHER PAPER ON Nested SRV
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% Runtime Verification Macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Clock}{\textit{clock}}
+\newcommand{\Xclock}{\ensuremath{X_\Clock}}
+\newcommand{\SRV}{SRV\xspace}
+\newcommand{\NRV}{NestedSRV\xspace}
+
+%%%% types
+\newcommand{\BoolT}{\textit{Bool}}
+\newcommand{\NatT}{\textit{Nat}}
+\newcommand{\IntT}{\textit{Int}}
+\newcommand{\StackT}{\textit{Stack}}
+\newcommand{\SetT}{\textit{Set}}
+\newcommand{\ElemT}{\textit{Elem}}
+\newcommand{\andsym}{\texttt{and}}
+\newcommand{\orsym}{\texttt{or}}
+\newcommand{\notsym}{\texttt{not}}
+\newcommand{\truesym}{\texttt{true}}
+\newcommand{\falsesym}{\texttt{false}}
+\newcommand{\SP}{\hspace{0.03em}}
+
+\newcommand{\ifthenelsesym}{
+  $\begin{bmatrix}
+    \sym{if}\SP\cdot\SP\sym{then}\SP\cdot\SP\\
+        \hspace{0.12em}\sym{else}\SP\cdot\SP
+  \end{bmatrix}$}
+\newcommand{\ifthenelsetype}[1]{
+  $\begin{array}{l}\BoolT \times #1 \times #1\\
+    \hspace{3em}\Into #1
+  \end{array}$
+}
+\newcommand{\BoolName}{\textit{Booleans}}
+\newcommand{\BoolSorts}{\BoolT}
+\newcommand{\NatName}{\textit{Naturals}}
+\newcommand{\NatSorts}{\NatT, \BoolT}
+\newcommand{\SetName}{\textit{Sets}}
+\newcommand{\SetSorts}{\SetT, \BoolT, \ElemT}
+\newcommand{\StackName}{\textit{Stacks}}
+\newcommand{\StackSorts}{\StackT, \BoolT, \ElemT}
+
+%%%%%
+
+\newcommand{\Sres}{S_{\text{res}}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\NExpr}{\ensuremath{\textit{NestedExpr}}}
+\newcommand{\NestedAtomic}[1]{\ensuremath{\textit{NestedOffset}(#1)}}
+\newcommand{\Atomic}[1]{\ensuremath{\textit{Offset}(#1)}}
+%\newcommand{\In}{\mathcal{I}}
+%\newcommand{\Out}{\mathcal{O}}
+\newcommand{\Dom}{\mathcal{D}}
+%\newcommand{\sym}[1]{#1}
+%\newcommand{\sym}[1]{\ensuremath{\mathtt{#1}}}
+\newcommand{\sym}[1]{\ensuremath{\mathtt{#1}}}
+\newcommand{\symIF}{\sym{if}}
+\newcommand{\symTHEN}{\sym{then}\xspace}
+\newcommand{\symELSE}{\sym{else}\xspace}
+\newcommand{\symTRUE}{\sym{true}\xspace}
+\newcommand{\symFALSE}{\sym{false}\xspace}
+\newcommand{\symf}{\sym{f}}
+%\newcommand{\DOM}[1]{{#1}^{\Dom}}
+\newcommand{\domf}{\DOM{f}}
+\newcommand{\clock}[1]{\ensuremath{\text{$#1$}}\xspace}
+\newcommand{\clockn}{\clock{n}}
+\newcommand{\symDIV}{\sym{div}}
+\newcommand{\otau}{\overline{\tau}}
+\newcommand{\osigma}{\overline{\sigma}}
+\newcommand{\anext}[3]{\ensuremath{#1 \leadsto_{#3} #2}}
+
+
+\newcommand{\Pred}{\ensuremath{\textit{pred}}}
+% Language name
+\newcommand{\NSRV}{NestedSRV\xspace}
+\newcommand{\LOLA}{LOLA\xspace}
+
+
+% Translation stuff
+\newcommand{\tigger}{trigger\xspace}
+\newcommand{\tiggers}{triggers\xspace}
+\newcommand{\Tiggers}{Triggers\xspace}
+
+% To change!!!
+\newcommand{\SIC}{\ensuremath{\parallel_{\mathcal{P}}}}
+
+\newcommand{\ctrue}{\tbf{true}}
+\newcommand{\cfalse}{\tbf{false}}
+
+%\newcommand{\default}{c}
+
+% Specification
+\newcommand{\Spec}{\varphi}
+
+% Input variables
+\newcommand{\iv}{t}
+\newcommand{\ivcall}{\iv_{call}}
+\newcommand{\ivbeg}{\iv_{beg}}
+\newcommand{\ivend}{\iv_{end}}
+\newcommand{\ivret}{\iv_{ret}}
+% Output variable
+\newcommand{\ov}{s}
+% Any stream variable 
+\newcommand{\asv}{v}
+
+
+% Output stream
+\newcommand{\os}{\sigma}
+% Input streams
+\newcommand{\is}{\tau}
+\newcommand{\iscall}{\is_{call}}
+\newcommand{\isbeg}{\is_{beg}}
+\newcommand{\isend}{\is_{end}}
+\newcommand{\isret}{\is_{ret}}
+% Any stream
+\newcommand{\as}{\sigma}
+
+% Abstract sum over execution model
+\newcommand{\asum}[1]{\oplus_{#1}}
+\newcommand{\aminus}[1]{\ominus_{#1}}
+
+% Guess
+\newcommand{\G}{\mathcal{G}}
+
+\newcommand{\gaprev}[1]{\ensuremath{#1 . \ttt{prev}_{abs}}}
+\newcommand{\gcprev}[1]{\ensuremath{#1 . \ttt{prev}_{con}}}
+\newcommand{\gnow}[1]{\ensuremath{#1 . \ttt{now}}}
+\newcommand{\gcnext}[1]{\ensuremath{#1 . \ttt{next}_{con}}}
+\newcommand{\ganext}[1]{\ensuremath{#1 . \ttt{next}_{abs}}}
+
+% Input
+\newcommand{\inp}{\sigma}
+\newcommand{\Inp}{\Sigma}
+
+% Execution model
+\newcommand{\exm}{\eta}
+\newcommand{\Exm}{H}
+
+% Automata
+\newcommand{\LA}[1]{\mathcal{L}(#1)}
+
+% Path
+\newcommand{\path}{\alpha}
+
+% Common types
+\newcommand{\FNat}{\Nat_\bot}
+
+% Brackets, tuples
+\newcommand{\Bracket}[1]{\llbracket #1 \rrbracket}
+\newcommand{\Tup}[1]{\ensuremath{\langle #1 \rangle}}
+
+% Felipe's notes
+\newcommand{\felitodo}[1]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red]{Felipe: #1}}
+\newcommand{\felitext}[1]{\todo[inline,linecolor=red,backgroundcolor=red!25,bordercolor=red]{Felipe: #1}}
+
+
+\definecolor{darkblue}{rgb} {0.200, 0.200, 0.800}
+\definecolor{darkred} {rgb} {0.800, 0.200, 0.200}
+\definecolor{darkgreen}{rgb}{0.200, 0.800, 0.200}
+
+\newcommand{\colorEv}[2]{\ensuremath{\textcolor{#2}{\llbracket} #1
+    \textcolor{#2}{\rrbracket}}}
+\newcommand{\colorSigmaEval}[3]{\ensuremath{\colorEv{#1}{#3}_{#2}}}
+\newcommand{\colorEval}[2]{\colorEv{#1}{#2}}
+\newcommand{\colorEvalSigma}[2]{\colorSigmaEval{#1}{\sigma}{#2}}
+%\newcommand{\evalSpec}[1]{\colorSigmaEval{#1}{darkblue}}
+\newcommand{\evalSpec}[1]{\colorEval{#1}{black}}
+\newcommand{\evalSpecsigma}[2]{\colorEval{#1}{#2}{black}}
+\newcommand{\evalE}[1]{\colorEval{#1}{darkred}}
+\newcommand{\evalEsigma}[2]{\colorSigmaEval{#1}{#2}{darkred}}
+%\newcommand{\evalTau}[1]{\colorSigmaEval{#1}{darkgreen}}
+\newcommand{\evalTau}[1]{\colorEvalSigma{#1}{darkblue}}
+\newcommand{\evalTauN}[1]{\colorEval{#1}{darkblue}}
+\newcommand{\evalTausigma}[2]{\colorSigmaEval{#1}{#2}{darkblue}}
+\newcommand{\evalTicks}[1]{\colorEvalSigma{#1}{brown}}
+\newcommand{\evalTicksN}[1]{\colorEval{#1}{brown}}
+\newcommand{\evalTickssigma}[2]{\colorSigmaEval{#1}{#2}{brown}}
+\newcommand{\presentLabel}{\ensuremath{\mathcal{O}}}
+\newcommand{\pastLabel}{\ensuremath{\prec}}
+\newcommand{\edgesSpec}{\ensuremath{Edges_\spec}}
+\newcommand{\interp}{\mathcal{I}}
+\newcommand{\Val}{\mathit{V}}
+
+%\newcommand{\undef}{\reserved{undef}}
+
+\newcommand{\specialbot}[2]{\ensuremath{\bot^{#1}_{\text{#2}}}\xspace}
+\newcommand{\untypedspecialbot}[1]{\ensuremath{\bot_{\text{#1}}}\xspace}
+\newcommand{\D}{D}
+
+% \newcommand{\maybe}[2]{\ensuremath{\mathtt{Maybe}}^#1_{\text{#2}}}
+\newcommand{\T}{\ensuremath{\mathbb{T}}\xspace}
+\newcommand{\outT}{\specialbot{\T}{outside}}
+\newcommand{\outD}{\specialbot{\D}{outside}}
+\newcommand{\notickD}{\specialbot{\D}{notick}}
+\newcommand{\outDS}{\Syntax{outside}_\D}
+\newcommand{\outTS}{\Syntax{outside}_{\T}}
+\newcommand{\notickDS}{\Syntax{notick}_\D}
+\newcommand{\maybe}[2]{\ensuremath{#1 \cup \{\specialbot{#1}{#2}\}}}
+% \newcommand{\outT}{\untypedspecialbot{outside}}
+% \newcommand{\outD}{\untypedspecialbot{outside}}
+% \newcommand{\notickD}{\untypedspecialbot{notick}}
+% \newcommand{\outDS}{\Syntax{outside}}
+% \newcommand{\outTS}{\Syntax{outside}}
+% \newcommand{\notickDS}{\Syntax{notick}}
+
+\newcommand{\maybeOutT}{\maybe{\T}{outside}}
+\newcommand{\maybeOutD}{\maybe{D}{outside}}
+\newcommand{\maybeNotickD}{\maybe{D}{notick}}
+\newcommand{\undef}{\reserved{undef}} % Might be confusing with bottom
+
+\newcommand{\entails}{\vdash}
+\newcommand{\nonZenoT}{2^{\T}_{nz}}
+\newcommand{\offsetEps}{\T_\epsilon}
+
+\newcommand{\lambdatS}[1]{\Syntax{(\text{\textlambda} t . }#1\Syntax{)}}
+\newcommand{\evalAlphaT}[1]{\colorSigmaEval{#1}{black}\alpha_t}
+\newcommand{\evalAlpha}[1]{\colorSigmaEval{#1}{black}\alpha}
+
+\newcommand{\Eval}{\mathit{Eval}\xspace}
+\newcommand{\EvalPhi}{\ensuremath{\Eval_\varphi}\xspace}
+
+% Processors
+\newcommand{\colorboxnode}[2]{%
+    \colorlet{currentcolor}{.}%
+    {\color{#1}%
+    \fbox{\color{currentcolor}\strut \ensuremath{#2}}}%
+    \xspace
+}
+\newcommand*{\tickNode}[1]{\colorboxnode{green}{#1}}
+\newcommand*{\valueNode}[1]{\colorboxnode{blue}{#1}}
+\newcommand*{\gateNode}[1]{\colorboxnode{black}{#1}}
+
+\newcommand*{\delayTickNode}{\tickNode{delay}}
+\newcommand*{\srcTickNode}{\tickNode{srcTick}}
+\newcommand*{\constTickNode}{\tickNode{constTick~c}}
+\newcommand*{\UTickNode}{\tickNode{UTick}}
+
+\newcommand*{\prevNode}{\valueNode{prev}}
+\newcommand*{\prevEqNode}{\valueNode{prevEq}}
+\newcommand*{\prevValNode}{\valueNode{prevVal}}
+\newcommand*{\prevEqValNode}{\valueNode{prevEqVal}}
+\newcommand*{\funcNode}{\valueNode{func~f}}
+\newcommand*{\tNode}{\valueNode{\mathbf{t}}}
+
+\newcommand*{\coreNode}{\gateNode{core}}
+\newcommand*{\inputNode}{\gateNode{in}}
+
+\newcommand*{\StreamT}[1]{\ensuremath{\mathcal{S}_{#1}}}
+\newcommand*{\StreamProgressT}[1]{\ensuremath{\mathcal{S}^{\progressEv}_{#1}}}
+\newcommand*{\StreamUnit}{\StreamT{Unit}}
+\newcommand*{\StreamProgressUnit}{\StreamProgressT{Unit}}
+
+% Processor functions
+\newcommand*{\voteFun}{\ensuremath{vote}\xspace}
+\newcommand*{\execFun}{\ensuremath{exec}\xspace}
+\newcommand*{\rinseFun}{\ensuremath{rinse}\xspace}
+\newcommand*{\mayTickFun}{\ensuremath{mayTick}\xspace}
+\newcommand*{\computeValFun}{\ensuremath{computeVal}\xspace}
+
+% Progress events data
+\newcommand*{\progressEv}{\untypedspecialbot{progress}}
+
+% Translation phase
+\newcommand*{\signalFun}{\ensuremath{signalNode}\xspace}
+\newcommand*{\translateTicks}[1]{\ensuremath{translateTicks(#1)}\xspace}
+\newcommand*{\translateSpec}{\ensuremath{translateSpec}\xspace}
+\newcommand*{\translateVal}[1]{\ensuremath{translateVal(#1)}\xspace}
+
+% System state
+\newcommand*{\quiescT}{\ensuremath{\T \cup \{-\infty\}}\xspace}
+\newcommand*{\globalSystem}{\ensuremath{S}\xspace}
+\newcommand*{\graph}{\ensuremath{G}\xspace}
+\newcommand*{\graphT}{\ensuremath{\tupleof{V,E}}\xspace}
+\newcommand*{\eStates}{\ensuremath{\Sigma_E}\xspace}
+\newcommand*{\vStates}{\ensuremath{\Sigma_V}\xspace}
+\newcommand*{\inputTagT}{\ensuremath{InTag}\xspace}
+\newcommand*{\nodeStateT}{\ensuremath{nodeState}\xspace}
+\newcommand*{\edgeStateT}{\ensuremath{edgeState}\xspace}
+\newcommand*{\vStateFunT}{\ensuremath{(V \to \nodeStateT)}\xspace}
+\newcommand*{\eStateFunT}{\ensuremath{(V \times \inputTagT \to \edgeStateT)}\xspace}
+\newcommand*{\dynSys}{\ensuremath{\Sigma}\xspace}
+\newcommand*{\dynSysT}{\ensuremath{\tupleof{\vStateFunT, \eStateFunT}}\xspace}
+\newcommand*{\portTag}[1]{\ensuremath{\mathtt{#1}}\xspace}
+
+% Channel functions
+\newcommand*{\writeChansFun}{\ensuremath{writeChannels}\xspace}
+\newcommand*{\readChansFun}{\ensuremath{readChannels}\xspace}
+\newcommand{\emptyChannel}{\specialbot{\D}{emptychannel}}
+
+% Operational semantics
+\newcommand{\ticksDef}[1]{\mathcal{E}^{ticks}_{#1}}
+\newcommand{\valsDef}[1]{\mathcal{E}^{vals}_{#1}}
+
+
+
+\newcommand{\colorHEval}[2]{\colorSigmaEval{#1}{H}{#2}}
+\newcommand{\evalEH}[1]{\colorHEval{#1}{darkred}}
+\newcommand{\evalTicksH}[1]{\colorHEval{#1}{brown}}
+
+\newcommand{\opEval}[5]{\colorSigmaEval{#4}{#5}{#2\vert_{#1,#3}}(#3)}
+\newcommand{\mayTick}[4]{\opEval{#2}{#3}{#4}{#1}{brown}}
+\newcommand{\computeVal}[4]{\opEval{#2}{#3}{#4}{#1}{darkred}}
+\newcommand{\computeTau}[4]{\opEval{#2}{#3}{#4}{#1}{darkblue}}
+
+% Dependency graph
+\newcommand{\ddep}{\rightarrow}
+\newcommand{\ddepPres}{\xrightarrow{0}}
+\newcommand{\ddepPresStar}{\xrightarrow{\smash{0}}^*}
+
+\newcommand{\ddepPast}{\xrightarrow{-}}
+\newcommand{\ddepFut}{\xrightarrow{+}}
+
+\newcommand{\Present}{\textit{Present}}
+\newcommand{\Past}{\textit{Past}}
+\newcommand{\Future}{\textit{Future}}
+
+%%%% For algorithmic
+
+% New definitions
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\texttt{assert}}
+\algnewcommand\Assert[1]{\State \algorithmicassert(#1)}%
+% New "environments"
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1\ \algorithmicdo}{\algorithmicend\ \algorithmicswitch}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}%
+\algtext*{EndSwitch}%
+\algtext*{EndCase}%
+
+%%%
+\newcommand{\SUP}{\ensuremath{\mathit{sup}}}
+
+\newcommand{\tin}{\ensuremath{t_\textit{in}}}
+%\newcommand{\tqin}{\ensuremath{t_q^{\textit{in}}}}
+\newcommand{\tqin}{\tin}
+\newcommand{\tout}{\ensuremath{t_\textit{out}}}
+%\newcommand{\tqout}{\ensuremath{t_q^{\textit{out}}}}
+\newcommand{\tqout}{\tout}
+\newcommand{\append}{\textit{append}}
+\newcommand{\tq}{\ensuremath{t_q}}
+
+\newcommand{\App}{\ensuremath{\mathrel{\scalebox{0.8}{++}}}}
+
+\newcommand{\PrevStt}[1]{\ensuremath{\textbf{\texttt{<<}}~#1}}
+\newcommand{\PrevEqStt}[1]{\ensuremath{\textbf{\texttt{<\~}}~#1}}
+
+\newcommand{\SY}[1]{\text{\texttt{#1}}}
+\newcommand{\PrevEqV}[1]{\SY{(\~}#1\SY{)}}
+\newcommand{\PrevV}[1]{\SY{(<}#1\SY{)}}
+\newcommand{\SuccEqV}[1]{\SY{(}#1\SY{~)}}
+\newcommand{\SuccV}[1]{\SY{(}#1\SY{>)}}

@@ -1,0 +1,13 @@
+\begin{figure}[ht]
+	\begin{algorithm}[H]
+          \caption{\small Wrapper for function DPO.\textbf{EpochInc}$(h)$ for algorithm~\ref{DPO-alg1}.}
+          \label{DPO-wEpochInc1}
+          \begin{algorithmic}[1]
+		    \Function{WEpochInc}{$h$}
+			\State \<call> \<DPO>.\<EpochInc>\((h)\) in \(3f+1\) different servers.
+		%	\State \textbf{wait } response $ACK$ from 1 server.
+			\State \<return> \<call>
+			\EndFunction
+		\end{algorithmic}
+	\end{algorithm}\vspace{-2em}
+\end{figure}
