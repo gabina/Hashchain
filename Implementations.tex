@@ -63,41 +63,53 @@ Esto involucra, por un lado, los métodos presentados como parte de la API de
 \setchain y, por el otro, los perteniences a la interfaz de aplicación de
 blockchain ~(ver sección ~\ref{sec:prelim}).
 
-\section{Primera implementación: vainilla}\label{sec:vanilla}
+\section{Primera implementación: Vainilla}\label{sec:vanilla}
 
-\input{algorithms/alg-api-vanilla}
+Vainilla se presenta como la solución más sencilla a la API de \setchain
+utilizando Tendermint.
 %
-En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
-de \setchain utilizando Tendermint.
+La característica principal que le otorga sencillez a esta solución es que
+un cliente invocando \Add(e) se traduce en una nueva transacción de Tendermint en la red,
+que representa a ese y solo a ese elemento a añadir a la \setchain.
+%
+Que $e$ sea finalmente añadido a la \setchain dependerá de si la transacción asociada
+al mismo se incluye en un bloque que, a su vez, eventualmente se agrega a la blockchain
+subyacente de Tendermint. 
+
+\subsection{Flujo de mensajes}
+En la Figura~\ref{fig:vanilla-flow} se muestra el flujo usual de mensajes que se inicia
+cuando un cliente invoca \Add(e).
 %
 
-Los clientes agregan elementos invocando (indirectamente) a la función
-\texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
-la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}.
+El proceso comienza con el sistema en su estado inicial (Figura (a)), a la espera de que algún cliente
+se conecte con esa instancia particular (una máquina conectada a la red) para agregar un elemento.
+El Tendermint Core expone sus puntos de entrada RPC, que serán utilizados por parte de la API de
+\setchain. Por su parte, la aplicación mantiene una instancia de la \setchain.
 %
 
-Para dar una implementación completa de \setchain utilizando Tendermint, además se
-deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
-(ver sección~\ref{subsec:abci}). 
+En la Figura (b) se observa el resultado de un cliente invocando \Add(e): el cliente, mediante
+la API de \setchain, envía un elemento $e$, y la API de \setchain, a su vez, se comunica con el
+punto de entrada del Tendermint Core para enviar una transacción $t_e$ que representa a $e$.
+Es importante notar que el cliente envía \textit{elementos}, pero en la red de Tendermint
+lo que circulan son \textit{transacciones}.
 %
 
-El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
-Vainilla.
-%
-Solo se definen \CheckTx, \DeliverTx, y \EndBlock; el resto tiene implementaciones
-triviales.
+Para determinar si la nueva transacción debe ser difundida en la red, Tendermint chequea que
+sea válida por medio de \CheckTx, y si lo es, entonces inserta la transacción en la mempool.
+En caso contrario, la descartará, el flujo de dicha transacción terminará, y el elemento $e$
+asociado a ella no será agregado a la \setchain.
+La petición \CheckTx se muestra en la Figura (c).
 
 %
-El flujo usual de elementos agregados al invocar \Add(e) en esta implementación es el siguiente.
+Si la transacción $t_e$ llega a la mempool, luego de un tiempo, es esperable que sea añadida a un
+bloque de Tendermint, propuesto como siguiente bloque en la cadena, como parte del algoritmo de
+consenso.
+Una vez que dicho bloque obtiene todos los votos necesarios para ser considerado
+\textit{commited by the network}, comenzará una nueva instancia de consenso. En la Figura (d)
+se representa que el siguiente bloque fue consensuado por parte del Tendermint Core.
+
 %
-Comp primer paso, Tendermint chequea que el elemento $e$ a agregar sea válido a través de
-\CheckTx, y si lo es, entonces insertará el elemento en la mempool. En caso contrario,
-lo descartará y el flujo de dicho elemento terminará.
-%
-Si el elemento $e$ llega a la mempool, luego de un tiempo, es esperable que sea añadido a un
-bloque de Tendermint, propuesto como siguiente bloque en la cadena como parte del algoritmo de
-consenso. Una vez que dicho bloque obtiene todos los votos necesarios para ser considerado
-\textit{commited by the network}, Tendermint enviará
+El siguiente paso será que el Tendermint Core envíe
 la secuencia correspondiente de pedidos a la aplicación: \BeginBlock para indicar el inicio de
 un nuevo bloque,
 una lista de llamadas a \DeliverTx por cada transacción agregada (en el orden en que fueron
@@ -105,56 +117,25 @@ consensuadas dentro del bloque)\footnote{En esta implementación
 una \textit{transacción} agregada coincide con un \textit{elemento} agregado.},
 \EndBlock para indicar la finalización del bloque, y \Commit para señalizar que el nuevo estado
 puede ser persistido.
+%
+Si la transacción $t_e$ de Tendermint asociada a $e$ es parte de dicho bloque,
+entonces con seguridad, una de las llamadas a \DeliverTx tendrá como argumento a $t_e$.
+Esto se visualiza en la Figura (e).
 
-%\input{algorithms/alg-abci-vanilla}
-
-En esta versión, chequear si una transacción es válida consiste en simplemente chequear
-la validez del elemento, dado que las transacciones contienen un único elemento.
 %
-Puede parecer absurdo definir la función \texttt{getElementFromTransaction()}
-en este caso (dado que es la función identidad). Sin embargo, la decisión de dar
-la definición explícita se basa en enfatizar la diferencia conceptual entre una
-transacción de Tendermint, y los elementos a añadir en la \setchain.
-%
-
-El Tendermint core envía peticiones \DeliverTx asíncronamente (pero en orden)
-una vez por cada transacción en el bloque.
-%
-Nótese que las transacciones ya fueron ordenadas en el consenso global por el protocolo
-de Temndermint cuando \DeliverTx se ejecuta.
-%
-Para este algoritmo, la única acción a realizar por parte de la ABCI cuando se recibe una
-transacción es añadir el elemento subyacente a la \setchain siempre y cuando el mismo
-sea válido.
-%
-Siempre es necesario chequear del lado de la ABCI si una transacción es válida.
-%
-Nótese que un nodo correcto podría chequear la transacción antes de agregarla a la
-mempool,
-y que el resultado de esa validación cambie para el momento en que ésta arriva a la
-ABCI.
-%
-Por otro lado, un nodo bizantino podría añadir transacciones sin chequear
-su validez previamente.
-%
-Tendermint envía peticiones \EndBlock una única vez por bloque, luego de haber
-enviado todas las transacciones dentro del mismo.
-%
-En este algoritmo, la finalización de un bloque desencadena un incremento de época
-y, por lo tanto, cada bloque de Tendermint define una época distitna de \setchain.
-%
-Finalmente, cuando los clientes invocan \Get, indirectamente inician una llamada
-a la función \<abciquery>, que retorna la \setchain. EXPLICITAR QUÉ PINTA TIENE ESTO.
-
+El último paso en este flujo (Figura (f)) muestra que una nueva época se agregó a la \setchain,
+en donde uno de sus elementos es $e$.
 
 \begin{figure}
-  \subfloat[fig 1]{\includegraphics[width = 3in]{figures/vanilla-flow-0.png}} 
-  \subfloat[fig 2]{\includegraphics[width = 3in]{figures/vanilla-flow-1.png}}\\
-  \subfloat[fig 3]{\includegraphics[width = 3in]{figures/vanilla-flow-2.png}}
-  \subfloat[fig 4]{\includegraphics[width = 3in]{figures/vanilla-flow-3.png}} 
-  \caption{Add your own figures before compiling}
-  \label{some example}
-  \end{figure}
+  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/vanilla-flow-0.png}} 
+  \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}}\\
+  \subfloat[$e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}}
+  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}}\\
+  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}}
+  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}} 
+  \caption{Flujo usual de mensajes}
+  \label{fig:vanilla-flow}
+\end{figure}
 
 % \begin{figure}
 %   \begin{subfigure}{.7\textwidth}
@@ -185,7 +166,7 @@ a la función \<abciquery>, que retorna la \setchain. EXPLICITAR QUÉ PINTA TIEN
 %   \label{fig:fig}
 %   \end{figure}
 
-\subsubsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
+\subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %
 Como se mencionó antes, cuando un proceso cliente utiliza la API de \setchain
 para añadir un elemento, o para recuperar el estado actual de la \setchain,
@@ -266,7 +247,77 @@ La validez de los elementos regulares se chequea a través de la ya mencionada f
 Sin enmbargo, un elemento de prueba de época necesita ser validado de otra manera: verificando la firma.
 %
 
-\subsubsection{Conclusión}
+\subsection{Algoritmos}
+
+\input{algorithms/alg-api-vanilla}
+%
+En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
+de \setchain.
+%
+
+Los clientes agregan elementos invocando (indirectamente) a la función
+\texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
+la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}.
+%
+
+Para dar una implementación completa de \setchain utilizando Tendermint, además se
+deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
+(ver sección~\ref{subsec:abci}). 
+%
+
+\input{algorithms/alg-abci-vanilla}
+El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
+Vainilla.
+%
+Solo se definen \CheckTx, \DeliverTx, y \EndBlock; el resto tiene implementaciones
+triviales.
+
+En esta versión, chequear si una transacción es válida consiste en simplemente chequear
+la validez del elemento, dado que las transacciones contienen un único elemento.
+%
+Puede parecer absurdo definir la función \texttt{getElementFromTransaction()}
+en este caso (dado que es la función identidad). Sin embargo, la decisión de dar
+la definición explícita se basa en enfatizar la diferencia conceptual entre una
+transacción de Tendermint, y los elementos a añadir en la \setchain.
+%
+
+El Tendermint core envía peticiones \DeliverTx asíncronamente (pero en orden)
+una vez por cada transacción en el bloque.
+%
+Nótese que las transacciones ya fueron ordenadas en el consenso global por el protocolo
+de Temndermint cuando \DeliverTx se ejecuta.
+%
+Para este algoritmo, la única acción a realizar por parte de la ABCI cuando se recibe una
+transacción es añadir el elemento subyacente a la \setchain siempre y cuando el mismo
+sea válido.
+%
+Siempre es necesario chequear del lado de la ABCI si una transacción es válida.
+%
+Nótese que un nodo correcto podría chequear la transacción antes de agregarla a la
+mempool,
+y que el resultado de esa validación cambie para el momento en que ésta arriva a la
+ABCI.
+%
+Por otro lado, un nodo bizantino podría añadir transacciones sin chequear
+su validez previamente.
+%
+
+Tendermint envía peticiones \EndBlock una única vez por bloque, luego de haber
+enviado todas las transacciones dentro del mismo.
+%
+En este algoritmo, la finalización de un bloque desencadena un incremento de época
+y, por lo tanto, cada bloque de Tendermint define una época distitna de \setchain.
+%
+
+Finalmente, cuando los clientes invocan \Get, indirectamente inician una llamada
+a la función \<abciquery>, que retorna la \setchain hasta la época \texttt{epoch - 1}.
+Nótese que la época actual (\texttt{epoch}) puede estar siendo modificada en el momento
+en que \<abciquery> se invoca, por lo que no sería correcto que \Get la retorne, puesto que
+podría ser una visión parcial de la misma. 
+
+EXPLICITAR QUÉ PINTA TIENE ESTO.
+
+\subsection{Conclusión}
 Si bien la implementación descripta en esta sección implementa \setchain, no está explotando su idea
 principal: relajar el orden total entre los elementos.
 %
@@ -282,23 +333,27 @@ entre elementos.
 % when adding the elements from the same block to a specific epoch.
 
 
-\subsection{Segunda implementación: Compresschain}\label{subsec:compresschain}
+\section{Segunda implementación: Compresschain}\label{subsec:compresschain}
 
 Para acercanos a la especificación de \setchain, en esta sección proponemos
-empaquetar elementos en un bache, formando un conjunto y comprimiéndolo
+empaquetar elementos en un lote, formando un conjunto y comprimiéndolo
 previamente a su difusión.
 %
+
 Se propone una implementación nueva, llamada \emph{Compresschain}, que explora
-la relajación de orden propuesta por \setchain, aún corriendo el algoritmo de
+la relajación de orden propuesta por \setchain, aún ejecutando el algoritmo de
 consenso de Tendermint por detrás.
 %
+
 En lugar de difundir inmediatamente cada elemento añadido por un cliente como una
 transacción de Tendermint, una nueva pieza intermedia de software llamada \textit{collector}
-es responsable de recolectar elementos hasta llegar a un bache suficientemente grande,
+es responsable de recolectar elementos hasta llegar a un lote suficientemente grande,
 que es difundido como una única transacción.
 %
-Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo de codificación RLP de
-Ethereum~\cite{ethereum} y el algoritmo de compresión Brotli~\cite{brotli.compressor}
+
+Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo de codificación
+\textit{Recursive Length Prefix} (RLP)~\cite{ethereum}
+y el algoritmo de compresión Brotli~\cite{brotli.compressor}.
 ~\footnote{ Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
 %
 % This means that a new
@@ -311,10 +366,10 @@ Ethereum~\cite{ethereum} y el algoritmo de compresión Brotli~\cite{brotli.compr
 %
 
 En lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
-primero se recolectan y se codifican utilizando RLP y, una vez que el bache está listo,
-se comprime el bache con el agoritmo de compresión Brotli.
+primero se recolectan y se codifican utilizando RLP y, una vez que el lote está listo,
+se comprime con el agoritmo de compresión Brotli.
 %
-Un bache se considera \textit{listo} para ser enviado una vez que o bien alcanza un tamaño máximo,
+Un lote se considera \textit{listo} para ser enviado una vez que o bien alcanza un tamaño máximo,
 o bien una cantidad razonable de tiempo transacurrió desde que el primer elemento llegó. 
 %
 En el Algoritmo ~\ref{alg:collector-brotli} se muestra una implementación posible para un \textit{collector}.
@@ -396,7 +451,7 @@ En este caso, las épocas se definen como transacciones: cada bache de elementos
 
 % To dicuss: if epochs are defined by batches, then epochs are generated by the same node.
 % This is a new setchain property and may be undesirable. 
-\subsection{Tercera implementación: HashChain}\label{subsec:hashchain}
+\section{Tercera implementación: HashChain}\label{subsec:hashchain}
 %
 Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
 funciones hash en lugar de compresión en Brotli.
