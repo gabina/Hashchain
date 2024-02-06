@@ -191,7 +191,7 @@ h
 \usepackage{stmaryrd}
 \usepackage{array}
 \usepackage{cesar-llncs}
-\usepackage{ltlfonts}
+%\usepackage{ltlfonts}
 \usepackage{color}
 %\usepackage[table]{xcolor}
 %\usepackage{bussproofs}
