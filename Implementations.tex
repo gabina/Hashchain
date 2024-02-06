@@ -129,7 +129,7 @@ en donde uno de sus elementos es $e$.
 \begin{figure}
   \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/vanilla-flow-0.png}} 
   \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}}\\
-  \subfloat[$e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}}
+  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}}
   \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}}\\
   \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}}
   \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}} 
@@ -481,7 +481,7 @@ antes de introducirlo a la red de Tendermint.
 Los baches hasheados son difundidos como transacciones y compartidos a través de toda la red, de forma
 análoga al enfoque empleado para los baches comprimidos en Compresschain.
 
-\subsubsection{Algoritmo distribuído para la inversión de hashes}
+\subsection{Algoritmo distribuído para la inversión de hashes}
 
 Como ya se mencionón, el \textit{hash collector} adopta un concepto similar al \textit{compression collector}
 de Compresschain. Sin embargo, la definición de la ABCI para Hashchain es considerablemente más compleja.
@@ -622,7 +622,7 @@ es actualiado con el nuevo descubrimiento.
 % Something we discussed with Marga: when the collector creates a hash h and signs it, and broadcast (h, s) every call to CheckTx(h, s) will be true, as no one is expected to have the reverse of h the first time they see it. Because of that, (h, s) in the hashchain doesn't mean that there is at least one good valid element in the h. h could be full of garbage
 % A client could contact every collector node with the same elements, and every collector would broadcast (h, sn), with n being the n-collector. This could cause that hash h consolidates, without anyone really having checking elements in h. Is that bad? not too bad, only an empty epoch would occur. Possible fixes: collector hashes elements + pubkey, chain of signatures
 
-\subsubsection{Consolidación de épocas}\label{subsubsec:consolidation}
+\subsection{Consolidación de épocas}\label{subsubsec:consolidation}
 
 En esta implementación, las épocas se definen por todos los elementos en un hash, similar
 a la implementación de Compresschain.
@@ -734,7 +734,7 @@ no consolidarán en la ronda actual; sin embargo, pueden hacerlo en el futuro.
 % Do not use this because we want a proof that specific elements belong to a specific epoch.
 %Client processes do not know if they are contacting a Byzantine or correct process. The general idea of a client protocol that wants to ensure that an element is going to be added to the \setchain is to interact with enough servers to guarantee that some are correct. To guarantee contacting at least one correct server, the client needs to send f + 1 messages. However, each element added to the \setchain comes from a consolidated hash. That means that we already have \textbf{SIGNATURES\_PER\_HASH} validator's signatures for that hash. Those signatures may act as a proof for the batch of elements that really belongs to the \setchain. If that proof is added to the epoch as an extra element, a client sending an element, waiting for a while, and then requesting a Get to only one server (hoping it is correct server) may be sure that its element belongs to the \setchain because the epoch comes along a proof of their elements. 
 
-\subsubsection{Ataques front-running}
+\subsection{Ataques front-running}
 En el contexto de las blockchains, un ataque de front-running refiere a una situación en donde
 un actor malicioso explota conocimiento sobre transacciones pendientes para obtener una ventaja
 desleal. Debido a que las transacciones pendientes son públicas, un usuario malicioso puede
@@ -843,7 +843,7 @@ y por lo tanto, $v$ ganaría el juego haciendo trampa.
 
 \input{algorithms/alg-api-hash}
 
-\subsubsection{Detalles de implementación}\label{subsubsec:details}
+\subsection{Detalles de implementación}\label{subsubsec:details}
 
 No definimos un nuevo \texttt{collector} para \hashchain dado que es similar al definido
 para Compresschain, con la única diferencia del uso de funciones hash.
