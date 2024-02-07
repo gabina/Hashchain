@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.24">
-<info created="D:20100311191937" modified="D:20240204182242" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
+<info created="D:20100311191937" modified="D:20240206200121" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
 <preamble>
 \input{preamble}</preamble>
 <bitmap id="1" width="512" height="512" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="4518" alphaLength="7522" encoding="base64">
@@ -26617,7 +26617,7 @@ h
 <path matrix="0.43825 0 0 0.43825 564.346 246.525" stroke="black">
 35.7771 0 0 35.7771 48 464 e
 </path>
-<text matrix="0.43825 0 0 0.43825 529.859 272.992" transformations="translations" pos="132 384" stroke="black" type="label" width="8.61084" height="7.76061" depth="0" valign="baseline" size="small">$e$</text>
+<text matrix="0.43825 0 0 0.43825 529.859 272.992" transformations="translations" pos="132 384" stroke="black" type="label" width="8.61084" height="7.76061" depth="0" valign="baseline" size="small" style="math">e</text>
 </page>
 <page>
 <layer name="alpha"/>
@@ -26628,13 +26628,14 @@ h
 <layer name="zeta"/>
 <layer name="eta"/>
 <layer name="theta"/>
-<view layers="alpha" active="alpha"/>
-<view layers="alpha beta" active="beta"/>
-<view layers="alpha beta theta" active="theta"/>
-<view layers="alpha beta eta theta" active="eta"/>
-<view layers="alpha beta delta eta theta" active="delta"/>
-<view layers="alpha beta delta zeta eta theta" active="zeta"/>
-<view layers="alpha beta delta epsilon zeta eta theta" active="epsilon"/>
+<layer name="iota"/>
+<view layers="alpha iota" active="iota"/>
+<view layers="alpha beta iota" active="beta"/>
+<view layers="alpha beta theta iota" active="theta"/>
+<view layers="alpha beta eta theta iota" active="eta"/>
+<view layers="alpha beta delta eta theta iota" active="delta"/>
+<view layers="alpha beta delta zeta eta theta iota" active="zeta"/>
+<view layers="alpha beta delta epsilon zeta eta theta iota" active="epsilon"/>
 <view layers="alpha beta gamma delta epsilon zeta eta theta" active="gamma"/>
 <path layer="alpha" matrix="1 0 0 1 44 88" stroke="black" opacity="70%" stroke-opacity="opaque">
 288.351 320.143 m
@@ -26694,7 +26695,6 @@ h
 624 384 l
 h
 </path>
-<text matrix="1 0 0 1 56.2985 15.4875" transformations="translations" pos="320 400" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
 <text matrix="1 0 0 1 75.1272 -2.25813" transformations="translations" pos="320 368" stroke="black" type="label" width="41.7457" height="12.5163" depth="0" valign="baseline" size="small">ABCI</text>
 <path matrix="1 0 0 1 44 88" stroke="black" fill="lightblue">
 172 268 m
@@ -26709,9 +26709,6 @@ h
 <group matrix="1 0 0 1 96 -122.258" decoration="decoration/rounded-box-small-white">
 <text transformations="translations" pos="108 416" stroke="black" type="label" width="35.6835" height="12.5163" depth="0" valign="baseline" size="small">RPC</text>
 </group>
-<group layer="delta" matrix="1 0 0 1 -124.291 188" decoration="decoration/3d-box">
-<text matrix="1 0 0 1 64.4437 -19.4763" transformations="rigid" pos="340 200" stroke="black" type="label" width="65.116" height="7.51941" depth="2.4924" valign="baseline" size="tiny">CheckTx(......)</text>
-</group>
 <group layer="epsilon" matrix="1 0 0 1 199.015 224.236" decoration="decoration/3d-box">
 <text matrix="1 0 0 1 13.8091 0" transformations="translations" pos="330.51 174.704" stroke="black" type="label" width="50.3404" height="6.97068" depth="1.9296" valign="baseline" size="tiny">BeginBlock</text>
 <text matrix="1 0 0 1 7.76872 0.703284" transformations="translations" pos="340.262 158.825" stroke="black" type="label" width="42.9175" height="6.95259" depth="0" valign="baseline" size="tiny">DeliverTx</text>
@@ -26720,8 +26717,8 @@ h
 <text transformations="translations" pos="351.793 112.592" stroke="black" type="label" width="35.3921" height="6.95259" depth="0" valign="baseline" size="tiny">Commit</text>
 <text matrix="1 0 0 1 7.7685 -12.5428" transformations="translations" pos="340.262 158.825" stroke="black" type="label" width="42.9175" height="6.95259" depth="0" valign="baseline" size="tiny">DeliverTx</text>
 </group>
-<text matrix="1 0 0 1 24 -11.0693" transformations="translations" pos="600 456" stroke="black" type="label" width="71.9339" height="6.96465" depth="1.9899" valign="baseline" size="tiny">\texttt{DeliverTx($t_e$)}</text>
-<path stroke="black" dash="dotted" arrow="latexarc/normal">
+<text matrix="1 0 0 1 -20 12.9307" transformations="translations" pos="600 456" stroke="black" type="label" width="123.002" height="12.5303" depth="1.4874" valign="baseline" size="small">\texttt{DeliverTx( .)}</text>
+<path matrix="0.5 0 0 1.33333 296 -125.333" stroke="black" dash="dotted" arrow="latexarc/normal">
 592 384 m
 592 384
 640 376
@@ -26739,7 +26736,7 @@ h
 376 192 l
 h
 </path>
-<text matrix="1 0 0 1 328 336" transformations="translations" pos="160 108" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 332 336" transformations="translations" pos="160 108" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
 <path matrix="0.348926 0 0 1 471.748 -23.218" stroke="black" arrow="latexarc/normal">
 80 472.021 m
 128 472.021 l
@@ -26800,55 +26797,7 @@ h
 168 300 m
 168 300 l
 </path>
-<path layer="gamma" matrix="0.526408 0 0 0.35 418.07 408.8" stroke="black" fill="lightgray">
-96 192 m
-96 32 l
-376 32 l
-376 192 l
-h
-</path>
-<group layer="alpha" matrix="1 0 0 1 8.02982 0" decoration="decoration/rounded-box-small-white">
-<text matrix="1 0 0 1 345.319 312" transformations="translations" pos="156 164" stroke="black" type="label" width="37.8423" height="6.95259" depth="0" valign="baseline" size="tiny">Setchain</text>
-</group>
-<text layer="gamma" matrix="1 0 0 1 316 336" transformations="translations" pos="160 108" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
-<path matrix="0.348926 0 0 1 459.748 -23.218" stroke="black" arrow="latexarc/normal">
-80 472.021 m
-128 472.021 l
-</path>
-<text matrix="1 0 0 1 305.729 36.37" transformations="translations" pos="187.957 387.572" stroke="black" type="label" width="56.077" height="6.97068" depth="1.9296" valign="baseline" size="tiny">epoch = n-1</text>
-<group matrix="0.775379 0 0 0.775379 416.178 364.259">
-<use matrix="0.576073 0 0 0.576073 112.799 -156.494" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 112.799 -156.494" name="mark/disk(sx)" pos="48 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 131.234 -156.494" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 112.799 -147.277" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 117.575 -165.637" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 119.012 -150.311" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 124.76 -143.605" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 126.196 -164.679" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.576073 0 0 0.576073 128.112 -151.748" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<path matrix="0.576073 0 0 0.576073 112.799 -156.494" stroke="black">
-35.7771 0 0 35.7771 48 464 e
-</path>
-</group>
-<path matrix="0.348926 0 0 1 519.748 -23.218" stroke="black" arrow="latexarc/normal">
-80 472.021 m
-128 472.021 l
-</path>
-<text matrix="1 0 0 1 373.729 36.37" transformations="translations" pos="187.957 387.572" stroke="black" type="label" width="47.2129" height="6.97068" depth="1.9296" valign="baseline" size="tiny">epoch = n</text>
 <text layer="beta" matrix="1 0 0 1 -30.5163 -58.0746" transformations="translations" pos="132 384" stroke="black" type="label" width="9.46107" height="7.76061" depth="0" valign="baseline" size="small">\texttt{e}</text>
-<use layer="gamma" matrix="0.43825 0 0 0.43825 560.346 246.525" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 560.346 246.525" name="mark/disk(sx)" pos="48 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 578.37 250.525" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 564.346 253.537" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 563.979 243.569" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 569.072 251.229" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 573.445 256.33" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 570.538 236.298" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<use matrix="0.43825 0 0 0.43825 571.995 246.136" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
-<path matrix="0.43825 0 0 0.43825 564.346 246.525" stroke="black">
-35.7771 0 0 35.7771 48 464 e
-</path>
-<text matrix="0.43825 0 0 0.43825 529.859 272.992" transformations="translations" pos="132 384" stroke="black" type="label" width="8.61084" height="7.76061" depth="0" valign="baseline" size="small" style="math">e</text>
 <path layer="alpha" matrix="0.793103 0 0 1.28571 44.4138 -192" stroke="black" fill="imdeacyanone">
 60 476 m
 176 476 l
@@ -26876,10 +26825,112 @@ h
 <text matrix="1 0 0 1 -16.7751 49.8649" transformations="translations" pos="192 272" stroke="black" type="label" width="9.46107" height="7.76061" depth="0" valign="baseline" size="small">\texttt{e}</text>
 <text matrix="1 0 0 1 7.5224 21.293" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
 </group>
-<group layer="delta" matrix="1 0 0 1 152 48" decoration="decoration/tabbed">
+<group layer="delta" matrix="1 0 0 1 0 -1.1094">
+<group matrix="1 0 0 1 -48 0" decoration="decoration/3d-box">
+<text matrix="1 0 0 1 -59.8473 168.524" transformations="rigid" pos="340 200" stroke="black" type="label" width="107.215" height="13.5193" depth="4.5024" valign="baseline" size="small">CheckTx( .. )</text>
+</group>
+<group matrix="1 0 0 1 140 48" decoration="decoration/tabbed">
 <text matrix="1 0 0 1 7.5224 37.293" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
 <text matrix="1 0 0 1 -16.7751 49.8649" transformations="translations" pos="192 272" stroke="black" type="label" width="9.46107" height="7.76061" depth="0" valign="baseline" size="small">\texttt{e}</text>
 <text matrix="1 0 0 1 7.5224 21.293" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+</group>
+<group layer="epsilon" matrix="1 0 0 1 504 148" decoration="decoration/tabbed">
+<text matrix="1 0 0 1 7.5224 37.293" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 -16.7751 49.8649" transformations="translations" pos="192 272" stroke="black" type="label" width="9.46107" height="7.76061" depth="0" valign="baseline" size="small">\texttt{e}</text>
+<text matrix="1 0 0 1 7.5224 21.293" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+<path layer="gamma" matrix="0.825181 0 0 0.35 261.731 409.252" stroke="black" fill="lightgray">
+96 192 m
+96 32 l
+376 32 l
+376 192 l
+h
+</path>
+<text matrix="1 0 0 1 193.729 36.37" transformations="translations" pos="187.957 387.572" stroke="black" type="label" width="34.4534" height="6.57069" depth="0" valign="baseline" size="tiny">e = n-1</text>
+<text matrix="1 0 0 1 309.729 36.37" transformations="translations" pos="187.957 387.572" stroke="black" type="label" width="39.1809" height="6.58878" depth="1.0251" valign="baseline" size="tiny">e = n+1</text>
+<text layer="iota" matrix="1 0 0 1 56.2985 15.4875" transformations="translations" pos="320 400" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+<text layer="gamma" matrix="1 0 0 1 -79.7015 15.4875" transformations="translations" pos="320 400" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+<text matrix="1 0 0 1 257.729 36.37" transformations="translations" pos="187.957 387.572" stroke="black" type="label" width="25.5873" height="4.45014" depth="0" valign="baseline" size="tiny">e = n</text>
+<group matrix="1 0 0 1 -1.95903 4">
+<text matrix="1 0 0 1 188 336" transformations="translations" pos="160 108" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<path matrix="0.348926 0 0 1 334.059 -27.5688" stroke="black" arrow="latexarc/normal">
+80 472.021 m
+128 472.021 l
+</path>
+<group matrix="0.775379 0 0 0.775379 290.908 358.537">
+<use matrix="0.576073 0 0 0.576073 112.799 -156.494" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 112.799 -156.494" name="mark/disk(sx)" pos="48 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 131.234 -156.494" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 112.799 -147.277" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 117.575 -165.637" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 119.012 -150.311" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 124.76 -143.605" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 126.196 -164.679" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 128.112 -151.748" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<path matrix="0.576073 0 0 0.576073 112.799 -156.494" stroke="black">
+35.7771 0 0 35.7771 48 464 e
+</path>
+</group>
+<path matrix="0.348926 0 0 1 451.306 -27.5688" stroke="black" arrow="latexarc/normal">
+80 472.021 m
+128 472.021 l
+</path>
+<path matrix="0.348926 0 0 1 392.984 -27.5688" stroke="black" arrow="latexarc/normal">
+80 472.021 m
+128 472.021 l
+</path>
+<group matrix="1 0 0 1 -82.9489 -5.42075">
+<use matrix="0.43825 0 0 0.43825 516.346 246.525" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.43825 0 0 0.43825 516.346 246.525" name="mark/disk(sx)" pos="48 464" size="tiny" stroke="black"/>
+<use matrix="0.43825 0 0 0.43825 519.979 243.569" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.43825 0 0 0.43825 529.445 256.33" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.43825 0 0 0.43825 526.538 236.298" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.43825 0 0 0.43825 527.995 246.136" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<path matrix="0.43825 0 0 0.43825 520.346 246.525" stroke="black">
+35.7771 0 0 35.7771 48 464 e
+</path>
+<text matrix="0.43825 0 0 0.43825 485.859 272.992" transformations="translations" pos="132 384" stroke="black" type="label" width="8.61084" height="7.76061" depth="0" valign="baseline" size="small" style="math">e</text>
+<use matrix="0.43825 0 0 0.43825 534.37 250.525" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.43825 0 0 0.43825 520.346 253.537" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+</group>
+<group matrix="1 0 0 1 55.9758 -5.72175">
+<group matrix="0.775379 0 0 0.775379 352.178 364.259">
+<use matrix="0.576073 0 0 0.576073 112.799 -156.494" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 112.799 -156.494" name="mark/disk(sx)" pos="48 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 131.234 -156.494" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 112.799 -147.277" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 117.575 -165.637" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 119.012 -150.311" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 124.76 -143.605" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 126.196 -164.679" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<use matrix="0.576073 0 0 0.576073 128.112 -151.748" name="mark/disk(sx)" pos="32 464" size="tiny" stroke="black"/>
+<path matrix="0.576073 0 0 0.576073 112.799 -156.494" stroke="black">
+35.7771 0 0 35.7771 48 464 e
+</path>
+</group>
+</group>
+<path matrix="0.348926 0 0 1 510.23 -27.5688" stroke="black" arrow="latexarc/normal">
+80 472.021 m
+128 472.021 l
+</path>
+<text matrix="1 0 0 1 400 336" transformations="translations" pos="160 108" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+<group matrix="1 0 0 1 281.451 205.293" decoration="decoration/tabbed">
+<text matrix="1 0 0 1 20 -16" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 -2.22618 -1.70347" transformations="translations" pos="192 272" stroke="black" type="label" width="5.31846" height="4.31145" depth="0" valign="baseline" size="tiny">\texttt{e}</text>
+<text matrix="1 0 0 1 20 -32" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+<group matrix="1 0 0 1 -143.97 0" decoration="decoration/rounded-box-small-white">
+<text matrix="1 0 0 1 345.319 312" transformations="translations" pos="156 164" stroke="black" type="label" width="37.8423" height="6.95259" depth="0" valign="baseline" size="tiny">Setchain</text>
+</group>
+<group layer="iota" matrix="1 0 0 1 8.02988 -4" decoration="decoration/rounded-box-small-white">
+<text matrix="1 0 0 1 345.319 312" transformations="translations" pos="156 164" stroke="black" type="label" width="37.8423" height="6.95259" depth="0" valign="baseline" size="tiny">Setchain</text>
+</group>
+<group layer="gamma" matrix="1 0 0 1 236 313.293" decoration="decoration/tabbed">
+<text matrix="1 0 0 1 125.774 -124" transformations="translations" pos="168 296" stroke="black" type="label" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 101.774 -108" transformations="translations" pos="192 272" stroke="black" type="label" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 125.774 -140" transformations="translations" pos="168 296" stroke="black" type="label" valign="baseline" size="tiny">...</text>
 </group>
 </page>
 <page>

@@ -133,7 +133,7 @@ en donde uno de sus elementos es $e$.
   \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}}\\
   \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}}
   \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}} 
-  \caption{Flujo usual de mensajes}
+  \caption{Flujo usual de mensajes para vainilla}
   \label{fig:vanilla-flow}
 \end{figure}
 
@@ -350,6 +350,19 @@ transacción de Tendermint, una nueva pieza intermedia de software llamada \text
 es responsable de recolectar elementos hasta llegar a un lote suficientemente grande,
 que es difundido como una única transacción.
 %
+
+\subsection{Flujo de mensajes}
+
+\begin{figure}
+  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/compresschain-flow-0.png}} 
+  \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-2.png}}\\
+  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}}
+  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}}\\
+  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/compresschain-flow-5.png}}
+  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}} 
+  \caption{Flujo usual de mensajes para compresschain}
+  \label{fig:vanilla-flow}
+\end{figure}
 
 Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo de codificación
 \textit{Recursive Length Prefix} (RLP)~\cite{ethereum}
