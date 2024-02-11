@@ -567,7 +567,7 @@ En este punto, nuestro algoritmo distribuído para la inversión de hashes entra
 La idea principal es comunicarnos con un nodo de Tendermint que conoce el hash (inicialmente, solo su creador).
 %
 Para distribuír la información sobre quiénes conocen los datos de un hash, las transacciones contienen
-no solo el hash del lote, pero además una firma.
+no solo el hash del lote, sino además una firma.
 %
 Las firmas que acompañan los hashes indican que un validador específico de Tendermint
 (quien firma el hash) afirma conocer el hash y, por lo tanto, si es un nodo correcto,
@@ -578,20 +578,20 @@ el valor del hash y $s$ representa la firma obtenida al firmar $h$ con la clave 
 del nodo que conoce el hash.
 %
 Gracias a la firma es posible comunicarse con el nodo que afirma conocer los datos, y obtener
-el lote original (si el nodo se comporto apropiadamente).
+el lote original (si el nodo se comporta apropiadamente).
 %
 El proceso de petición de hashes se corre de forma asíncrona para evitar potenciales
 retrasos.
 
 %
-Después de dejar el colector, se espera que los hashes sean chequeados contra \<CheckTx>
+Después de dejar el \collector, se espera que los hashes sean chequeados contra \<CheckTx>
 para o bien ser añadidos a la mempool o bien ser descartados.
 
 %
 Para determinar la validez de un hash se necesita chequear los elementos en él.
 
 %
-Similar a Compresschai, los hashes son considerados válidos si al menos un elemento
+Similar a \compresschain, los hashes son considerados válidos si al menos un elemento
 en el hash es válido.
 %
 Para un nodo dado, en el punto en que \<CheckTx> corre, no podemos asegurar que el
@@ -613,7 +613,6 @@ se pueden tener transacciones en la blockchain sin conocer los elementos de ést
 %
 Aun más, una transacción puede terminar siendo parte de la blockchain sin que nadie
 la haya chequeado previamente, pero pasando el chequeo por el comportamiento optimista.
-
 %
 De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
 en la blockchain (fue consensuado sin que los nodos hayan chequeado realmente los elementos
