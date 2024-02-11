@@ -336,38 +336,88 @@ entre elementos.
 \section{Segunda implementación: Compresschain}\label{subsec:compresschain}
 
 Para acercanos a la especificación de \setchain, en esta sección proponemos
-empaquetar elementos en un lote, formando un conjunto y comprimiéndolo
-previamente a su difusión.
+empaquetar elementos en un lote y comprimir dicho lote
+previo a su difusión.
 %
 
-Se propone una implementación nueva, llamada \emph{Compresschain}, que explora
+Se propone una implementación nueva, llamada \compresschain, que explora
 la relajación de orden propuesta por \setchain, aún ejecutando el algoritmo de
 consenso de Tendermint por detrás.
 %
 
 En lugar de difundir inmediatamente cada elemento añadido por un cliente como una
 transacción de Tendermint, una nueva pieza intermedia de software llamada \textit{collector}
-es responsable de recolectar elementos hasta llegar a un lote suficientemente grande,
+es responsable de recolectar elementos hasta llegar a un lote lo suficientemente grande,
 que es difundido como una única transacción.
 %
 
 \subsection{Flujo de mensajes}
+Al igual que como se hizo para la versión \vanilla, se presentará el flujo de mensajes usual
+que se inicia cuando un cliente invoca \Add(e).
+En la Figura~\ref{fig:compresschain-flow} se muestras figuras detalladas de los distintos pasos de
+este flujo en el contexto de \compresschain.
+%
+
+El proceso comienzo con el sistema en su estado inicial. Ahora, detrás de la API de \setchain
+se encuentra la nueva pieza intermedia \collector. Esto se muestra en la Figura (a).
+
+%
+
+El primer paso se da cuando el ciente envía un elemento $e$, mediante la invocación a \Add(e) (ver
+Figura (b)).
+Desde el punto de vista del cliente, no hay diferencias en relación a la versión \vanilla, ya que
+la existencia del \collector es transparente para él.
+
+%
+
+En la Figura (c) se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
+en un lote.
+Un lote contiene potencialmente varios elementos envíados por uno o más clientes a una misma instancia
+corriendo el Tendermint Core, la aplicación, y el \collector.
+Una vez que el lote se encuentra listo, el \collector tiene una nueva transacción para inyectar en la red de Tendermint.
+Esta transacción se presenta en las figuras con un \textit{símbolo de carpeta} gris.
+
+%
+
+A partir de acá el proceso es el mismo que el explicado en la sección anterior para \vanilla: la transacción
+que representa al elemento $e$ (y a otros) se chequea contra \CheckTx para determinar si debe ser insertada
+en la mempool o descartada.
+%
+Si llega a la mempool, se espera que luego de un tiempo sea añadida a un bloque de Tendermint, y que eventualmente,
+mediante el algoritmo de consenso, este bloque se considere \textit{commited by the network}.
+%
+Una vez que el bloque fue decidido en el consenso, entonces el Tendermint Core enviará
+la secuencia correspondiente de pedidos a la aplicación.
+%
+Una de las peticiones será \DeliverTx, entregando la transacción correspondiente al lote que contiene a $e$.
+
+Esto se observa en las Figuras (d), (e) y (f).
+
+%
+En el último paso de este flujo se agregan las nuevas épocas a la \setchain.
+En contraposición con los visto en \vanilla, acá se agrega una nueva época por cada transacción (cada petición \DeliverTx).
+Las épocas contienen potencialmente más de un elemento porque, de hecho, las transacciones en este contexto representan a más de un elemento
+envíado por los clientes.
+Estas transacciones sí tienen orden entre ellas, por lo que el número de época asociada a cada una está determinado por el mismo.
+En la Figura (f) se muestra que la época $n$ se agregó a la \setchain y uno de sus elementos es $e$. Esta es, justamente, la época asociada
+a la transacción que contiene al elemento $e$.
+
 
 \begin{figure}
-  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/compresschain-flow-0.png}} 
-  \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-2.png}}\\
-  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}}
-  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}}\\
-  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/compresschain-flow-5.png}}
-  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}} 
+  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/compresschain-flow-0.png}}
+  \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-1.png}}\\
+  \subfloat[El lote está listo y es difundido]{\includegraphics[width = 3.5in]{figures/compresschain-flow-2.png}}
+  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}}\\
+  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}}
+  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/compresschain-flow-5.png}}\\
+  \subfloat[Se agrega la nuevas épocas a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}} 
   \caption{Flujo usual de mensajes para compresschain}
-  \label{fig:vanilla-flow}
+  \label{fig:compresschain-flow}
 \end{figure}
 
-Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo de codificación
-\textit{Recursive Length Prefix} (RLP)~\cite{ethereum}
-y el algoritmo de compresión Brotli~\cite{brotli.compressor}.
-~\footnote{ Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
+\subsection{Algoritmos}
+
+
 %
 % This means that a new
 % \setchain API version is defined, which uses the new collector component.
@@ -378,15 +428,23 @@ y el algoritmo de compresión Brotli~\cite{brotli.compressor}.
 % terms of size per element broadcasted,  is used.
 %
 
-En lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
-primero se recolectan y se codifican utilizando RLP y, una vez que el lote está listo,
-se comprime con el agoritmo de compresión Brotli.
+Como ya se mencionó, en lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
+primero se recolectan y se comprimen para ser enviados como una única transacción.
+Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo
+\textit{Recursive Length Prefix} (RLP)~\cite{ethereum} para codificar los elementos individualmente
+y el algoritmo de compresión Brotli~\cite{brotli.compressor} para comprimir el lote.
+~\footnote{ Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
+
 %
 Un lote se considera \textit{listo} para ser enviado una vez que o bien alcanza un tamaño máximo,
 o bien una cantidad razonable de tiempo transacurrió desde que el primer elemento llegó. 
 %
 En el Algoritmo ~\ref{alg:collector-brotli} se muestra una implementación posible para un \textit{collector}.
-El Algoritmo~\ref{alg:api-brotli} prsenta una nueva definición para la API de \setchain.
+El Algoritmo~\ref{alg:api-brotli} presenta una nueva definición para la API de \setchain.
+
+\input{algorithms/alg-collector-brotli}
+
+\input{algorithms/alg-api-brotli}
 
 %
 En esta implementación, un cliente que ejecuta \<add> invoca indirectamente el método \texttt{AddElement}
@@ -397,11 +455,6 @@ podría ocurrir si varias rutinas agregan elementos a la misma instancia del \te
 Sin embargo, esto puede resolverse sencillamente gracias al uso de candados.
 
 
-\input{algorithms/alg-api-brotli}
-
-\input{algorithms/alg-collector-brotli}
-
-%
 
 % After the meeting we decided to call isValidElement() locally in the collector, so the following is not true:
 % It is worth mentioning that, as the algorithm shows, the collector adds every element that receives to the batch
@@ -420,10 +473,10 @@ Existen varias diferencias con respecto a la implementación previa de \setchain
 
 La diferencia principal con la implementación Vainilla radica en que las transacciones contienen
 potencialmente más de un elemento de usuario. Esto se da porque las transacciones en este contexto
-son baches comprimidos de elementos.
+son lotes comprimidos de elementos.
 %
 Más aún, para recuperar elementos dentro de las transacciones, se necesita primero descomprimir
-el bache y, una vez que se tiene el bache original, debe RLP-decodificarse para así obtener los elementos
+el lote y, una vez que se tiene el lote original, debe RLP-decodificarse para así obtener los elementos
 originales enviados por los clientes.
 
 Aquellos elementos son los que deben ser agregados a la \setchain. La función \textit{getElementsFromTransaction()}
@@ -433,11 +486,11 @@ En la definición de Compresschain, las transacciones de Tendermint pueden conte
 como inválidos.
 %
 
-Se necesita definir un nuevo criterio para determinar cuándo una transacción (es decir, un bache de elementos
+Se necesita definir un nuevo criterio para determinar cuándo una transacción (es decir, un lote de elementos
 comprimido) se considera válida.
 
 %
-La función <isValidBatch>~(en el Algoritmo~\ref{alg:abci-brotli}) implementa este nuevo criterio, permitiendo
+La función \<isValidBatch>~(en el Algoritmo~\ref{alg:abci-brotli}) implementa este nuevo criterio, permitiendo
 a las transacciones ser consideradas válidas si al menos uno de sus elementos es válido.
 %
 La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos~\footnote{
@@ -453,7 +506,7 @@ Finalmente, en Compresschain, los bloques no delimitan épocas por lo que no se 
 la función \<EndBlock>.
 
 %
-En este caso, las épocas se definen como transacciones: cada bache de elementos define una época.
+En este caso, las épocas se definen como transacciones: cada lote de elementos define una época.
 
 % %
 % definition was given in this case, as the block does not
@@ -464,7 +517,7 @@ En este caso, las épocas se definen como transacciones: cada bache de elementos
 
 % To dicuss: if epochs are defined by batches, then epochs are generated by the same node.
 % This is a new setchain property and may be undesirable. 
-\section{Tercera implementación: HashChain}\label{subsec:hashchain}
+\section{Tercera implementación: Hashchain}\label{subsec:hashchain}
 %
 Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
 funciones hash en lugar de compresión en Brotli.
@@ -472,27 +525,27 @@ funciones hash en lugar de compresión en Brotli.
 %Hashchain follows a similar idea introduced in Compresschain but employing hash
 %functions instead of Brotli compression.
 %
-Mientras que el poder de compresión de funciones hash puede ser enorme, dado que las funciones
+Mientras que el poder de compresión de las funciones hash puede ser enorme, dado que las funciones
 mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles. Esto
-significa que un método no trivial para recuperar el bache original de elementos debe proveerse.
+significa que un método no trivial para recuperar el lote original de elementos debe proveerse.
 
 %
 La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes,
-y una estrategia distribuída para invertir hashes y obtener los baches originales.
+y una estrategia distribuída para invertir hashes y obtener los lotes originales.
 %
 % We shouldn't mention "consolidated hashes" before explaining it:
 %Therefore, we now have to maintain an inverse function for the consolidated
 %hashes.
 
 A menudo en esta sección nos tomaremos la libertad de utilizar la expresión \textit{elementos en un hash H}
-para referirnos a aquellos elementos pertenecientes al bache $B$, tal que $Hash(B) = H$.
+para referirnos a aquellos elementos pertenecientes al lote $B$, tal que $Hash(B) = H$.
 
 En lugar de usar el \textit{collector} de Compresschain (ver Algoritmo ~\ref{alg:collector-brotli}),
-ahora utilizamos un \textit{hash collector}, que construye un bache de elementos para luego hashearlo
+ahora utilizamos un \textit{hash collector}, que construye un lote de elementos para luego hashearlo
 antes de introducirlo a la red de Tendermint.
 %
-Los baches hasheados son difundidos como transacciones y compartidos a través de toda la red, de forma
-análoga al enfoque empleado para los baches comprimidos en Compresschain.
+Los lotes hasheados son difundidos como transacciones y compartidos a través de toda la red, de forma
+análoga al enfoque empleado para los lotes comprimidos en Compresschain.
 
 \subsection{Algoritmo distribuído para la inversión de hashes}
 
@@ -501,10 +554,10 @@ de Compresschain. Sin embargo, la definición de la ABCI para Hashchain es consi
 %
 En este escenario, tanto \<CheckTx> como \<DeliverTx> reciben hashes como transacciones.
 %
-Una máquina corriendo la \setchain no puede traducir inmediatamente hashes para obtener su bache de elementos
+Una máquina corriendo la \setchain no puede traducir inmediatamente hashes para obtener su lote de elementos
 original, debido a la naturaleza irreversible de un hash.
 %
-La ausencia del bache original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
+La ausencia del lote original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
 en la transacción, y que \<DeliverTx> no pueda añadir elementos a la \setchain.
 %
 
@@ -514,18 +567,18 @@ En este punto, nuestro algoritmo distribuído para la inversión de hashes entra
 La idea principal es comunicarnos con un nodo de Tendermint que conoce el hash (inicialmente, solo su creador).
 %
 Para distribuír la información sobre quiénes conocen los datos de un hash, las transacciones contienen
-no solo el hash del bache, pero además una firma.
+no solo el hash del lote, pero además una firma.
 %
 Las firmas que acompañan los hashes indican que un validador específico de Tendermint
 (quien firma el hash) afirma conocer el hash y, por lo tanto, si es un nodo correcto,
-tiene el bache original de elmentos.
+tiene el lote original de elmentos.
 %
 De esta forma, las transacciones se representan con una tupla $(h, s)$, donde $h$ denota
 el valor del hash y $s$ representa la firma obtenida al firmar $h$ con la clave privada
 del nodo que conoce el hash.
 %
 Gracias a la firma es posible comunicarse con el nodo que afirma conocer los datos, y obtener
-el bache original (si el nodo se comporto apropiadamente).
+el lote original (si el nodo se comporto apropiadamente).
 %
 El proceso de petición de hashes se corre de forma asíncrona para evitar potenciales
 retrasos.
@@ -542,12 +595,12 @@ Similar a Compresschai, los hashes son considerados válidos si al menos un elem
 en el hash es válido.
 %
 Para un nodo dado, en el punto en que \<CheckTx> corre, no podemos asegurar que el
-bache original de elementos sea conocido.
+lote original de elementos sea conocido.
 
 %
 Hashchain es optimista en el sentido de que, ante la imposibilidad de correr el chequeo
-de las transacciones, debido a la ausencia del bache original, \<CheckTx> considera a los
-hashes como transacciones válidas con la esperanza de que sus baches originales sean enviados
+de las transacciones, debido a la ausencia del lote original, \<CheckTx> considera a los
+hashes como transacciones válidas con la esperanza de que sus lotes originales sean enviados
 y conocidos más tarde. 
 
 %
@@ -564,7 +617,7 @@ la haya chequeado previamente, pero pasando el chequeo por el comportamiento opt
 %
 De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
 en la blockchain (fue consensuado sin que los nodos hayan chequeado realmente los elementos
-del bache.)
+del lote.)
 
 %
 
@@ -577,7 +630,7 @@ que los elementos en un hash que está en la blockchain sean parte de la \setcha
 % Tendermint, and the \setchain we want to build.
 %
 Para lograr eso, se define un número natural \texttt{SIGNATURES\_PER\_HASH} que establece
-el número de firmas que un hash tiene que tener para que los elementos del bache asociado a él
+el número de firmas que un hash tiene que tener para que los elementos del lote asociado a él
 sean considerados elementos a añadir a la \setchain.
 
 %
@@ -585,7 +638,7 @@ Estamos únicamente interesados en hashes firmados por al menos \texttt{SIGNATUR
 nodos, y los llamamos \textit{hashes consolidados}.
 
 \texttt{SIGNATURES\_PER\_HASH} es definido de una manera tal que se garantiza que si un hash
-consolidó entonces al menos un nodo correcto conoce el bache original del cual proviene.
+consolidó entonces al menos un nodo correcto conoce el lote original del cual proviene.
 
 %
 Los elementos de hashes consolidados son los candidatos a pertenecer a la \setchain.
@@ -596,26 +649,26 @@ Los elementos de hashes consolidados son los candidatos a pertenecer a la \setch
 % With this in mind, whenever the ABCI gets the revert of a hash, it runs the
 % validation against it, and
 %Moreover, if at least one element in the batch is valid, the node verifying the
-Cuando un nodo pregunta por la inversión de un hash, si al menos un elemento en el bache
+Cuando un nodo pregunta por la inversión de un hash, si al menos un elemento en el lote
 es válido, el nodo firma el hash (con sus propia clave privada), y difunde el hash junto
 con su propia firma.
 
 %
-Al difundir el hash y su firma, el nodo anuncia a la red que conoce el bache detrás de ese hash.
+Al difundir el hash y su firma, el nodo anuncia a la red que conoce el lote detrás de ese hash.
 %
-De esta forma, los baches válidos eventualmente consolidarán, significando que sus elementos
+De esta forma, los lotes válidos eventualmente consolidarán, significando que sus elementos
 serán añadidos a la \setchain.
 
 Para que esto funcione, se necesita mantener un registro de cuántas firmas tiene un hash,
-así como también un mapeo de hashes a baches.
+así como también un mapeo de hashes a lotes.
 %
 Durante la ejecución de \<DeliverTx> se chequea la validez de la firma.
 %
 Si la firma es válida y nueva para el hash en cuestión, se incrementa el contador de
 \texttt{firmas por hash}.
 %
-Además, cada vez que un hash es invertido, se chequea la correctitud del bache original
-(es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hash a baches
+Además, cada vez que un hash es invertido, se chequea la correctitud del lote original
+(es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hash a lotes
 es actualiado con el nuevo descubrimiento.
 
 %The first time a hash is passed around, other nodes would see the new hash and
@@ -856,7 +909,7 @@ y por lo tanto, $v$ ganaría el juego haciendo trampa.
 
 \input{algorithms/alg-api-hash}
 
-\subsection{Detalles de implementación}\label{subsubsec:details}
+\subsection{Algoritmos}\label{subsubsec:details}
 
 No definimos un nuevo \texttt{collector} para \hashchain dado que es similar al definido
 para Compresschain, con la única diferencia del uso de funciones hash.
