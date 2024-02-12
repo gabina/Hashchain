@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.24">
-<info created="D:20100311191937" modified="D:20240206200121" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
+<info created="D:20100311191937" modified="D:20240211205602" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
 <preamble>
 \input{preamble}</preamble>
 <bitmap id="1" width="512" height="512" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="4518" alphaLength="7522" encoding="base64">
@@ -26928,9 +26928,9 @@ h
 <text matrix="1 0 0 1 345.319 312" transformations="translations" pos="156 164" stroke="black" type="label" width="37.8423" height="6.95259" depth="0" valign="baseline" size="tiny">Setchain</text>
 </group>
 <group layer="gamma" matrix="1 0 0 1 236 313.293" decoration="decoration/tabbed">
-<text matrix="1 0 0 1 125.774 -124" transformations="translations" pos="168 296" stroke="black" type="label" valign="baseline" size="tiny">...</text>
-<text matrix="1 0 0 1 101.774 -108" transformations="translations" pos="192 272" stroke="black" type="label" valign="baseline" size="tiny">...</text>
-<text matrix="1 0 0 1 125.774 -140" transformations="translations" pos="168 296" stroke="black" type="label" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 125.774 -124" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 101.774 -108" transformations="translations" pos="192 272" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 125.774 -140" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
 </group>
 </page>
 <page>
@@ -27621,6 +27621,254 @@ h
 <group matrix="1 0 0 1 -21 -72" decoration="decoration/rounded-box-small-white">
 <text transformations="translations" pos="64 184" stroke="black" type="label" width="20.4779" height="6.95259" depth="0" valign="baseline" size="tiny">RPC</text>
 </group>
+</page>
+<page>
+<layer name="alpha"/>
+<layer name="beta"/>
+<layer name="gamma"/>
+<layer name="delta"/>
+<layer name="epsilon"/>
+<view layers="alpha" active="alpha"/>
+<view layers="alpha delta" active="delta"/>
+<view layers="alpha beta delta" active="beta"/>
+<view layers="alpha beta gamma delta" active="gamma"/>
+<view layers="alpha beta gamma delta epsilon" active="epsilon"/>
+<path layer="beta" matrix="0.326746 0 0 0.277118 115.457 259.254" stroke="black" arrow="latexarc/normal" opacity="70%" stroke-opacity="opaque">
+153.143 364.848 m
+153.143 364.848
+168.116 220.436
+143.042 146.447 c
+</path>
+<path layer="gamma" matrix="1 0 0 1 -9.27384 -6.1172" stroke="black" dash="dotted" arrow="latexarc/normal" opacity="70%" stroke-opacity="opaque">
+135.284 415.235 m
+178.31 456.334
+286.027 469.508
+362.486 467.238
+396.606 416.023 c
+</path>
+<path matrix="1 0 0 1 2.72616 9.8828" stroke="black" dash="dotted" arrow="latexarc/normal" opacity="70%" stroke-opacity="opaque">
+311.923 393.333 m
+189.378 393.157 l
+</path>
+<path matrix="1.00003 0 0 1.13809 -5.28806 -52.1209" stroke="black" dash="dotted" arrow="latexarc/normal" opacity="70%" stroke-opacity="opaque">
+593.794 363.062 m
+318.903 333.15
+182.139 370.118 c
+</path>
+<path matrix="1 0 0 1 -1.1606 -6.004" stroke="black" dash="dotted" arrow="latexarc/normal" opacity="70%" stroke-opacity="opaque">
+109.788 414.293 m
+194.798 493.125
+207.548 496.684
+309.245 495.039
+376.475 495.598
+581.663 494.111
+603.199 415.152 c
+</path>
+<group layer="beta" matrix="1 0 0 1 -28 57.2926" decoration="decoration/tabbed">
+<text matrix="1 0 0 1 20 -16" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 -2.22618 -1.70347" transformations="translations" pos="192 272" stroke="black" type="label" width="5.31846" height="4.31145" depth="0" valign="baseline" size="tiny">\texttt{e}</text>
+<text matrix="1 0 0 1 20 -32" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+<group layer="gamma" matrix="1 0 0 1 52 133.293" decoration="decoration/tabbed">
+<text matrix="1 0 0 1 20 -16" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 -2.22618 -1.70347" transformations="translations" pos="192 272" stroke="black" type="label" width="5.31846" height="4.31145" depth="0" valign="baseline" size="tiny">\texttt{e}</text>
+<text matrix="1 0 0 1 20 -32" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+<group matrix="1 0 0 1 176 65.2926" decoration="decoration/tabbed">
+<text matrix="1 0 0 1 20 -16" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+<text matrix="1 0 0 1 -2.22618 -1.70347" transformations="translations" pos="192 272" stroke="black" type="label" width="5.31846" height="4.31145" depth="0" valign="baseline" size="tiny">\texttt{e}</text>
+<text matrix="1 0 0 1 20 -32" transformations="translations" pos="168 296" stroke="black" type="label" width="8.86611" height="0.9045" depth="0" valign="baseline" size="tiny">...</text>
+</group>
+<path layer="delta" matrix="0.268482 0.00596026 0.00564499 0.412114 73.5715 209.96" stroke="black" arrow="latexarc/normal" opacity="70%" stroke-opacity="opaque">
+112.431 145.246 m
+58.0754 279.398
+111.572 364.474 c
+</path>
+<group matrix="1 0 0 1 32.24 28.362" decoration="decoration/tabbed">
+<text transformations="translations" pos="52.2359 304.143" stroke="black" type="label" width="22.1904" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">Hash</text>
+</group>
+<group matrix="1 0 0 1 -215.056 -158.397" decoration="decoration/rounded-box-small-yellow">
+<text matrix="1 0 0 1 269.47 170.874" transformations="translations" pos="38.5282 305.594" stroke="black" type="label" width="25.9009" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">\textit{Firma}</text>
+</group>
+<path layer="alpha" matrix="1 0 0 1 234 68" stroke="black">
+32 432 m
+32 80 l
+224 80 l
+224 432 l
+h
+</path>
+<group matrix="1 0 0 1 236.911 -4.4302">
+<path matrix="1 0 0 1 -57.3106 -80.6597" stroke="black" fill="imdeacyanone">
+135.526 493.322 m
+251.094 493.52 l
+229.272 445.492 l
+113.705 445.294 l
+h
+</path>
+<group matrix="1 0 0 1 -0.9947 17.2446">
+<group matrix="1 0 0 1 -37.3706 -91.5328">
+<text transformations="translations" pos="142.708 466.022" stroke="black" type="label" width="41.4924" height="12.5163" depth="0" valign="baseline" size="small" opacity="70%">\bf{Hash}</text>
+</group>
+<text matrix="1 0 0 1 -20 12" transformations="translations" pos="112 344" stroke="black" type="label" width="68.1671" height="12.5163" depth="0" valign="baseline" size="small"> Collector</text>
+</group>
+</group>
+<group matrix="1 0 0 1 233 55.5698">
+<path stroke="black" fill="imdeacyanone">
+64 156 m
+64 124 l
+212 124 l
+212 156 l
+h
+</path>
+<text matrix="1 0 0 1 -26.8717 -2.25813" transformations="translations" pos="100 136" stroke="black" type="label" width="129.743" height="12.5163" depth="0" valign="baseline" size="small">Tendermint Core</text>
+</group>
+<group matrix="1 0 0 1 215 8" decoration="decoration/rounded-box-small-white">
+<text transformations="translations" pos="64 184" stroke="black" type="label" width="20.4779" height="6.95259" depth="0" valign="baseline" size="tiny">RPC</text>
+</group>
+<path matrix="1 0 0 1 472 68" stroke="black">
+32 432 m
+32 80 l
+224 80 l
+224 432 l
+h
+</path>
+<group matrix="1 0 0 1 474.911 -4.4302">
+<path matrix="1 0 0 1 -57.3106 -80.6597" stroke="black" fill="imdeacyanone">
+135.526 493.322 m
+251.094 493.52 l
+229.272 445.492 l
+113.705 445.294 l
+h
+</path>
+<group matrix="1 0 0 1 -0.9947 17.2446">
+<group matrix="1 0 0 1 -37.3706 -91.5328">
+<text transformations="translations" pos="142.708 466.022" stroke="black" type="label" width="41.4924" height="12.5163" depth="0" valign="baseline" size="small" opacity="70%">\bf{Hash}</text>
+</group>
+<text matrix="1 0 0 1 -20 12" transformations="translations" pos="112 344" stroke="black" type="label" width="68.1671" height="12.5163" depth="0" valign="baseline" size="small"> Collector</text>
+</group>
+</group>
+<group matrix="1 0 0 1 471 55.5698">
+<path stroke="black" fill="imdeacyanone">
+64 156 m
+64 124 l
+212 124 l
+212 156 l
+h
+</path>
+<text matrix="1 0 0 1 -26.8717 -2.25813" transformations="translations" pos="100 136" stroke="black" type="label" width="129.743" height="12.5163" depth="0" valign="baseline" size="small">Tendermint Core</text>
+</group>
+<group matrix="1 0 0 1 453 8" decoration="decoration/rounded-box-small-white">
+<text transformations="translations" pos="64 184" stroke="black" type="label" width="20.4779" height="6.95259" depth="0" valign="baseline" size="tiny">RPC</text>
+</group>
+<path layer="epsilon" matrix="0.625 0 0 0.824916 12.5 101.71" stroke="black" arrow="latexarc/normal">
+108 220 m
+52 176
+44 124 c
+</path>
+<path layer="alpha" matrix="1 0 0 1 -10 68" stroke="black">
+32 432 m
+32 80 l
+224 80 l
+224 432 l
+h
+</path>
+<group matrix="1 0 0 1 -7 55.5698">
+<path stroke="black" fill="imdeacyanone">
+64 156 m
+64 124 l
+212 124 l
+212 156 l
+h
+</path>
+<text matrix="1 0 0 1 -26.8717 -2.25813" transformations="translations" pos="100 136" stroke="black" type="label" width="129.743" height="12.5163" depth="0" valign="baseline" size="small">Tendermint Core</text>
+</group>
+<group matrix="1 0 0 1 -25 8" decoration="decoration/rounded-box-small-white">
+<text transformations="translations" pos="64 184" stroke="black" type="label" width="20.4779" height="6.95259" depth="0" valign="baseline" size="tiny">RPC</text>
+</group>
+<path matrix="1 0 0 1 -60.3996 -85.0899" stroke="black" fill="imdeacyanone">
+135.526 493.322 m
+251.094 493.52 l
+229.272 445.492 l
+113.705 445.294 l
+h
+</path>
+<group matrix="1 0 0 1 -4.0837 12.8144">
+<group matrix="1 0 0 1 -37.3706 -91.5328">
+<text transformations="translations" pos="142.708 466.022" stroke="black" type="label" width="41.4924" height="12.5163" depth="0" valign="baseline" size="small" opacity="70%">\bf{Hash}</text>
+</group>
+<text matrix="1 0 0 1 -20 12" transformations="translations" pos="112 344" stroke="black" type="label" width="68.1671" height="12.5163" depth="0" valign="baseline" size="small"> Collector</text>
+</group>
+<group matrix="1 0 0 1 -30 -4">
+<path matrix="1 0 0 1 16 0" stroke="black" fill="imdeacyanone">
+80 304 m
+80 272 l
+192 272 l
+192 304 l
+h
+</path>
+<text matrix="1 0 0 1 -239.702 107.488" transformations="translations" pos="352 176" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+</group>
+<group layer="beta" matrix="1 0 0 1 210 -4">
+<path matrix="1 0 0 1 16 0" stroke="black" fill="imdeacyanone">
+80 304 m
+80 272 l
+192 272 l
+192 304 l
+h
+</path>
+<text matrix="1 0 0 1 -239.702 107.488" transformations="translations" pos="352 176" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+</group>
+<group matrix="1 0 0 1 448 -4">
+<path matrix="1 0 0 1 16 0" stroke="black" fill="imdeacyanone">
+80 304 m
+80 272 l
+192 272 l
+192 304 l
+h
+</path>
+<text matrix="1 0 0 1 -239.702 107.488" transformations="translations" pos="352 176" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+</group>
+<group layer="alpha" matrix="1 0 0 1 210 -4">
+<path matrix="1 0 0 1 16 0" stroke="black" fill="imdeacyanone">
+80 304 m
+80 272 l
+192 272 l
+192 304 l
+h
+</path>
+<text matrix="1 0 0 1 -239.702 107.488" transformations="translations" pos="352 176" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+</group>
+<group matrix="1 0 0 1 448 -4">
+<path matrix="1 0 0 1 16 0" stroke="black" fill="imdeacyanone">
+80 304 m
+80 272 l
+192 272 l
+192 304 l
+h
+</path>
+<text matrix="1 0 0 1 -239.702 107.488" transformations="translations" pos="352 176" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+</group>
+<group layer="gamma" matrix="1 0 0 1 172.24 150.362" decoration="decoration/tabbed">
+<text transformations="translations" pos="52.2359 304.143" stroke="black" type="label" width="22.1904" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">Hash</text>
+</group>
+<group matrix="1 0 0 1 -75.056 -36.397" decoration="decoration/rounded-box-small-yellow">
+<text matrix="1 0 0 1 269.47 170.874" transformations="translations" pos="38.5282 305.594" stroke="black" type="label" width="25.9009" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">\textit{Firma}</text>
+</group>
+<group matrix="1 0 0 1 412.24 180.362" decoration="decoration/tabbed">
+<text transformations="translations" pos="52.2359 304.143" stroke="black" type="label" width="22.1904" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">Hash</text>
+</group>
+<group matrix="1 0 0 1 164.944 -6.397" decoration="decoration/rounded-box-small-yellow">
+<text matrix="1 0 0 1 269.47 170.874" transformations="translations" pos="38.5282 305.594" stroke="black" type="label" width="25.9009" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">\textit{Firma}</text>
+</group>
+<group layer="epsilon" matrix="1 0 0 1 -13.76 -59.638" decoration="decoration/tabbed">
+<text transformations="translations" pos="52.2359 304.143" stroke="black" type="label" width="22.1904" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">Hash</text>
+</group>
+<group matrix="1 0 0 1 -259.056 -246.397" decoration="decoration/rounded-box-small-green">
+<text matrix="1 0 0 1 269.47 170.874" transformations="translations" pos="38.5282 305.594" stroke="black" type="label" width="25.9009" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">\textit{Firma}</text>
+</group>
+<text layer="alpha" matrix="1 0 0 1 -23.7421 0" transformations="translations" pos="84 460" stroke="black" type="label" width="115.484" height="18.0076" depth="5.018" valign="baseline">M\&apos;aquina 1</text>
+<text matrix="1 0 0 1 220.258 0" transformations="translations" pos="84 460" stroke="black" type="label" width="115.484" height="18.0076" depth="5.018" valign="baseline">M\&apos;aquina 2</text>
+<text matrix="1 0 0 1 458.258 0" transformations="translations" pos="84 460" stroke="black" type="label" width="115.484" height="18.0076" depth="5.018" valign="baseline">M\&apos;aquina 3</text>
 </page>
 <page>
 <layer name="alpha"/>
