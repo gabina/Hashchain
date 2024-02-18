@@ -372,7 +372,7 @@ la existencia del \collector es transparente para él.
 
 En la Figura (c) se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
 en un lote.
-Un lote contiene potencialmente varios elementos envíados por uno o más clientes a una misma instancia
+Un lote contiene potencialmente varios elementos enviados por uno o más clientes a una misma instancia
 corriendo el Tendermint Core, la aplicación, y el \collector.
 Una vez que el lote se encuentra listo, el \collector tiene una nueva transacción para inyectar en la red de Tendermint.
 Esta transacción se presenta en las figuras con un \textit{símbolo de carpeta} gris.
@@ -495,7 +495,7 @@ a las transacciones ser consideradas válidas si al menos uno de sus elementos e
 %
 La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos~\footnote{
 Los elementos pueden ser válidos al momento en que los clientes los envían, pero ser inválidos una vez que
-los bloques fueron consensados.} a un nodo no debería privar a los elementos válidos envíados al mismo nodo de
+los bloques fueron consensados.} a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
 ser añadidos a la \setchain.
 
 %
@@ -521,9 +521,9 @@ En este caso, las épocas se definen como transacciones: cada lote de elementos 
 \compresschain es una alternativa construída enteramente sobre Tendermint, pero que agrega una capa
 intermedia entre el cliente y el Tendermint Core.
 De forma completamente transparente tanto para el
-cliente como para la pila de Tendermint, muchos elementos envíados potencialmente por diferentes partes
+cliente como para la pila de Tendermint, muchos elementos enviados potencialmente por diferentes partes
 (pero a la misma máquina servidor)
-son transmitidos dentro de la red de Tendermint como una única transacción.
+son difundidos dentro de la red de Tendermint como una única transacción.
 El algoritmo de consenso
 decide el orden de estas transacciones, ignorando por completo cuáles y cuántos elementos hay dentro de ellas.
 Si bien los elementos del cliente agrupados dentro de un lote naturalmente tienen un orden específico,
@@ -550,7 +550,7 @@ Mientras que el poder de compresión de las funciones hash puede ser enorme, dad
 mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles. Esto
 significa que un método no trivial para recuperar el lote original de elementos debe proveerse.
 
-%
+% Esto capaz debería sacarlo porque no es claro.
 La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes,
 y una estrategia distribuída para invertir hashes y obtener los lotes originales.
 %
@@ -622,8 +622,12 @@ en la transacción, y que \<DeliverTx> no pueda añadir elementos a la \setchain
 En este punto, nuestro algoritmo distribuído para la inversión de hashes entra en juego.
 %
 
-La idea principal es comunicarnos con un nodo de Tendermint que conoce el hash (inicialmente, solo su creador).
+La idea principal es comunicarnos con un nodo de Tendermint que \textit{conoce el hash}, es decir,
+conoce los elementos del cual proviene.
 %
+Inicialmente, el único nodo que conoce un hash es el creador del mismo.
+%
+
 Para distribuír la información sobre quiénes conocen los datos de un hash, las transacciones contienen
 no solo el hash del lote, sino además una firma criptográfica.
 %
