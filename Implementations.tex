@@ -594,7 +594,7 @@ elementos originales teniendo un hash.
 
 %
 
-Suponiendo que se logra resolver esta cuestión, la misma pregunta surge luego,
+La misma pregunta surge luego,
 cuando después de consensuado el siguiente bloque llegan las peticiones de la ABCI.
 %
 \<DeliverTx> dará la indicación de agregar una nueva época a la \setchain, para lo cual también
@@ -649,24 +649,9 @@ El \collector mismo es quien se encarga de conseguir el lote asociado a un hash.
 %
 En la Figura ~\ref{fig:hash-inversion-flow} se muestra el flujo de pedidos que se puede dar
 en el proceso de inversión.
-%
-En el momento en que la aplicación necesita invertir un hash, se comunica con el \collector
-para solicitárselo. Esto se observa en la Figura (a).
-%
-Si el \collector conoce el lote original del hash (por ejemplo, porque fue el \collector creador
-del mismo), entonces directamente lo devuelve a la aplicación. Esto se representa en la Figura (b).
-%
-Por el contrario, en la Figura (c) se muestra el caso en que el \collector no posee el lote original,
-por lo que debe pedírselo al \collector correspondiente. Gracias a la firma, es posible determinar
-quién es el \collector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
-futuras peticiones, y lo comunica a la aplicación. De esta forma, es transparente para la aplicación
-cómo se resuelve el proceso de inversión.
-%
-
-
-%
 
 \begin{figure}
+  \centering
   %\subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/hash-reversal-0.png}}\\
   \subfloat[La aplicación requiere la inversión de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-1.png}}\\
   \subfloat[El \collector conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-2.png}}\\
@@ -675,6 +660,22 @@ cómo se resuelve el proceso de inversión.
   \caption{Flujo usual de mensajes para vainilla}
   \label{fig:hash-inversion-flow}
 \end{figure}
+
+%
+En el momento en que la aplicación necesita invertir un hash, se comunica con el \collector
+para solicitárselo. Esto se observa en la Figura (a).
+%
+Si el \collector conoce el lote original del hash (por ejemplo, porque fue el \collector creador
+del mismo), entonces directamente lo devuelve a la aplicación. Esto se representa en la Figura (b).
+%
+
+Por el contrario, en la Figura (c) se muestra el caso en que el \collector no posee el lote original,
+por lo que debe pedírselo al \collector correspondiente. Gracias a la firma, es posible determinar
+quién es el \collector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
+futuras peticiones, y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
+cómo se resuelve el proceso de inversión.
+
+En la Figura (d) se muestra el último paso posible de esta comunicación, en la que la aplicación  
 
 Después de dejar el \collector, se espera que los hashes sean chequeados contra \<CheckTx>
 para o bien ser añadidos a la mempool o bien ser descartados.
