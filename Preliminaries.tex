@@ -61,7 +61,62 @@ malintencionado. Se volverá a este punto en la sección ~\ref{subsubsec:consens
 
 % Fuente: Fault-Tolerant Message-Passing Distributed Systems An Algorithmic Approach
 
+\subsection{Algoritmos de consenso}\label{subsubsec:consensus}
+El problema de consenso es uno de los más celebrados en los sistemas de computación distribuída tolerante a fallas.
+%
+Abstrae diversos problemas en donde, de una manera u otra, los procesos deben ponerse de acuerdo.
+%
+
+Los problemas de consenso requieren acuerdo entre un número de procesos para determinar un valor particular.
+%
+Algunos de los procesos pueden fallar o ser no confiables de diversas maneras, por lo que los protocolos de
+consenso deben ser resilientes a fallas.
+%
+Los procesos deben de alguna forma establecer sus valores candidatos, comunicándose entre ellos, y
+poniéndose de acuerdo en un valor específico.
+%
+Los protocolos que resuelven el problema de consenso son diseñados para lidiar con un número limitado de procesos
+que fallan.
+%
+Estos protoclos deben satisfacer un número de requerimientos para ser utilizados.
+%
+A lo largo de la historia se han desarrollado distintos algoritmos de consenso, que funcionan bajo diferentes
+escenarios (cantidad de nodos, cantidad de nodos que pueden fallar, formas en las que pueden fallar, etc.)
+
+%
+
+Si bien a lo largo de este trabajo no se entrará en detalles sobre ningún algoritmo de consenso en particular,
+es pertienente discutir conceptos y nomenclatura básica.
+
+\subsubsection{El problema de los generales bizantinos}
+
+Los sistemas de computación confiables deben lidiar con componentes que, por mal funcionamiento,
+dan información conflictiva a diferentes partes del sistema.
+La situación puede ser exrepsada abstractamente
+en términos de un grupo de generales de la armada bizantina que acampan con sus tropas alrededor de una
+ciudad enemiga~\cite{byzantineproblem}.
+Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en una plan
+de batalla común.
+Sin embargo, uno o más de ellos pueden ser traidores, quienes tratarán de confundir a los
+otros.
+El problema es encontrar un algoritmo que asegure que los generales leales lleguen a un acuerdo.
+Está demostrado que, usando solo mensajes orales, este problema es resoluble si y solo si más de dos tercios
+de los generales son leales.
+La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
+es conocida como tolerancia a fallas bizantinas (BFT por sus siglas en inglés).
+
+%
+
+Con esta analogía de los generales bizantinos, Lamport inició el estudio de los algoritmos de consenso BFT
+(tolerantes a fallas bizantinas).
+Si bien la teoría de
+BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
+debido al amplio éxito de tecnologías blockchains como Bitcoin y Ethereum.
+
 \subsection{Criptografía}
+Usualmente, los protocolos BFT hacen un uso muy fuerte de la criptografía, fundamentalmente para autenticar
+mensajes y decisiones que, a su vez, pueden ser utilizadas por otros para validar criptográficamente los resultados
+mostrados por el protocolo de consenso.
 
 \subsection{Los orígenes de la blockchain}
 % Fuente: Mastering Bitcoin. Programming the open blockchain.
@@ -192,51 +247,6 @@ que la contiene y todos los bloques siguientes.~\cite{bitcoin}
 % Fuente: https://developer.bitcoin.org/devguide/block_chain.html
 
 %\subsection{Blockchain actuales}
-
-\subsection{Algoritmos de consenso}\label{subsubsec:consensus}
-El problema de consenso es uno de los más celebrados en los sistemas de computación distribuída tolerante a fallas.
-%
-Abstrae diversos problemas en donde, de una manera u otra, los procesos deben ponerse de acuerdo.
-%
-
-Los problemas de consenso requieren acuerdo entre un número de procesos para determinar un valor particular.
-%
-Algunos de los procesos pueden fallar o ser no confiables de diversas maneras, por lo que los protocolos de
-consenso deben ser resilientes a fallas.
-%
-Los procesos deben de alguna forma establecer sus valores candidatos, comunicándose entre ellos, y
-poniéndose de acuerdo en un valor específico.
-%
-Los protocolos que resuelven el problema de consenso son diseñados para lidiar con un número limitado de procesos
-que fallan.
-%
-Estos protoclos deben satisfacer un número de requerimientos para ser utilizados.
-%
-A lo largo de la historia se han desarrollado distintos algoritmos de consenso, que funcionan bajo diferentes
-escenarios (cantidad de nodos, cantidad de nodos que pueden fallar, formas en las que pueden fallar, etc.)
-
-%
-
-Si bien a lo largo de este trabajo no se entrará en detalles sobre ningún algoritmo de consenso en particular,
-es pertienente discutir conceptos y nomenclatura básica.
-
-\subsubsection{El problema de los generales bizantinos}
-
-Los sistemas de computación confiables deben lidiar con componentes que, por mal funcionamiento,
-dan información conflictiva a diferentes partes del sistema. La situación puede ser exrepsada abstractamente
-en términos de un grupo de generales de la armada bizantina que acampan con sus tropas alrededor de una
-ciudad enemiga. Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en una plan
-de batalla común. Sin embargo, uno o más de ellos pueden ser traidores, quienes tratarán de confundir a los
-otros. El problema es encontrar un algoritmo que asegure que los generales leales lleguen a un acuerdo.
-Está demostrado que, usando solo mensajes orales, este problema es resoluble si y solo si más de dos tercios
-de los generales son leales.
-La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
-es conocida como tolerancia a fallas bizantinas (BFT por sus siglas en inglés). Si bien la teoría de
-BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
-debido al amplio éxito de tecnologías blockchains como Bitcoin y Ethereum.
-
-% Fuente: [10] Lamport, L., Shostak, R., and Marshall, P. The byzantine generals problem.
-
 
 \subsection{Setchain}~\label{sec:setchain}
 

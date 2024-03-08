@@ -584,12 +584,12 @@ Una vez allí es sometido a
 %
 
 En \compresschain, para decidir si una transacción es válida, debe revertirse el proceso hecho a la misma para
-así obtener los elementos de cliente que la componen y analizarlos de forma individual.
+así obtener los elementos de cliente que la componen, y analizarlos de forma individual.
 
 %
 
-La primera pregunta que surge cuando se piensa en la contraparte para \hashchain, es cómo se determina si una
-transacción (un hash) es válido para ser agregado a la mempool, siendo que no es trivial recuperar los
+La primera pregunta que surge, cuando se piensa en la contraparte para \hashchain, es cómo se determina si una
+transacción (un hash) es válida para ser agregada a la mempool, siendo que no es trivial recuperar los
 elementos originales teniendo un hash.
 
 %
@@ -675,24 +675,35 @@ quién es el \collector que enuncia tener el lote. Una vez que obtiene el invers
 futuras peticiones, y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
 cómo se resuelve el proceso de inversión.
 
-En la Figura (d) se muestra el último paso posible de esta comunicación, en la que la aplicación  
+%
+
+En la Figura (d) se muestra el último paso posible de esta comunicación: la aplicación
+anuncia a la red sobre el conocimiento de un nuevo hash. Esto ocurre solo cuando la aplicación
+efectivamente toma conocimiento de un nuevo hash, ya que anunciar más de una vez que se conoce un
+determinado hash generaría tráfico innecesario en la red. Por otro lado, solo se firma el hash si al
+menos un elemento en el hash es válido, como se explicará con más detalle en la siguiente sección.
+
+%
+
+Es importante aclarar que, en principio, las claves públicas/privadas que sirven para autenticarse
+funcionan a nivel nodo: aplicaicón y \collector comparten una misma clave.
+
+\subsection{Validación de hashes}
 
 Después de dejar el \collector, se espera que los hashes sean chequeados contra \<CheckTx>
 para o bien ser añadidos a la mempool o bien ser descartados.
 
 %
-Para determinar la validez de un hash se necesita chequear los elementos en él.
-
-%
-Similar a \compresschain, los hashes son considerados válidos si al menos un elemento
+Para determinar la validez de un hash se necesita chequear los elementos en él. Similar a
+\compresschain, los hashes son considerados válidos si al menos un elemento
 en el hash es válido.
 %
-Para un nodo dado, en el punto en que \<CheckTx> corre, no podemos asegurar que el
+Sin embargo, para un nodo dado, en el punto en que \<CheckTx> corre, no podemos asegurar que el
 lote original de elementos sea conocido.
 
 %
 Hashchain es optimista en el sentido de que, ante la imposibilidad de correr el chequeo
-de las transacciones, debido a la ausencia del lote original, \<CheckTx> considera a los
+de las transacciones (debido a la ausencia del lote original) \<CheckTx> considera a los
 hashes como transacciones válidas con la esperanza de que sus lotes originales sean enviados
 y conocidos más tarde. 
 
@@ -704,12 +715,12 @@ se pueden tener transacciones en la blockchain sin conocer los elementos de ést
 (solo conociendo los hashes).
 
 %
-Aun más, una transacción puede terminar siendo parte de la blockchain sin que nadie
+Aún más, una transacción puede terminar siendo parte de la blockchain sin que nadie
 la haya chequeado previamente, pero pasando el chequeo por el comportamiento optimista.
 %
 De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
 en la blockchain (fue consensuado sin que los nodos hayan chequeado realmente los elementos
-del lote.)
+del lote).
 
 %
 
@@ -721,15 +732,15 @@ que los elementos en un hash que está en la blockchain sean parte de la \setcha
 % the HashChain living in
 % Tendermint, and the \setchain we want to build.
 %
-Para lograr eso, se define un número natural \texttt{SIGNATURES\_PER\_HASH} que establece
+Para lograr eso, se define un número natural \SPH que establece
 el número de firmas que un hash tiene que tener para que los elementos del lote asociado a él
 sean considerados elementos a añadir a la \setchain.
 
 %
-Estamos únicamente interesados en hashes firmados por al menos \texttt{SIGNATURES\_PER\_HASH}
-nodos, y los llamamos \textit{hashes consolidados}.
+Estamos únicamente interesados en hashes firmados por al menos \SPH
+nodos, y a dichos hashes los llamamos \textit{hashes consolidados}.
 
-\texttt{SIGNATURES\_PER\_HASH} es definido de una manera tal que se garantiza que si un hash
+El número \SPH se define de manera tal que se garantiza que si un hash
 consolidó entonces al menos un nodo correcto conoce el lote original del cual proviene.
 
 %
@@ -741,7 +752,7 @@ Los elementos de hashes consolidados son los candidatos a pertenecer a la \setch
 % With this in mind, whenever the ABCI gets the revert of a hash, it runs the
 % validation against it, and
 %Moreover, if at least one element in the batch is valid, the node verifying the
-Cuando un nodo pregunta por la inversión de un hash, si al menos un elemento en el lote
+Cuando un nodo solicita la inversión de un hash, si al menos un elemento en el lote
 es válido, el nodo firma el hash (con sus propia clave privada), y difunde el hash junto
 con su propia firma.
 
@@ -760,8 +771,8 @@ Si la firma es válida y nueva para el hash en cuestión, se incrementa el conta
 \texttt{firmas por hash}.
 %
 Además, cada vez que un hash es invertido, se chequea la correctitud del lote original
-(es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hash a lotes
-es actualiado con el nuevo descubrimiento.
+(es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hashes a lotes
+es actualizado con el nuevo descubrimiento.
 
 %The first time a hash is passed around, other nodes would see the new hash and
 %try to get the data from other servers.
@@ -783,7 +794,7 @@ es actualiado con el nuevo descubrimiento.
 \subsection{Consolidación de épocas}\label{subsubsec:consolidation}
 
 En esta implementación, las épocas se definen por todos los elementos en un hash, similar
-a la implementación de Compresschain.
+a la implementación de \compresschain.
 
 %
 En otras palabras, los elementos que provienen del mismo hash consolidado pertenecen a la
@@ -805,9 +816,9 @@ En este trabajo se presentan dos alternativas para asignar una época a un hash 
 %
 La primera se llama \textit{Consolidación de época actual} (CEC), que significa que 
 una vez que un hash consolida, todos sus elementos subyacentes son añadidos a la época actual
-(es decir, a la época en el cual la firma número \texttt{SIGNATURES\_PER\_HASH} es vista).
+(es decir, a la época en el cual la firma número \SPH es vista).
 %
-La segunda estrategia, \textit{Consolidación de época de primera vista} (FSEC) asigna la época
+La segunda estrategia, \textit{Consolidación de época de primera vista} (FSEC), asigna la época
 de acuerdo a cuándo el hash fue visto por privera vez. La asignación de época se lleva
 a cabo una vez que el hash consolidó. 
 
@@ -819,7 +830,7 @@ todos los nodos correctos estarán de acuerdo en eso.
 %
 
 En la Figura~\ref{fig:consolidation_epoch} se muestra un ejemplo de estas dos estrategias para asignar
-un número de época a un hash que consolidó cuando \texttt{SIGNATURES\_PER\_HASH} es 3.
+un número de época a un hash que consolidó cuando \SPH es 3.
 
 %
 El hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que primero consolida
@@ -841,56 +852,96 @@ con la época $a$, y los elementos del hash $k$ son estampados con la época $a+
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.5]{figures/consolidation_epoch.pdf}
-  \caption{Consolidation epoch strategies}
+  \includegraphics[scale=0.7]{figures/consolidation_epoch.pdf}
+  \caption{Estrategias de consolidación de épocas}
   \label{fig:consolidation_epoch}
 \end{figure}
 
 La variante de consolidación de época de primera vista le otorga a los hashes un período
 de gracia en el cual pueden o bien consolidarse o bien ser descartados.
 %
-Dicho período de gracia es necesario, examinemos por qué.
+Dicho período de gracia es necesario; examinemos por qué.
 % The grace period is necessary, let
 % us briefly examine why.
+
+
 Suponiendo que no existe período de gracia tal, si un hash $j$ apareciera por primera vez
-antes que el hash $k$, una vez que consolidados, los elementos provenientes del hash $j$
+antes que el hash $k$, una vez consolidados, los elementos provenientes del hash $j$
 serían estampados con la época $E$, mientras que los elementos del hash $k$ serían estampados
 con una época $F$ \textgreater \ $E$.
 %
+
 Sea $j$ un hash que fue visto por primera vez en un momento tal que, una vez consolidado,
 se le asignaría la época $E$.
 %
-Si el hash $j$ nunca logra obtener las \texttt{SIGNATURES\_PER\_HASH} firmas para
+Si el hash $j$ nunca logra obtener las \SPH firmas para
 consolidar, un hash $k$ más nuevo (es decir, un hash que fue visto por primera vez
-después de $j$) no podría consolidad, dado que sus elementos subyacentes no podrían ser
+después de $j$) no podría consolidar, dado que sus elementos subyacentes no podrían ser
 estampados con una época $F$ \textgreater \ $E$, si la época $E$ no fue definida aún.
 %
-En la Figura~\ref{fig:grace_period} se muestra un ejemplo de esto.
-%
-Se concluye entonces que un período de gracia es necesario para garantizar la evolución
-éxitosa de la \hashchain. De este modo, los hashes $k$ y $l$ (e incluso $o$ y $q$) no
-pueden consolidarse hasta que $j$ consolide o sea rechazada.
-%
-Vale la pena notar que el aspecto crucial en la consolidación de FSEC radica en la ocurrencia
-de las \texttt{SIGNATURES\_PER\_HASH} firmas dentro de una ventana equivalente a la duración
-del período de gracia.
-%
-Los hashes que son inicialmente rechazados pueden consolidar en el futuro siempre y cuando
-consigan las \texttt{SIGNATURES\_PER\_HASH} firmas dentro del período de gracia.
-%
-Los hashes que logran las \texttt{SIGNATURES\_PER\_HASH} firmas terminado el período de gracia
-no consolidarán en la ronda actual; sin embargo, pueden hacerlo en el futuro.
+
+En la Figura~\ref{fig:grace_period} se muestra un ejemplo de lo mencionado. Los hashes
+$k$ y $l$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o sea rechazada.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.5]{figures/grace_period.pdf}
-  \caption{Scenario requiring grace period under FSEC.}
+  \includegraphics[scale=0.7]{figures/grace_period.pdf}
+  \caption{Escenario que requiere período de gracia bajo FSEC.}
   \label{fig:grace_period}
 \end{figure}
+
+%
+Se concluye entonces que un período de gracia es necesario para garantizar la evolución
+éxitosa de la \hashchain. 
+%
+Vale la pena notar que el aspecto crucial en la consolidación de FSEC radica en la ocurrencia
+de las \SPH firmas dentro de una ventana equivalente a la duración
+del período de gracia.
+%
+Los hashes que son inicialmente rechazados pueden consolidar en el futuro siempre y cuando
+consigan las \SPH firmas dentro del período de gracia.
+%
+%Los hashes que logran las \SPH firmas terminado el período de gracia
+%no consolidarán en la ronda actual; sin embargo, pueden hacerlo en el futuro.
 
 %\subsubsection{Elements Membership Proof}
 % Do not use this because we want a proof that specific elements belong to a specific epoch.
 %Client processes do not know if they are contacting a Byzantine or correct process. The general idea of a client protocol that wants to ensure that an element is going to be added to the \setchain is to interact with enough servers to guarantee that some are correct. To guarantee contacting at least one correct server, the client needs to send f + 1 messages. However, each element added to the \setchain comes from a consolidated hash. That means that we already have \textbf{SIGNATURES\_PER\_HASH} validator's signatures for that hash. Those signatures may act as a proof for the batch of elements that really belongs to the \setchain. If that proof is added to the epoch as an extra element, a client sending an element, waiting for a while, and then requesting a Get to only one server (hoping it is correct server) may be sure that its element belongs to the \setchain because the epoch comes along a proof of their elements. 
+
+\subsection{Algoritmos}\label{subsubsec:details}
+
+Al igual que se hizo para Vainilla y \compresschain, en esta subsección se presentan los pseudocódigos
+para los distintos algoritmos. No definimos un nuevo \texttt{collector} para \hashchain dado que
+es similar al definido
+para \compresschain, con la única diferencia del uso de funciones hash.
+
+% No collector piece for Hashchain appears as it is similar to the already
+% presented collector for Brotli, employing hash functions instead of Brotli
+% compression.
+En el Algoritmo ~\ref{alg:api-hashchain} se define la API de \setchain.
+
+\input{algorithms/alg-api-hash}
+
+% shows how a new collector is
+% used now in order to add elements to the \setchain.
+
+Finalmente, en relación a la definición de la ABCI, se muestra una posible implementación para
+\hashchain utilizando la estrategia de consolidación de época actual en el Algoritmo ~\ref{alg:abci-hash1}
+y ~\ref{alg:abci-hash2}.
+
+Es importante notar que en el algoritmo la función \<Query> inicia la construcción de \<history>, además de
+la difusión de pruebas de época.
+%
+Aunque este enfoque es empleado para claridad, un nodo que recibe consultas
+no muy frecuentemente podría experimentar retrazos en la generación de pruebas de época.
+%
+Como resultado, el proceso de contrucción de \<history> y las pruebas de época podrían ser ejecutadas
+periódicamente mediante planificación, independientemente de la petición de consultas.
+
+\input{algorithms/alg-abci-hash}
+%As mentioned above, Hashchain First Seen Consolidation version uses an idea of grace period in which the hashes are either consolidated or discarded. In this case, we will define the grace period in terms of number of blocks, meaning that if a hash has been seen for the first time in block $B$, and the grace period is $P$ blocks, then on block $B$ + $P$ we will determine if the hash is consolidated (hence, their elements are added to the \setchain), or is discarded. To implement this, we will keep a fixed capacity queue (with capacity $P + 1$), in which the \textit{i}-th element has a list of hashes seen for first time in block $current block - (P - i)$. Notice that the first element of the queue has the list of hashes that were seen for first time in block $current block - P$, meaning that those hashes will be decided in the current block. The last element of the queue has the list of hashes first seen at the current block. Algorithm ~\ref{alg:abci-hash-first-seen} illustrates this behavior.
+
+%\input{algorithms/alg-abci-hash-first-seen}
 
 \subsection{Ataques front-running}
 En el contexto de las blockchains, un ataque de front-running refiere a una situación en donde
@@ -914,11 +965,11 @@ o incluso evitando la consolidación.
 
 Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
 %
-En la estrategia FSEC, si una transacción no obtiene las \texttt{SIGNATURES\_PER\_HASH} firmas
+En la estrategia FSEC, si una transacción no obtiene las \SPH firmas
 dentro del período de gracia, el hash no consolidará en aquella ronda (pero podría hacerlo
 en el futuro).
 %
-En la estrategia CEC, el hash no consolidará hasta obtener las \texttt{SIGNATURES\_PER\_HASH} firmas,
+En la estrategia CEC, el hash no consolidará hasta obtener las \SPH firmas,
 sin tener ningún período de gracia para ello.
 %
 En este punto, las estrategias no parecen tener diferencias fundamentales. Sin embargo, el aspecto
@@ -931,15 +982,15 @@ Para lograrlo, ignora la transacción, pero difunde su propia transacción firma
 esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
 %
 Bajo el comportamiento FSEC, $h_0$ fue vista por primera vez antes, por lo que si logra las
-\texttt{SIGNATURES\_PER\_HASH} firmas dentro del período de gracia, consolidará, y los elementos
+\SPH firmas dentro del período de gracia, consolidará, y los elementos
 en el hash serán estampados con una época menor a la de $t_1$.
 %
 Notemos que esto es completamente independiente del número de firmas que $h_1$ logre, y la velocidad
-a la cual lo haga. $h_1$ podría incluso consolidar (llegar a su firma \texttt{SIGNATURES\_PER\_HASH})
+a la cual lo haga. $h_1$ podría incluso consolidar (llegar a su firma \SPH)
 antes que $h_0$.
 %
 Por el otro lado, bajo el comportamiento CEC la situación es básicamente una carrera entre $h_0$ y
-$h_1$: el primero en obtener las \texttt{SIGNATURES\_PER\_HASH} firmas será el primero en consolidar y,
+$h_1$: el primero en obtener las \SPH firmas será el primero en consolidar y,
 por lo tanto, sus elementos serán estamapdos con una época más temprana.
 %
 Como ya se mencionó, 
@@ -964,7 +1015,7 @@ Luego, $v$ no revierte el hash $h_0$ a nadie, porque quiere esperar hasta que el
 y obtenga suficientes firmas.
 %
 Una vez que esto sucede, y es seguro que el hash $h_1$ consolidará, $v$ comienza a revertir su hash
-$h_0$ a todos sus pares, esperando que el hash logre las \texttt{SIGNATURES\_PER\_HASH} firmas
+$h_0$ a todos sus pares, esperando que el hash logre las \SPH firmas
 dentro del período de gracia.
 Si es exitoso, luego $v$ habría cumplido su objetivo: los elementos del hash $h_0$ serían estampados
 con una época menor que los elementos provenientes del hash $h_1$.
@@ -997,37 +1048,6 @@ Una vez que se asegura el resultado ganador, solo dará a conocer la inversa del
 por el resultado ganador. Si obtiene las firmas necesarias durante el período de gracia,
 sus transacciones serían estampadas con un número de época anterior que la transacción de los resultados,
 y por lo tanto, $v$ ganaría el juego haciendo trampa.
-
-
-\input{algorithms/alg-api-hash}
-
-\subsection{Algoritmos}\label{subsubsec:details}
-
-No definimos un nuevo \texttt{collector} para \hashchain dado que es similar al definido
-para Compresschain, con la única diferencia del uso de funciones hash.
-
-% No collector piece for Hashchain appears as it is similar to the already
-% presented collector for Brotli, employing hash functions instead of Brotli
-% compression.
-Se define la API de \setchain en el Algoritmo ~\ref{alg:api-hashchain}.
-
-% shows how a new collector is
-% used now in order to add elements to the \setchain.
-
-Finalmente, en relación a la definición de la ABCI, se muestra una posible implementación para
-\hashchain utilizando la estrategia de consolidación de época actual en el Algoritmo ~\ref{alg:abci-hash1}
-y ~\ref{alg:abci-hash2}.
-
-Es nootorio que en el algoritmo la función \<Query> inicia la construcción de \<history>, además de
-la difusión de pruebas de época. Aunque este enfoque es empleado para claridad, a nodo que recive consultas
-no muy frecuentemente podría experimentar retrazos en la generación de pruebas de época.
-Como resultado, el proceso de contrucción de \<history> y las pruebas de época podrían ser ejecutadas
-periódicamente mediante planificación, independientemente de la petición de consultas.
-
-\input{algorithms/alg-abci-hash}
-%As mentioned above, Hashchain First Seen Consolidation version uses an idea of grace period in which the hashes are either consolidated or discarded. In this case, we will define the grace period in terms of number of blocks, meaning that if a hash has been seen for the first time in block $B$, and the grace period is $P$ blocks, then on block $B$ + $P$ we will determine if the hash is consolidated (hence, their elements are added to the \setchain), or is discarded. To implement this, we will keep a fixed capacity queue (with capacity $P + 1$), in which the \textit{i}-th element has a list of hashes seen for first time in block $current block - (P - i)$. Notice that the first element of the queue has the list of hashes that were seen for first time in block $current block - P$, meaning that those hashes will be decided in the current block. The last element of the queue has the list of hashes first seen at the current block. Algorithm ~\ref{alg:abci-hash-first-seen} illustrates this behavior.
-
-%\input{algorithms/alg-abci-hash-first-seen}
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"
