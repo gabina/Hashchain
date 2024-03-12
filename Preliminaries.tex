@@ -39,7 +39,8 @@ Se asume que los procesos cooperan por un objetivo común, lo cual significa que
 información de una manera u otra. Es interesante notar que el hecho de que las entidades
 cooperen no significa la asumción de que todas las entidades se comportarán de la forma
 acordada, ya sea por un error (por ejemplo, en la programación o en una red) o por un compartamiento
-malintencionado. Se volverá a este punto en la sección ~\ref{subsubsec:consensus}.
+malintencionado. 
+% Se volverá a este punto en la sección ~\ref{subsubsec:consensus}.
 
 % Two main process failures models are considered in this book:
 % • Crash failures. A process commits a crash failure when it prematurely stops its execution. Until
@@ -94,31 +95,82 @@ Los sistemas de computación confiables deben lidiar con componentes que, por ma
 dan información conflictiva a diferentes partes del sistema.
 La situación puede ser exrepsada abstractamente
 en términos de un grupo de generales de la armada bizantina que acampan con sus tropas alrededor de una
-ciudad enemiga~\cite{byzantineproblem}.
+ciudad enemiga.
 Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en una plan
 de batalla común.
 Sin embargo, uno o más de ellos pueden ser traidores, quienes tratarán de confundir a los
 otros.
 El problema es encontrar un algoritmo que asegure que los generales leales lleguen a un acuerdo.
 Está demostrado que, usando solo mensajes orales, este problema es resoluble si y solo si más de dos tercios
-de los generales son leales.
+de los generales son leales~\cite{byzantineproblem}.
 La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
-es conocida como tolerancia a fallas bizantinas (BFT por sus siglas en inglés).
+es conocida como tolerancia a fallas bizantinas (\textit{Bizantyne fault-tolerance}).
 
 %
 
-Con esta analogía de los generales bizantinos, Lamport inició el estudio de los algoritmos de consenso BFT
-(tolerantes a fallas bizantinas).
+Con esta analogía de los generales bizantinos, Lamport inició el estudio de los algoritmos de consenso tolerantes a fallas
+bizantinas (\textit{Bizantyne fault-tolerant}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
 Si bien la teoría de
 BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
 debido al amplio éxito de tecnologías blockchains como Bitcoin y Ethereum.
 
-\subsection{Criptografía}
+\subsection{Firmas digitales}
 Usualmente, los protocolos BFT hacen un uso muy fuerte de la criptografía, fundamentalmente para autenticar
 mensajes y decisiones que, a su vez, pueden ser utilizadas por otros para validar criptográficamente los resultados
-mostrados por el protocolo de consenso.
+obtenidos gracias al protocolo de consenso.
 
-\subsection{Los orígenes de la blockchain}
+%
+Las firmas digitales son una de las primitivas más poderosas de la criptografía.
+Son similares a las firmas de puño y letra, en el sentido de que apuntan a cumplir las mismas propiedades
+(pero, al ser firmas criptográficas, presentan garantías):
+\begin{itemize}
+  \item La firma solo puede ser utilizada por su dueño para firmar mensajes arbritarios.
+  \item Cualquiera puede verificar la firma de un mensaje.
+\end{itemize}
+ 
+Los \textit{esquemas de firmas digitales} pertenecen al dominio de lo que se conoce como \textit{criptografía asimétrica}
+o \textit{criptografía de clave pública}.
+%
+Esta categoría de la criptografía hace uso de distintas claves para distintas funciones (en oposición a una única
+clave usada en la \textit{criptografía simétrica}), o provee diferentes puntos de vistas a diferentes participantes.
+%
+En líneas generales esto se puede expresar mediante la existencia de dos claves: una clave pública (conocida por cualquiera)
+y una clave privada (que debe mantenerse secreta). Estas claves se encuentras conectadas entre sí y tienen roles complementarios.
+
+
+Un esquema de firmas típicamente consiste de algoritmos diferentes:
+\begin{itemize}
+  \item Un algoritmo de generación de pares de claves que un firmante usa para crear una nueva clave privada y una pública.
+  \item Un algoritmo para firmar que toma una clave privada y un mensaje, y produce una firma del mismo.
+  \item Un algoritmo de verificación de firmas que toma una clave pública, un mensaje, y una firma, y determina si la firma
+  fue creada para dicho mensaje con la clave privada asociada a la clave pública. 
+\end{itemize}
+
+La clave privada es también conocida como la \textit{clave de firmado} y la clave pública como la \textit{clave de verificación}.
+En la Figura ~\ref{fig:digital-signatures} se recapitulan estos tres algoritmos.
+
+\begin{figure}
+  \centering
+  \subfloat[Generación de claves]{\includegraphics[width = 1.7in]{figures/signature-00.png}}
+  \hspace{1.4em}
+  \subfloat[Firma de mensajes]{\includegraphics[width = 1.7in]{figures/signature-1.png}}
+  \hspace{1.4em}
+  \subfloat[Verificación de firma]{\includegraphics[width = 1.7in]{figures/signature-2.png}}
+  \caption{Interfaz de firma digital.}
+  \label{fig:digital-signatures}
+\end{figure}
+
+
+Las firmas son utilizadas para autenticar el \textit{origen} de un mensaje (el mensaje fue generado por el dueño de la clave privada
+asociada a la firma), así como también la \textit{integridad} del mismo (ya que si el mensaje fuese cambiado, la firma sería invalidada).
+
+%
+
+Existen distintos estándares para los esquemas de firmas digitales, basados en aritmética de módulo sobre grandes números (por ejemplo,
+RSA-PSS~\cite{pss.rsa}) o en curvas elípticas (como ECDSA~\cite{ecdsa}).
+Sin embargo, no se entrará en detalles sobre ellos.
+
+\subsection{Los orígenes de la blockchain: Bitcoin}
 % Fuente: Mastering Bitcoin. Programming the open blockchain.
 Las blockchains tomaron popularidad con la invención de Bitcoin en 2008, luego de la publicación
 de un artículo llamado \textit{Bitcoin: A Peer-to-Peer
@@ -127,9 +179,9 @@ bajo el pseudónimo de Satoshi Nakamoto.
 Nakamoto combinó diversas invenciones previas como
 \textit{b-money}~\cite{b.money} y \textit{HashCash}~\cite{hashcash} para crear un sistema de dinero electrónico completamente
 descentralizado que, justamente, no necesita confiar en ninguna autoridad central para la emisión de monedas,
-o la liquidación o validación de las transacciones. 
+o la ejecución de transacciones. 
 La innovación clave en Bitcoin fue el uso de un sistema de cómputo distribuído que lleva
-a cabo una elección global de las nuevas transacciones cada 10 minutos, permitiendo
+a cabo una elección global de las nuevas transacciones, permitiendo
 a la red descentralizada llegar a un consenso sobre el estado de las mismas. Estas transacciones
 se guardan empaquetadas como bloques en una bitácora distribuída pública conocida como blockchain.~\cite{mastering.bitcoin}
 %
@@ -140,54 +192,91 @@ dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
 %en el cual una misma unidad de moneda se utiliza dos veces. Previamente, el problema del doble gasto fue
 %una debilidad de los sistemas de moneda digital que fue abordado mediante servidores de información centrales.
 
-Bitcoin es una colección de conceptos y tecnologías que forman las bases de un ecosistema de dinero
-digital.
+%Bitcoin es una colección de conceptos y tecnologías que forman las bases de un ecosistema de dinero
+%digital.
 %
 Si bien la noción de bitcoin como criptomoneda no es imprescindible para la comprensión de las
 contribuciones de este trabajo, es el primer caso de uso que da particular importancia a la blockchain
-como tal y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
-su funcionamiento.
+como tal, y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
+su funcionamiento, poniendo foco en el aspecto cripográfico del mismo.
 
-\subsubsection{Funcionamiento de bitcoin}
+\subsubsection{Cuentas y transacciones}
 
-Las unidades de moneda llamadas bitcoins son usadas para almacenar y transmitir valor a través
-de los participantes de la red de bitcoin. Los usuarios se comunican entre ellos usando un protocolo 
-específico principalmente mediante internet. La pila del
-protocolo bitcoin, disponible como software de código abierto, se puede correr en una amplia gama de
-dispositivos, incluyendo computadoras portátiles y teléfonos inteligentes, haciéndolo una tecnología
-de fácil acceso.
+Un usuario de bitcoin está necesariamente lidiando con primitivas criptográficas.
+%
+Para comenzar, los usuarios de bitcoin no tienen un nombre de usuario y una contraseña
+con la cual inician sesión; en lugar de eso, tienen un par de claves ECDSA (\textit{Eliptic
+Curve Digital Signature Algorithm}) que generan ellos mismos mediante la interfaz de firmas
+digitales vista en la sección anterior.
+%
+El balance de un usuario no es más que una cantidad de BTCs asociada a una clave pública,
+y por lo tanto, para recibir BTCs, simplemente se debe compartir la clave pública con otros.
 
-Los usuarios pueden transferir bitcoins en la red y hacer básicamente cualquier operación que puede ser
-realizada con monedas tradicionales: comprar y vender bienes, enviar dinero a personas u
-organizaciones, o extender créditos. Los bitcoins también pueden ser vendidos, comprados, o intercambiados por
-otras monedas en casas de cambio especializadas.
+%
+Para utilizar los BTCs que tiene disponible, el usuario firma una transacción con su clave privada.
+%
+De forma simplificada, una transacción se podría pensar tan solo como un mensaje (firmado) del tipo
+\textquotedblleft Envío X BTCs a la clave pública Y\textquotedblright.
 
-A diferencia de las monedas tradicionales, los bitcoins son completamente virtuales. No hay monedas
-físicas e incluso no existen monedas en sí. Las monedas se representan en transacciones que transfieren
-valor desde el remitente hacia el destinatario. Los usuarios de bitcoin poseen claves criptográficas
-que permiten probar la propiedad de los bitcoins en la red. Con estas claves se pueden firmar las
-transacciones para desbloquear el valor y utilizarlo transfiriéndolo a un nuevo dueño. 
+Una característica fundamental de bitcoin es que no existe una base de datos real que contenga los
+balances de cada cuenta.
+%
+En lugar de eso, los usuarios tienen BTCs dispnibles para gastar, llamados
+\textit{Unspent Transaction Outputs} (UTXOs).
+%
+Cada usuario puede gastar únicamente sus propios UTXOs
+(puesto que necesita la clave privada asociada para hacerlo).
+%
+Cuando una transacción gasta algunos de estos UTXOs, desaparecen y aparecen nuevos,
+disponibles para gastar para el usuario destino de la transacción.
+%
+
+De este modo, para saber cuántos BTCs tiene una cuenta, se deben contar todos los UTXOs que fueron
+asignados a dicha clave pública.
+%
+En otras palabras, se debe contar todo el dinero que fue enviado a dicha clave pública y aún no
+fue gastado.
+
+Ahora surgen algunas preguntas. ¿Quién está a cargo de elegir y ordenar las transacciones?
+¿Quién mantiene el registro de todas ellas y cómo lo hace?
+% Las unidades de moneda llamadas bitcoins son usadas para almacenar y transmitir valor a través
+% de los participantes de la red de bitcoin. Los usuarios se comunican entre ellos usando un protocolo 
+% específico principalmente mediante internet. La pila del
+% protocolo bitcoin, disponible como software de código abierto, se puede correr en una amplia gama de
+% dispositivos, incluyendo computadoras portátiles y teléfonos inteligentes, haciéndolo una tecnología
+% de fácil acceso.
+
+% Los usuarios pueden transferir bitcoins en la red y hacer básicamente cualquier operación que puede ser
+% realizada con monedas tradicionales: comprar y vender bienes, enviar dinero a personas u
+% organizaciones, o extender créditos. Los bitcoins también pueden ser vendidos, comprados, o intercambiados por
+% otras monedas en casas de cambio especializadas.
+
+% A diferencia de las monedas tradicionales, los bitcoins son completamente virtuales. No hay monedas
+% físicas e incluso no existen monedas en sí. Las monedas se representan en transacciones que transfieren
+% valor desde el remitente hacia el destinatario. Los usuarios de bitcoin poseen claves criptográficas
+% que permiten probar la propiedad de los bitcoins en la red. Con estas claves se pueden firmar las
+% transacciones para desbloquear el valor y utilizarlo transfiriéndolo a un nuevo dueño. 
 %Las claves
 %son a menudo guardadas en billeteras digitales en las computadoras o celulares de los usuarios. La
 %posesión de una clave que puede firmar una transacción es el único prerequisito para utilizar bitcoin,
 %poniendo el control enteramente en manos de cada usuario.
 
-Bitcoin es un sistema distribuído de par a par. Como tal no tiene un servidor central o un punto de control.
-Los bitcoins son creados a través de un proceso llamado \textit{minería}, el cual involucra una competencia
-para encontrar solución a un problema matemático mientras se procesan las transacciones de bitcoin.
-Cualquier participante de la red (es decir, cualquiera quien use un dispositivo que corre la pila
-completa de protocolo de bitcoin) puede operar como minero, usando el poder de procesamiento de su
-computadora para verificar y guardar transacciones. Cada 10 minutos, en promedio, alguien logra validar
-las transacciones de los últimos 10 minutos y es compensando con bitcoin nuevo. Esencialmente, la minería
-de bitcoins descentraliza la emisión de moneda y las funciones de compensación de un banco central, evitando
-la necesidad del mismo.
+% Bitcoin es un sistema distribuído de par a par. Como tal no tiene un servidor central o un punto de control.
+% Los bitcoins son creados a través de un proceso llamado \textit{minería}, el cual involucra una competencia
+% para encontrar solución a un problema matemático mientras se procesan las transacciones de bitcoin.
+% Cualquier participante de la red (es decir, cualquiera quien use un dispositivo que corre la pila
+% completa de protocolo de bitcoin) puede operar como minero, usando el poder de procesamiento de su
+% computadora para verificar y guardar transacciones. Cada 10 minutos, en promedio, alguien logra validar
+% las transacciones de los últimos 10 minutos y es compensando con bitcoin nuevo. Esencialmente, la minería
+% de bitcoins descentraliza la emisión de moneda y las funciones de compensación de un banco central, evitando
+% la necesidad del mismo.
 
-El protocolo de bitcoin incluye algoritmos nativos que regulan las funciones de minería a lo largo de la
-red. La dificultad de la tarea de procesamiento que los mineros deben realizar se ajusta dinámicamente
-de modo que, en promedio, alguien tiene éxito cada 10 minutos sin importar la cantidad de mineros (y
-de poder de cómputo) existente en un momento dado. El protocolo además disminuye a la mitad el ratio de creación
-de bitcoins cada 4 años, y limita el número total de bitcoins que serán creados a un número fijo de
-aproximadamente 21 millones de bitcoins.
+% El protocolo de bitcoin incluye algoritmos nativos que regulan las funciones de minería a lo largo de la
+% red. La dificultad de la tarea de procesamiento que los mineros deben realizar se ajusta dinámicamente
+% de modo que, en promedio, alguien tiene éxito cada 10 minutos sin importar la cantidad de mineros (y
+% de poder de cómputo) existente en un momento dado. El protocolo además disminuye a la mitad el ratio de creación
+% de bitcoins cada 4 años, y limita el número total de bitcoins que serán creados a un número fijo de
+% aproximadamente 21 millones de bitcoins.
 
 %El resultado es que el número de bitcoins en circulación
 %sigue una curva predecible fácilmente que llega a 21 millones para el 2140. Debido a la disminución de
@@ -196,25 +285,53 @@ aproximadamente 21 millones de bitcoins.
 
 %Detrás de escena, bitcoin es el nombre de un protocolo, una red de pares, y una innovación de
 %computación distribuída.
-Bitcoin representa la culminación de décadas de investigación en criptografía
-y sistemas distribuídos, e incluye 4 innovaciones claves funcionando juntas:
-\begin{itemize}
-  \item Una red de par a par descentralizada (el protocolo de bitcoin).
-  \item Una bitácora distribuída pública de transacciones organizadas en bloques (la blockchain).
-  \item Un conjunto de reglas para la validación independiente de transacciones y la emisión de monedas (reglas de consenso).
-  \item Un mecanismo para lograr un consenso global descentralizado en la blockchain (algoritmo de prueba de trabajo).
-\end{itemize}
+% Bitcoin representa la culminación de décadas de investigación en criptografía
+% y sistemas distribuídos, e incluye 4 innovaciones claves funcionando juntas:
+% \begin{itemize}
+%   \item Una red de par a par descentralizada (el protocolo de bitcoin).
+%   \item Una bitácora distribuída pública de transacciones organizadas en bloques (la blockchain).
+%   \item Un conjunto de reglas para la validación independiente de transacciones y la emisión de monedas (reglas de consenso).
+%   \item Un mecanismo para lograr un consenso global descentralizado en la blockchain (algoritmo de prueba de trabajo).
+% \end{itemize}
+
+ \subsubsection{Prueba de trabajo}
+
+ Para acordar el ordenamiento de las transacciones, Bitcoin permite a cualquiera proponer una lista
+ de transacciones a incluírse en la siguiente página de la bitácora.
+ %
+ Esta propuesta contiene una lista de transacciones llamada \textit{bloque}.
+ %
+ Sin embargo, dado que la participación en Bitcoin es abierta a cualquiera, la propuesta de nuevos
+ bloques debe ser restringida de alguna forma, de modo que solo una persona haga una propuesta
+ para el siguiente bloque.
+ %
+
+Para lograr esto, el protocolo de Bitcoin establece que para proponer un bloque debe resolverse
+un problema lo suficientemente difícil.
+%
+Este mecanismo se conoce como prueba de trabajo (\textit{PoW}, por sus siglas en inglés).
+%
+En el caso de Bitcoin, el rompezabezas a resolver consisten en que el hash del bloque a proponer
+tenga una representación binaria que comience con un número dado de ceros.
+
+%
+Las personas que se dedican a resolver el rompecabezas y proponer el nuevo bloque de transacciones
+se llaman \textit{mineros}.
 
 \subsubsection{La forma de la blockchain}
 
-La blockchain es la bitácora pública de bitcoin, un registro ordenado y con fecha y hora de las transacciones.
+La blockchain es la bitácora pública de bitcoin, un registro ordenado, y con fecha y hora de las transacciones.
+%
 Cada nodo completo en la red de bitcoin guarda independientemente una blockchain que contiene solo
-bloques validados por ese nodo. Cuando cierta cantidad de nodos tienen los mismos bloques en su propia blockchain
+bloques validados por ese nodo.
+%
+Cuando cierta cantidad de nodos tienen los mismos bloques en su propia blockchain
 se dice que llegaron a un consenso. 
 %The validation rules these nodes follow to maintain consensus are
 %called consensus rules. This section describes many of the consensus rules used by Bitcoin Core.
 
-La Figura \ref{fig:blockchain} muestra una versión simplificada de una blockchain. En la sección de datos de un bloque
+La Figura \ref{fig:blockchain} muestra una versión simplificada de una blockchain.
+En la sección de datos de un bloque
 se agrupan y alojan una o más transacciones nuevas. Copias de cada transacción se hashean, los hashes luego
 se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un único hash: la raíz de un
 \textit{merkle tree}~\cite{merkle.tree}. 
@@ -228,8 +345,13 @@ se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un
 
 
 En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
-La raíz del merkle tree se aloja en el encabezado del bloque. Cada bloque además contiene el hash del encabezado
-del bloque anterior, encadenándolos. Esto asegura que una transacción no pueda modificarse sin modificar el bloque
+La raíz del merkle tree se aloja en el encabezado del bloque.
+
+%
+Cada bloque además contiene el hash del encabezado del bloque anterior, encadenándolos.
+La blockchain es realmente una sucesión de bloques, donde cada bloque refiere al previo,
+hasta llegar al primero, conocido como \textit{génesis}.
+Esto asegura que una transacción no pueda modificarse sin modificar el bloque
 que la contiene y todos los bloques siguientes.~\cite{bitcoin}
 
 \begin{figure}[h]
