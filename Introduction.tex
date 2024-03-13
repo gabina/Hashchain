@@ -1,4 +1,5 @@
-\section{Disclaimer}
+\section{Historia}
+% \section{Disclaimer}
 
 % Es por acá, amiga...
 % Usuarias de instagram alrededor de Argentina
@@ -32,12 +33,13 @@ y solo pueden agregarse cuando los participantes logran un \textit{quorum}. En
 contraste con un sistema centralizado, las bitácoras distribuídas no requieren
 un administrador central y, en consecuencia, no tienen un punto de falla central.
 Un caso particular de bitácora distribuída, en donde los registros se empaquetan
-en forma de bloques, es la \textit{blockchain}. Las blockchains tomaron popularidad
-con la implementación de Bitcoin, un sistema de pago electrónico decentralizado, 
-propuesto por Nakamoto en 2009~\cite{nakamoto06bitcoin}.
-Así, aquello que en sus orígenes fue parte de una herramienta de guía, que mostró
-a los viajeros su rumbo, hoy representa un avance en una dirección que difícilmente se
-pueda considerar certera.
+en forma de bloques, es la \textit{blockchain}. [A completar]
+%Las blockchains tomaron popularidad
+%con la implementación de Bitcoin, un sistema de pago electrónico decentralizado, 
+%propuesto por Nakamoto en 2009~\cite{nakamoto06bitcoin}.
+%Así, aquello que en sus orígenes fue parte de una herramienta de guía, que mostró
+%a los viajeros su rumbo, hoy representa un avance en una dirección que difícilmente se
+%pueda considerar certera.
 
 % Agregar alguna cita o reflexión de alguien sobre la humanidad creyendo o queriendo
 % conocer el destino
@@ -46,11 +48,12 @@ pueda considerar certera.
 % What is the problem. Justifiy that the problem is a problem.
 %Blockchains
 Las blockchains tomaron
-popularidad con la implementación de Bitcoin, propuesta por Nakamoto en
+popularidad con la implementación de Bitcoin, una tecnología propuesta por Nakamoto en
 2009~\cite{nakamoto06bitcoin}.
 Allí se presentó como un método para eliminar terceras partes confiables en sistemas
 de pago electrónico.
 %
+
 Las blockchains modernas incorporan contratos inteligentes~\cite{szabo96smart,ethereum},
 los cuales son programas de estado inmutable alojados en la blockchain. Dichos
 programas describen la funcionalidad de las transacciones, incluyendo el intercambio
@@ -62,6 +65,7 @@ el valor monetario alojado en DeFi estaba estimado en alrededor de \$100B, de ac
 \url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
 gobierno decentralizado, Web3, etc.
 %
+
 La blockchain es un \textit{objeto distribuído} que contiene las transacciones realizadas
 en nombre de los usuarios, empaquetadas en bloques, y toalmente
 ordenadas~\cite{anta2018formalizing,anta2021principles}.
@@ -70,6 +74,7 @@ En implementaciones de mundo real, el objeto blockchain es mantenido por múltip
 sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
 ataques bizantinos.
 %
+
 Un aspecto clave en la adopción de las tecnologías blockchain es \emph{su rendmiento}, medido
 en términos del número de transacciones por segundo.
 %
@@ -87,7 +92,7 @@ un tipo de datos concurrente que implementa conjuntos de solo crecimiento distri
 proveyendo barreras o puntos de sincronización (llamados épocas). A su vez,
 \textit{Setchain} es tolerante a comportamientos bizantinos.
 %
-\setchain relaja el requerimiento de orden total y, por lo ranto, puede lograr mayor
+\setchain relaja el requerimiento de orden total y, por lo tanto, puede lograr mayor
 rendimiento y escalabilidad.
 %
 Las \setchains se pueden usar para aquellas aplicaciones, como los registros digitales,
@@ -145,7 +150,14 @@ fijo en lugar de cientos o miles de elementos.
 El precio a pagar es un algoritmo distribuído adicional para obtener el conjunto de
 elementos desde un hash, garantizando tolerancia a servidores bizantinos.
 %
-Cada una de las soluciones está enteramente construída sobre Tendermint.
+
+La hipótesis fundamental con la que se trabaja es que intercambiar latencia por un aumento en el
+ancho de banda resulta en una mejora significativa en el rendimiento.
+%
+Es decir, hacer consenso sobre hashes de tamaño fijo conlleva un incremento en la cantidad de elementos
+añadidos a la \setchain por segundo, incluso si esto significara un aumento en la latencia.
+
+Cada una de las soluciones presentadas en este trabajo está enteramente construída sobre Tendermint.
 
 % The article is structured as follows: in Section~\ref{sec:prelim}, we present a
 % brief description of Setchain and Tendermint; in Section~\ref{sec:impl}, we

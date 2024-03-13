@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.24">
-<info created="D:20100311191937" modified="D:20240211205602" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
+<info created="D:20100311191937" modified="D:20240312213923" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
 <preamble>
 \input{preamble}</preamble>
 <bitmap id="1" width="512" height="512" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="4518" alphaLength="7522" encoding="base64">
@@ -28619,5 +28619,81 @@ h
 h
 </path>
 <text matrix="1 0 0 0.789474 -113.157 72.7092" transformations="translations" pos="224 384" stroke="black" type="label" width="132.98" height="6.96264" depth="0.8241" valign="baseline" size="tiny">\texttt{hash(Hash 0-0 + Hash 0-1)}</text>
+</page>
+<page>
+<layer name="alpha"/>
+<view layers="alpha" active="alpha"/>
+<path layer="alpha" matrix="5.19735 0 0 1.0638 110.369 -146.454" stroke="black" fill="white">
+33.0377 0 0 33.0377 42.6653 429.431 e
+</path>
+<group matrix="0.579915 0 0 -24.4534 148.231 9302.96">
+<text matrix="1 0 0 1 -112 96" transformations="translations" pos="272 272" stroke="black" type="label" width="182.196" height="12.5163" depth="0" valign="baseline" size="small">Medio de comunicaci\&apos;on</text>
+</group>
+<group>
+<group>
+<path matrix="0.634784 0 0 1.47047 83.6413 -197.953" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<group matrix="1 0 0 1 8 8">
+<text matrix="1 0 0 1 40.1731 -50.1346" transformations="translations" pos="144 464" stroke="black" type="label" width="15.6539" height="7.76664" depth="3.4974" valign="baseline" size="small">$p_i$</text>
+<path matrix="1.00974 0 0 1.00974 -1.65001 -4.27307" stroke="black">
+22.6274 0 0 22.6274 192 416 e
+</path>
+</group>
+<path matrix="-0.616988 -0.0073297 0.0160426 -1.39772 352.899 920.992" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+</group>
+</group>
+<path matrix="-0.632465 0.0542142 -0.125587 -1.4651 595.298 800.31" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<path matrix="0.61536 -0.0453914 0.103389 1.39398 231.46 -291.551" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<text matrix="-0.996346 0.0854057 -0.0854057 -0.996346 597.427 638.678" transformations="translations" pos="144 464" stroke="black" type="label" width="23.4406" height="7.76664" depth="3.4974" valign="baseline" size="small" style="math">p_m</text>
+<path matrix="-1.00605 0.0862376 -0.0862376 -1.00605 655.082 592.766" stroke="black">
+22.6274 0 0 22.6274 192 416 e
+</path>
+<path matrix="0.303872 -0.3517 0.636179 0.901455 107.707 106.42" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<path matrix="-0.488354 0.397045 -0.97667 -1.01895 895.596 682.145" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<text matrix="0.760246 -0.64316 0.687089 0.711641 -14.4729 183.425" transformations="translations" pos="144 464" stroke="black" type="label" width="17.1433" height="7.75659" depth="4.3416" valign="baseline" size="small" style="math">p_j</text>
+<path matrix="0.767651 -0.649425 0.693781 0.718572 -13.6185 248.482" stroke="black">
+22.6274 0 0 22.6274 192 416 e
+</path>
+<path matrix="-0.333195 0.339307 -0.615314 -0.938601 548.201 532.216" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<path matrix="0.502555 -0.371175 0.918244 1.05977 -219.485 -83.266" stroke="black" arrow="latexarc/normal">
+216 416 m
+288 400
+280 368 c
+</path>
+<path matrix="-0.79813 0.61158 -0.658255 -0.751251 663.223 393.659" stroke="black">
+22.6274 0 0 22.6274 192 416 e
+</path>
+<text matrix="1 0 0 1 84.5855 -267.572" transformations="translations" pos="144 464" stroke="black" type="label" width="15.1252" height="7.76664" depth="3.4974" valign="baseline" size="small" style="math">p_l</text>
+<text matrix="1 0 0 1 96.8047 -47.5692" transformations="translations" pos="144 464" stroke="black" type="label" width="14.9665" height="7.77267" depth="1.9899" valign="baseline" size="small" style="math">e_i</text>
+<text matrix="1 0 0 1 311.785 -65.5793" transformations="translations" pos="144 464" stroke="black" type="label" width="16.4559" height="7.75659" depth="4.3416" valign="baseline" size="small" style="math">e_j</text>
+<text matrix="1 0 0 1 217.574 -266.143" transformations="translations" pos="144 464" stroke="black" type="label" width="22.7532" height="7.77267" depth="1.9899" valign="baseline" size="small" style="math">e_m</text>
+<text matrix="1 0 0 1 46.8905 -247.968" transformations="translations" pos="144 464" stroke="black" type="label" width="14.4378" height="7.76463" depth="2.1306" valign="baseline" size="small" style="math">e_l</text>
 </page>
 </ipe>

@@ -7,6 +7,7 @@ En particular, se exponen tres alternativas diferentes, comenzando con una
 solución inocente pero trivialmente correcta, y finalizando con un algoritmo
 complejo que implementa \setchain utilizando funciones hash.
 %
+
 Para evitar repeticiones, las definciones de funciones que permanezcan sin cambios
 de una versión a la siguiente, no serán re-escritas.
 Solo se volverán a presentar aquellas funciones para las cuales la definición se
@@ -21,8 +22,9 @@ Dependiendo de la alternativa sobre la que se esté trabajando, una transacción
 Tendermint puede contener uno o más elementos a ser agregados.
 %
 % \subsection{General Considerations about Implementation}\label{subsec:general}
+
 Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
-~\ref{sec:prelim}): \Add y \Get, y por lo tanto, cada solución provee definiciones
+~\ref{sec:setchain}): \Add y \Get, y por lo tanto, cada solución provee definiciones
 para ambas.
 %
 Por su parte, Tendermint provee dos \textit{endpoints} RPC principales.
@@ -61,7 +63,7 @@ A continuación se presentan diferentes definiciones de métodos y funciones
 necesarias para que la aplicación corriendo sobre Tendermint implemente \setchain.
 Esto involucra, por un lado, los métodos presentados como parte de la API de
 \setchain y, por el otro, los perteniences a la interfaz de aplicación de
-blockchain ~(ver sección ~\ref{sec:prelim}).
+blockchain ~(ver sección ~\ref{sec:tendermint}).
 
 \section{Primera implementación: Vainilla}\label{sec:vanilla}
 

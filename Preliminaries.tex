@@ -2,8 +2,8 @@
 
 %% Agregar algo de firmas criptográficas.
 
-En esta sección se presenta una breve descripción de los conceptos fundamentales
-más importantes para hacer posible la comprensión y discusión sobre las
+En esta sección se presenta una breve descripción de los conceptos principales
+necesarios para la comprensión y discusión sobre las
 contribuciones de este trabajo.
 
 \subsection{Sistemas distribuídos: donde todo comenzó}
@@ -21,12 +21,12 @@ Es clave notar que el hecho de que las entidades (y la información que consume 
 estén distribuídas no es una propiedad que se encuentre bajo el control de los programadores, sino 
 que es una imposición dada por las características propias del problema. En la 
 Figura ~\ref{fig:distributed-systems} se expresa esto mediante un punto de vista
-de la arquitectura del sistema, en donde cada par $(p_i, in_i)$ denota una entidad informática $p_i$ y su
-entrada asociada $in_i$.
+de la arquitectura del sistema, en donde cada par $(p_i, e_i)$ denota una entidad informática $p_i$ y su
+entrada asociada $e_i$.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.5]{figures/distributed-systems.png}
+  \includegraphics[scale=0.25]{figures/distributed-systems.png}
   \caption{Estructura básica de la computación distribuída}
   \label{fig:distributed-systems}
 \end{figure}
@@ -38,9 +38,9 @@ abstraída a través de la noción de un proceso, interconectada a través de un
 Se asume que los procesos cooperan por un objetivo común, lo cual significa que intercambian
 información de una manera u otra. Es interesante notar que el hecho de que las entidades
 cooperen no significa la asumción de que todas las entidades se comportarán de la forma
-acordada, ya sea por un error (por ejemplo, en la programación o en una red) o por un compartamiento
-malintencionado. 
-% Se volverá a este punto en la sección ~\ref{subsubsec:consensus}.
+acordada, ya sea por un error (por ejemplo, en la programación o en una red) o por un comportamiento
+malintencionado.
+Se profundizará en este punto en la siguiente sección. % ~\ref{subsubsec:consensus}.
 
 % Two main process failures models are considered in this book:
 % • Crash failures. A process commits a crash failure when it prematurely stops its execution. Until
@@ -112,7 +112,7 @@ Con esta analogía de los generales bizantinos, Lamport inició el estudio de lo
 bizantinas (\textit{Bizantyne fault-tolerant}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
 Si bien la teoría de
 BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
-debido al amplio éxito de tecnologías blockchains como Bitcoin y Ethereum.
+debido al amplio éxito de tecnologías blockchains como Bitcoin~\cite{nakamoto06bitcoin} y Ethereum~\cite{ethereum}.
 
 \subsection{Firmas digitales}
 Usualmente, los protocolos BFT hacen un uso muy fuerte de la criptografía, fundamentalmente para autenticar
@@ -198,7 +198,7 @@ dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
 Si bien la noción de bitcoin como criptomoneda no es imprescindible para la comprensión de las
 contribuciones de este trabajo, es el primer caso de uso que da particular importancia a la blockchain
 como tal, y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
-su funcionamiento, poniendo foco en el aspecto cripográfico del mismo.
+su funcionamiento, poniendo foco en el aspecto técnico del mismo (no monetario).
 
 \subsubsection{Cuentas y transacciones}
 
@@ -311,12 +311,12 @@ un problema lo suficientemente difícil.
 %
 Este mecanismo se conoce como prueba de trabajo (\textit{PoW}, por sus siglas en inglés).
 %
-En el caso de Bitcoin, el rompezabezas a resolver consisten en que el hash del bloque a proponer
+En el caso de Bitcoin, el rompecabezas a resolver consisten en que el hash del bloque a proponer
 tenga una representación binaria que comience con un número dado de ceros.
 
 %
-Las personas que se dedican a resolver el rompecabezas y proponer el nuevo bloque de transacciones
-se llaman \textit{mineros}.
+Las personas que se dedican a resolver el rompecabezas y proponer los nuevos bloques de transacciones
+son denominadas \textit{mineros}.
 
 \subsubsection{La forma de la blockchain}
 
@@ -352,7 +352,7 @@ Cada bloque además contiene el hash del encabezado del bloque anterior, encaden
 La blockchain es realmente una sucesión de bloques, donde cada bloque refiere al previo,
 hasta llegar al primero, conocido como \textit{génesis}.
 Esto asegura que una transacción no pueda modificarse sin modificar el bloque
-que la contiene y todos los bloques siguientes.~\cite{bitcoin}
+que la contiene y todos los bloques siguientes~\cite{bitcoin}.
 
 \begin{figure}[h]
   \centering
@@ -374,7 +374,7 @@ que la contiene y todos los bloques siguientes.~\cite{bitcoin}
 
 \setchain~\cite{Capretto.2022.Setchain} es un tipo de datos concurrente y distribuído que implementa
 conjuntos distribuídos de solo crecimiento, con barreras de sincronización (llamadas épocas), y tolerante
-a comportamiento bizantinos.
+a comportamientos bizantinos.
 %
 Las barreras imponen un orden entre elementos pertenecientes a diferentes épocas pero no entre elementos
 de la misma época.
@@ -394,7 +394,7 @@ mantienen:
   \item un conjunto $\THESET \subseteq U$ de elementos agregados;
   \item un número natural $\EPOCH \in \mathds{N}$;
   \item una función $\HISTORY : [1..\EPOCH] \rightarrow \mathcal{P}(U)$\footnote{$\mathcal{P}(U)$ denota el conjunto potencia
-  de $U$} que describe los conjuntos de elementos que fueron estampados con un número de época.
+  de $U$.} que describe los conjuntos de elementos que fueron estampados con un número de época.
 \end{itemize}
 
 %
@@ -413,10 +413,10 @@ Cada nodo servidor $v$ soporta dos operaciones, disponibles para todos los proce
 \begin{itemize}
   \item $v.\Add(e)$: solicita agregar el elemento $e$ a $\THESET$.
   \item $v.\Get()$: retorna los valores de $\THESET $, $\HISTORY $,
-    and $\EPOCH $, según $v$.
+    y $\EPOCH $, según $v$.
 \end{itemize}
   
-Cuando se impone una nueva barrera de sincronización, los nodos que mantinen la \setchain colaborativamente
+Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
 deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
 %
 Estos eventos se llaman \textit{incrementos de época}.
@@ -443,13 +443,13 @@ ninguna garantía.
 \begin{itemize}
   \item Cada elemento válido agregado por un servidor correcto eventualmente es retornado en
   todas las futuras invocaciones a \Get hechas sobre servidores correctos.
-  \item Todos los elementos válidos agregados en un servidor corrector deben eventualmente ser
+  \item Todos los elementos válidos agregados en un servidor correcto deben eventualmente ser
   estampados con un número de época en todos los servidores correctos.
   \item Una vez que un elemento es estampado con una época, no puede ser des-estampado, ni puede
   ser estampado con otro número de época.
   \item Dos servidores correctos cualesquieras están se acuerdo en el contenido de todas las épocas
   que hayan sido computadas~\footnote{No todos los servidores correctos procesan los incrementos de
-  época simultáneamente, dado que algunos pueden estar más retrazados que otros.}.
+  época simultáneamente, dado que algunos pueden estar más atrasados que otros.}.
   \item Cada elemento que se estampa con una época proviene del resultado de un cliente añadiendo
   el elemento.
 \end{itemize}
@@ -505,7 +505,8 @@ módulos de la blockchain. Éstos son los módulos que se presentan en la capa i
 evidencia, sincronización rápida, y sincronización de estado. Para el presente trabajo, solo serán pertinentes los
 módulos de mempool y de consenso.
 
-Un cliente interactúa con el sistema mediante RPC al enviar transacciones
+Un cliente interactúa con el sistema mediante RPC\footnote{\textit{Remote Procedure Call} o llamada a procedimiento
+remoto en español.} al enviar transacciones
 que (en caso de ser válidas) son añadidas al módulo de mempool. El cliente en general
 recibe respuestas generadas por el módulo de consenso.
 El módulo de consenso se encarga de ordenar e intermediar la ejecución de las transacciones, por medio de la
@@ -525,7 +526,7 @@ de aplicación genérica.
 El motor de consenso, llamado \textit{Tendermint Core}, asegura que las mismas transacciones sean registradas en cada
 máquinas en el mismo orden.
 %
-La interfaz de aplicación, llamada \textit{interfaz de aplicación de blockchain} (IABC)\footnote{Proveniente de \textit{Application
+La interfaz de aplicación, llamada \textit{interfaz de aplicación de blockchain} (ABCI)\footnote{Proveniente de \textit{Application
 BlockChain Interface} (ABCI) en inglés.}, habilita que las transacciones
 sean procesadas en cualquier lenguaje de programación.
 
@@ -534,6 +535,7 @@ La interfaz de aplicación de blockchain es la interfaz entre el Tendermint Core
 %
 Un nodo de Tendermint mantiene tres conexiones ABCI con la aplicación replicada.
 %
+
 La \textit{conexión de consenso} se utiliza solo cuando se hace \textit{commit} sobre un nuevo bloque,
 y comunica toda la información del bloque mediante una serie de peticiones: 
 \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
@@ -568,8 +570,7 @@ por distintos módulos de Tendermint (tales como el módulo de filtrado de pares
 %
 Se utiliza para consultar la aplicación sin forzar consenso.
 %
-Se expone mediante el servidor RPC\footnote{\textit{Remote Procedure Call} o llamada a procedimiento
-remoto en español.} del Tendermint Core, de modo que los clientes pueden
+Se expone mediante el servidor RPC del Tendermint Core, de modo que los clientes pueden
 consultar el estado de la aplicación sin exponer un servidor de la aplicación en sí mismo. 
 
 La Figura~\ref{fig:abci_flow} muestra el flujo de mensajes mediante las conexiones de consenso y de mempool.
