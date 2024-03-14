@@ -65,9 +65,9 @@ Esto involucra, por un lado, los métodos presentados como parte de la API de
 \setchain y, por el otro, los perteniences a la interfaz de aplicación de
 blockchain ~(ver sección ~\ref{sec:tendermint}).
 
-\section{Primera implementación: Vainilla}\label{sec:vanilla}
+\section{Primera implementación: \vanilla}\label{sec:vanilla}
 
-Vainilla se presenta como la solución más sencilla a la API de \setchain
+\vanilla se presenta como la solución más sencilla a la API de \setchain
 utilizando Tendermint.
 %
 La característica principal que le otorga sencillez a esta solución es que
@@ -135,7 +135,7 @@ en donde uno de sus elementos es $e$.
   \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}}\\
   \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}}
   \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}} 
-  \caption{Flujo usual de mensajes para vainilla}
+  \caption{Flujo usual de mensajes para \vanilla}
   \label{fig:vanilla-flow}
 \end{figure}
 
@@ -178,20 +178,21 @@ correcto o con un nodo bizantino.
 %Client processes do not know if they are contacting a Byzantine or correct
 %process.
 %
-Para asegurar que un elemento será añadido a la \setchain, el cliente neecesita
+Para asegurar que un elemento será añadido a la \setchain, el cliente necesitaría
 interactuar con suficientes servidores, de modo de garantizar que al menos uno de ellos
-es correcto~\cite{Capretto.2022.Setchain}.
+sea correcto.
 %
 % An extension to Setchain presented an optimistic client with the following
 % approach.
 %
+
+En este trabajo se utilizará la extensión a Setchain presentada como
+\textit{cliente optimista}~\cite{Capretto.2022.Setchain}. El enfoque se introduce a continuación.
+
 Los nodos correctos firman criptográficamente un hash del conjunto de elementos
 pertenecientes a una época, e insertan este hash como un elemento en la \setchain.
 %
 A esos hashes los llamamos \textit{elementos de prueba de época}.
-%
-Estas pruebas de época pueden implementarse utilizando \textit{Ed25519}~\cite{ed25519}
-como sistema de firmas.
 %
 Las pruebas de época en principio contienen: el número de época al cual pertenece
 la prueba, la clave pública del validador que firma, y la firma de los elementos 
@@ -203,45 +204,32 @@ determinado servidor, esperando que sea correcto.
 Luego de esperar cierto tiempo, los clientes pueden invocar  \<get> (también a un
 único nodo) y chequear si el elemento $e$ pertenece a alguna época y existen suficientes
 pruebas para dicha época\footnote{Se asume que una cota superior $f$ de número de servidores
-biantinos es conocida y, por lo tanto, se requieren $f+1$ firmas.}. De este modo, se garantiza
-que al menos un servidor corrector la firmó.
+bizantinos es conocida y, por lo tanto, se requieren $f+1$ firmas.}. De este modo, se garantiza
+que al menos un servidor correcto la firmó.
 %
+
 Los clientes pueden verificar si las pruebas de época son válidas generando el hash de elementos
 en la época dada, y verificando (a través de la clave pública) si la firma de la prueba es válida
-para el hash obtenido.
+para el hash obtenido. Este proceso se corresponde con la verificación de firmas vista en la
+sección~\ref{subsec:signatures}.
+
 %
 Las claves públicas de los validadores necesitan ser públicamente conocidas para los usuarios.
 %
-Si un elemento $e$ pertenece a una época que tiene suficientes prueas, los clientes pueden
+Si un elemento $e$ pertenece a una época que tiene suficientes pruebas, los clientes pueden
 concluír que la época es correcta y que $e$ fue éxitosamente insertado en la \setchain.
 %
-Nótese que esto solo requiere una llaada a \<add> y una llamada a \<get>.
+Nótese que, en caso de comunicarse con nodos correctos, solo se requieren una llamada a \<add> y
+una llamada a \<get> para estar seguros de que el elemento fue añadido a la \setchain.
 %
-Este mecanismo de membrecías de elementos a épocas está implementado en la definición de
-\<EndBlock>.
-%
-Otra opción para implementar los elementos de prueba de época es a través de la librería
-criptográfica de \textit{ethereum}.
-%
-Esta librería provee una función \texttt{Sign} que cacula una firma ECDSA.
-%
-La firma producida se encuentra en el formato $[R || S || V]$, donde $V$ es 0 o 1.
-%
-El valor de $V$ es usualmente llamado \textit{bit de recuperación}, y permite utilizar
-la función \texttt{Ecrecover}, la cua dado un hash y una firma, retorna la clave pública
-(en formato descomprimido) que creó dicha firma.
-%
-De esta forma, los elementos de prueba de época pueden contener el número de época y la firma
-en el formato mencionado arriba, y los clientes pueden usar la función \texttt{Ecrecover} para
-verificar que la firma dada fue de hecho generada por un validador conocido.
-%
-Nótese que las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
+
+Las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
 un cliente, y elementos de prueba de época; significando que cada elemento de prueba de época
-pertenece a su vez a una época. Sin embargo, los elementos de pruea de época no necesitan ser
+pertenece a su vez a una época. Sin embargo, los elementos de prueba de época no necesitan ser
 incluídos como elementos en el hash firmado que es parte de la prueba de época para una época
 dada.
 %
-Consecuentemente, es necesario diferenciar entre elementos regular, y elementos de prueba de época.
+Consecuentemente, es necesario diferenciar entre elementos regulares, y elementos de prueba de época.
 %
 La validez de los elementos regulares se chequea a través de la ya mencionada función
 \texttt{isValidElement}.
@@ -249,14 +237,41 @@ La validez de los elementos regulares se chequea a través de la ya mencionada f
 Sin enmbargo, un elemento de prueba de época necesita ser validado de otra manera: verificando la firma.
 %
 
+\subsubsection{Detalles de implementación}
+%Estas pruebas de época pueden implementarse utilizando \textit{Ed25519}~\cite{ed25519}
+%como sistema de firmas.
+
+La implementación de los elementos de prueba de época se hace a través de la librería
+Golang criptográfica \textit{crypto} de Ethereum
+~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
+%
+Esta librería provee una función \texttt{Sign} que cacula una firma ECDSA.
+%
+La firma producida se encuentra en el formato $[R || S || V]$, donde $V$ es 0 o 1.
+%
+El valor de $V$ es usualmente llamado \textit{bit de recuperación}, y permite utilizar
+la función \texttt{Ecrecover}, la cual dado un hash y una firma, retorna la clave pública
+(en formato descomprimido) que creó dicha firma.
+%
+De esta forma, los elementos de prueba de época pueden contener el número de época y la firma
+en el formato mencionado anteriormente, y los clientes pueden usar la función \texttt{Ecrecover} para
+verificar que la firma dada fue, de hecho, generada por un validador conocido.
+%
+
+% Chequear si esto es siempre así:
+%Este mecanismo de membrecías de elementos a épocas está implementado en la definición de
+%\<EndBlock>.
+
 \subsection{Algoritmos}
 
-\input{algorithms/alg-api-vanilla}
+En esta sección se presentan los algoritmos (en pseudocódigo) necesarios para concluir
+la implementación de la versión \vanilla.
 %
+
+\input{algorithms/alg-api-vanilla}
 En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
 de \setchain.
 %
-
 Los clientes agregan elementos invocando (indirectamente) a la función
 \texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
 la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}.
@@ -269,12 +284,12 @@ deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
 
 \input{algorithms/alg-abci-vanilla}
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
-Vainilla.
+\vanilla.
 %
 Solo se definen \CheckTx, \DeliverTx, y \EndBlock; el resto tiene implementaciones
 triviales.
 
-En esta versión, chequear si una transacción es válida consiste en simplemente chequear
+En esta versión, chequear si una transacción es válida consiste simplemente en chequear
 la validez del elemento, dado que las transacciones contienen un único elemento.
 %
 Puede parecer absurdo definir la función \texttt{getElementFromTransaction()}
@@ -295,9 +310,9 @@ sea válido.
 %
 Siempre es necesario chequear del lado de la ABCI si una transacción es válida.
 %
-Nótese que un nodo correcto podría chequear la transacción antes de agregarla a la
+Es importante reparar en que un nodo correcto podría chequear la transacción antes de agregarla a la
 mempool,
-y que el resultado de esa validación cambie para el momento en que ésta arriva a la
+y que el resultado de esa validación cambie para el momento en que ésta arriba a la
 ABCI.
 %
 Por otro lado, un nodo bizantino podría añadir transacciones sin chequear
@@ -317,10 +332,10 @@ Nótese que la época actual (\texttt{epoch}) puede estar siendo modificada en e
 en que \<abciquery> se invoca, por lo que no sería correcto que \Get la retorne, puesto que
 podría ser una visión parcial de la misma. 
 
-EXPLICITAR QUÉ PINTA TIENE ESTO.
+[COMPLETAR. EXPLICITAR QUÉ PINTA TIENE ESTO.]
 
 \subsection{Conclusión}
-Si bien la implementación descripta en esta sección implementa \setchain, no está explotando su idea
+Si bien los algoritmos descriptos en esta sección implementan \setchain, no se está explotando su idea
 principal: relajar el orden total entre los elementos.
 %
 Aunque diversos elementos pueden pertenecer a una misma época, significando que no hay orden total
@@ -339,7 +354,7 @@ entre elementos.
 
 Para acercanos a la especificación de \setchain, en esta sección proponemos
 empaquetar elementos en un lote y comprimir dicho lote
-previo a su difusión.
+previamente a su difusión.
 %
 
 Se propone una implementación nueva, llamada \compresschain, que explora
@@ -348,15 +363,22 @@ consenso de Tendermint por detrás.
 %
 
 En lugar de difundir inmediatamente cada elemento añadido por un cliente como una
-transacción de Tendermint, una nueva pieza intermedia de software llamada \textit{collector}
+transacción de Tendermint, una nueva pieza intermedia de software llamada \collector
 es responsable de recolectar elementos hasta llegar a un lote lo suficientemente grande,
 que es difundido como una única transacción.
 %
+Esta transacción está formada por los elementos
+enviados (potencialmente) por diferentes clientes, convenientemente codificados.
+%
+El lote de elementos se comprime antes de inyectarse en la red de Tendermint, de ahí el nombre
+\compresschain.
+%
+Una transacción es, entonces, un lote de elementos comprimido.
 
 \subsection{Flujo de mensajes}
 Al igual que como se hizo para la versión \vanilla, se presentará el flujo de mensajes usual
 que se inicia cuando un cliente invoca \Add(e).
-En la Figura~\ref{fig:compresschain-flow} se muestras figuras detalladas de los distintos pasos de
+En la Figura~\ref{fig:compresschain-flow} se muestran los distintos pasos de
 este flujo en el contexto de \compresschain.
 %
 
@@ -385,14 +407,14 @@ A partir de acá el proceso es el mismo que el explicado en la sección anterior
 que representa al elemento $e$ (y a otros) se chequea contra \CheckTx para determinar si debe ser insertada
 en la mempool o descartada.
 %
-Si llega a la mempool, se espera que luego de un tiempo sea añadida a un bloque de Tendermint, y que eventualmente,
+Si llega a la mempool, se espera que luego de un tiempo sea añadida a un bloque de Tendermint y que, eventualmente,
 mediante el algoritmo de consenso, este bloque se considere \textit{commited by the network}.
 %
 Una vez que el bloque fue decidido en el consenso, entonces el Tendermint Core enviará
 la secuencia correspondiente de pedidos a la aplicación.
 %
 Una de las peticiones será \DeliverTx, entregando la transacción correspondiente al lote que contiene a $e$.
-
+%
 Esto se observa en las Figuras (d), (e) y (f).
 
 %
@@ -435,15 +457,15 @@ primero se recolectan y se comprimen para ser enviados como una única transacci
 Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo
 \textit{Recursive Length Prefix} (RLP)~\cite{ethereum} para codificar los elementos individualmente
 y el algoritmo de compresión Brotli~\cite{brotli.compressor} para comprimir el lote.
-~\footnote{ Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
+\footnote{Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
 
 %
-Un lote se considera \textit{listo} para ser enviado una vez que o bien alcanza un tamaño máximo,
+Un lote se considera \textit{listo} para ser enviado una vez que, o bien alcanza un tamaño máximo,
 o bien una cantidad razonable de tiempo transacurrió desde que el primer elemento llegó. 
 %
 El Algoritmo~\ref{alg:api-brotli} presenta una nueva definición para la API de \setchain.
 En el Algoritmo ~\ref{alg:collector-brotli} se muestra una implementación posible para un
-\textit{collector}.
+\collector.
 
 \input{algorithms/alg-collector-brotli}
 
@@ -451,10 +473,10 @@ En el Algoritmo ~\ref{alg:collector-brotli} se muestra una implementación posib
 
 %
 En \compresschain, un cliente que ejecuta \<add> invoca indirectamente el método \texttt{AddElement}
-del \textit{collector}.
+del \collector.
 %
 Se realizaron algunas simplificaciones en los algoritmos presentados. Por ejemplo, una condición de carrera
-podría ocurrir si varias rutinas agregan elementos a la misma instancia del \textit{collector} concurrentemente.
+podría ocurrir si varias rutinas agregan elementos a la misma instancia del \collector concurrentemente.
 Sin embargo, esto puede resolverse sencillamente gracias al uso de candados.
 
 
@@ -473,7 +495,7 @@ Existen varias diferencias con respecto a la implementación previa de \setchain
 %
 \input{algorithms/alg-abci-brotli}
 
-La diferencia principal con la implementación Vainilla radica en que las transacciones contienen
+La diferencia principal con la implementación \vanilla radica en que las transacciones contienen
 potencialmente más de un elemento de usuario. Esto se da porque las transacciones en este contexto
 son lotes comprimidos de elementos.
 %
@@ -497,7 +519,7 @@ a las transacciones ser consideradas válidas si al menos uno de sus elementos e
 %
 La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos~\footnote{
 Los elementos pueden ser válidos al momento en que los clientes los envían, pero ser inválidos una vez que
-los bloques fueron consensados.} a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
+los bloques fueron consensuados.} a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
 ser añadidos a la \setchain.
 
 %
@@ -548,7 +570,7 @@ funciones hash en lugar de compresión en Brotli.
 %Hashchain follows a similar idea introduced in Compresschain but employing hash
 %functions instead of Brotli compression.
 %
-Mientras que el poder de compresión de las funciones hash puede ser enorme, dado que las funciones
+Mientras que el poder de compresión de las funciones hash puede ser enorme, dado que estas funciones
 mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles. Esto
 significa que un método no trivial para recuperar el lote original de elementos debe proveerse.
 
@@ -563,8 +585,8 @@ y una estrategia distribuída para invertir hashes y obtener los lotes originale
 A menudo en esta sección nos tomaremos la libertad de utilizar la expresión \textit{elementos en un hash H}
 para referirnos a aquellos elementos pertenecientes al lote $B$, tal que $Hash(B) = H$.
 
-En lugar de usar el \textit{collector} de Compresschain (ver Algoritmo ~\ref{alg:collector-brotli}),
-ahora utilizamos un \textit{hash collector}, que construye un lote de elementos para luego hashearlo
+En lugar de usar el \collector de Compresschain (ver Algoritmo ~\ref{alg:collector-brotli}),
+ahora utilizamos un \hcollector, que construye un lote de elementos para luego hashearlo
 antes de introducirlo a la red de Tendermint.
 %
 Los lotes hasheados son difundidos como transacciones y compartidos a través de toda la red, de forma
@@ -578,7 +600,7 @@ de la vida de un elemento en el contexto de \hashchain.
 %
 
 Retomando la Figura ~\ref{fig:compresschain-flow} de la sección anterior, podemos pensar que el flujo de mensajes
-debería ser similar. El cliente se comunica con la API de \setchain, mientras que el \collector colecciona elementos
+debería ser similar. El cliente se comunica con la API de \setchain, mientras que el \hcollector colecciona elementos
 hasta que el próximo lote esté listo para ser hasheado y enviado al Tendermint core.
 Una vez allí es sometido a
 \<CheckTx> para determinar si debe ser añadido a la mempool o descartado.
@@ -620,7 +642,6 @@ inmediatamente hashes para obtener su lote de elementos original.
 La ausencia del lote original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
 en la transacción, y que \<DeliverTx> no pueda añadir elementos a la \setchain.
 %
-
 En este punto, nuestro algoritmo distribuído para la inversión de hashes entra en juego.
 %
 
@@ -635,7 +656,7 @@ no solo el hash del lote, sino además una firma criptográfica.
 %
 Las firmas que acompañan los hashes indican que un validador específico de Tendermint
 (quien firma el hash) afirma conocer el hash y, por lo tanto, si es un nodo correcto,
-tiene el lote original de elmentos.
+tiene el lote original de elementos.
 %
 De esta forma, las transacciones se representan con una tupla $(h, s)$, donde $h$ denota
 el valor del hash y $s$ representa la firma obtenida al firmar $h$ con la clave privada
@@ -644,10 +665,10 @@ del nodo que conoce el hash.
 Gracias a la firma es posible comunicarse con el nodo que afirma conocer los datos, y obtener
 el lote original (si el nodo se comporta apropiadamente).
 %
-El proceso de petición de hashes se corre de forma asíncrona para evitar potenciales
+El proceso de petición de inversión de hashes se corre de forma asíncrona para evitar potenciales
 retrasos.
 
-El \collector mismo es quien se encarga de conseguir el lote asociado a un hash.
+El \hcollector mismo es quien se encarga de conseguir el lote asociado a un hash.
 %
 En la Figura ~\ref{fig:hash-inversion-flow} se muestra el flujo de pedidos que se puede dar
 en el proceso de inversión.
@@ -656,24 +677,25 @@ en el proceso de inversión.
   \centering
   %\subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/hash-reversal-0.png}}\\
   \subfloat[La aplicación requiere la inversión de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-1.png}}\\
-  \subfloat[El \collector conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-2.png}}\\
-  \subfloat[El \collector no conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-3.png}}\\
+  \subfloat[El \hcollector conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-2.png}}\\
+  \subfloat[El \hcollector no conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-3.png}}\\
   \subfloat[Se anuncia a la red el conocimiento de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-4.png}}
-  \caption{Flujo usual de mensajes para vainilla}
+  \caption{Flujo usual de mensajes para \vanilla}
   \label{fig:hash-inversion-flow}
 \end{figure}
 
 %
-En el momento en que la aplicación necesita invertir un hash, se comunica con el \collector
+En el momento en que la aplicación necesita invertir un hash, se comunica con el \hcollector
 para solicitárselo. Esto se observa en la Figura (a).
 %
-Si el \collector conoce el lote original del hash (por ejemplo, porque fue el \collector creador
-del mismo), entonces directamente lo devuelve a la aplicación. Esto se representa en la Figura (b).
+Si el \hcollector conoce el lote original del hash (por ejemplo, porque fue el \hcollector creador
+del mismo), entonces directamente devuelve los elementos asociados a él a la aplicación.
+Esto se representa en la Figura (b).
 %
 
-Por el contrario, en la Figura (c) se muestra el caso en que el \collector no posee el lote original,
-por lo que debe pedírselo al \collector correspondiente. Gracias a la firma, es posible determinar
-quién es el \collector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
+Por el contrario, en la Figura (c) se muestra el caso en que el \hcollector no posee el lote original,
+por lo que debe pedírselo al \hcollector correspondiente. Gracias a la firma, es posible determinar
+quién es el \hcollector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
 futuras peticiones, y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
 cómo se resuelve el proceso de inversión.
 
@@ -688,12 +710,12 @@ menos un elemento en el hash es válido, como se explicará con más detalle en 
 %
 
 Es importante aclarar que, en principio, las claves públicas/privadas que sirven para autenticarse
-funcionan a nivel nodo: aplicaicón y \collector comparten una misma clave.
+funcionan a nivel nodo: aplicaicón y \hcollector comparten una misma clave.
 
 \subsection{Validación de hashes}
 
-Después de dejar el \collector, se espera que los hashes sean chequeados contra \<CheckTx>
-para o bien ser añadidos a la mempool o bien ser descartados.
+Después de dejar el \hcollector, se espera que los hashes sean chequeados contra \<CheckTx>
+para, o bien ser añadidos a la mempool, o bien ser descartados.
 
 %
 Para determinar la validez de un hash se necesita chequear los elementos en él. Similar a
@@ -705,7 +727,7 @@ lote original de elementos sea conocido.
 
 %
 Hashchain es optimista en el sentido de que, ante la imposibilidad de correr el chequeo
-de las transacciones (debido a la ausencia del lote original) \<CheckTx> considera a los
+de las transacciones (debido a la ausencia del lote original), \<CheckTx> considera a los
 hashes como transacciones válidas con la esperanza de que sus lotes originales sean enviados
 y conocidos más tarde. 
 
@@ -795,7 +817,8 @@ es actualizado con el nuevo descubrimiento.
 
 \subsection{Consolidación de épocas}\label{subsubsec:consolidation}
 
-En esta implementación, las épocas se definen por todos los elementos en un hash, similar
+En esta implementación las épocas se definen por todos los elementos en una transacción
+(es decir, un hash), similar
 a la implementación de \compresschain.
 
 %
@@ -813,12 +836,12 @@ misma época.
 
 %
 
-En este trabajo se presentan dos alternativas para asignar una época a un hash consolidado.
+En este trabajo se presentan dos alternativas para asignar un número de época a un hash consolidado.
 
 %
 La primera se llama \textit{Consolidación de época actual} (CEC), que significa que 
 una vez que un hash consolida, todos sus elementos subyacentes son añadidos a la época actual
-(es decir, a la época en el cual la firma número \SPH es vista).
+(es decir, a la época en la cual la firma número \SPH es vista).
 %
 La segunda estrategia, \textit{Consolidación de época de primera vista} (FSEC), asigna la época
 de acuerdo a cuándo el hash fue visto por privera vez. La asignación de época se lleva
@@ -860,7 +883,7 @@ con la época $a$, y los elementos del hash $k$ son estampados con la época $a+
 \end{figure}
 
 La variante de consolidación de época de primera vista le otorga a los hashes un período
-de gracia en el cual pueden o bien consolidarse o bien ser descartados.
+de gracia en el cual pueden, o bien consolidarse, o bien ser descartados.
 %
 Dicho período de gracia es necesario; examinemos por qué.
 % The grace period is necessary, let
@@ -912,7 +935,7 @@ consigan las \SPH firmas dentro del período de gracia.
 
 \subsection{Algoritmos}\label{subsubsec:details}
 
-Al igual que se hizo para Vainilla y \compresschain, en esta subsección se presentan los pseudocódigos
+Al igual que se hizo para \vanilla y \compresschain, en esta subsección se presentan los pseudocódigos
 para los distintos algoritmos. No definimos un nuevo \texttt{collector} para \hashchain dado que
 es similar al definido
 para \compresschain, con la única diferencia del uso de funciones hash.
@@ -935,9 +958,9 @@ Es importante notar que en el algoritmo la función \<Query> inicia la construcc
 la difusión de pruebas de época.
 %
 Aunque este enfoque es empleado para claridad, un nodo que recibe consultas
-no muy frecuentemente podría experimentar retrazos en la generación de pruebas de época.
+no muy frecuentemente podría experimentar retrasos en la generación de pruebas de época.
 %
-Como resultado, el proceso de contrucción de \<history> y las pruebas de época podrían ser ejecutadas
+Para evitar esto, el proceso de contrucción de \<history> y las pruebas de época podrían ser ejecutadas
 periódicamente mediante planificación, independientemente de la petición de consultas.
 
 \input{algorithms/alg-abci-hash}
@@ -945,27 +968,29 @@ periódicamente mediante planificación, independientemente de la petición de c
 
 %\input{algorithms/alg-abci-hash-first-seen}
 
-\subsection{Ataques front-running}
-En el contexto de las blockchains, un ataque de front-running refiere a una situación en donde
+\subsection{Front-running en \hashchain: el ataque del clarividente}
+En el contexto de las blockchains, un ataque de \textit{front-running}~\cite{frontrunning} refiere a una situación en donde
 un actor malicioso explota conocimiento sobre transacciones pendientes para obtener una ventaja
 desleal. Debido a que las transacciones pendientes son públicas, un usuario malicioso puede
-observar las transacciones que le llegan a una víctima, construír una nueva transacción y luego
+observar las transacciones que le llegan a una víctima, construir una nueva transacción y luego
 encontrar una forma de ubicarla antes que la transacción de la víctima. En la red Ethereum, esta
 \textquotedblleft forma \textquotedblright de colocar una transacción antes de otra es usualmente
-llevada a cabo mediante pagos: o bien pagando impuestos de transacción (transacction fees) más altos
+llevada a cabo mediante pagos: o bien pagando impuestos de transacción (\textit{transacction fees}) más altos
 que la víctima, o haciendo pagos directos a ciertos validadores.
 %
-Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
+
+\subsubsection{El ataque del clarividente}
+¿Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
 Supongamos que un validador $v$ recibe una transacción $(h_0, s_0)$, donde $h_0$ es un hash,
 y $s_0$ una firma de aquel hash (la primera). Un validador especulador puede firmar él mismo la
-transacción y difundirla (el comportamiento esperando), o puede ignorarla (un posible comportamiento
+transacción y difundirla (el comportamiento esperado), o puede ignorarla (un posible comportamiento
 malicioso). Si el validador la firma y la difunde, entonces está colaborando para que el hash
-consolide (y, por lo tanto, los elementos provenientes de él se agreguen a la  \hashchain).
+consolide (y, por lo tanto, los elementos provenientes de él se agreguen a la  \setchain).
 En caso contrario, no contribuirá a que el hash consolide, potencialmente causando retrasos
 o incluso evitando la consolidación.
 %
 
-Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
+¿Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
 %
 En la estrategia FSEC, si una transacción no obtiene las \SPH firmas
 dentro del período de gracia, el hash no consolidará en aquella ronda (pero podría hacerlo
@@ -979,10 +1004,11 @@ interesante se da en el escenario alternativo: cuando las transacciones finalmen
 \setchain.
 %
 
-Supongamos que $v$ vee una transacción $t_0 = (h_0, s_0)$ y quiere ejecutar un ataque de front-running.
+Supongamos que $v$ ve una transacción $t_0 = (h_0, s_0)$ y quiere ejecutar un ataque de front-running.
 Para lograrlo, ignora la transacción, pero difunde su propia transacción firmada $t_1 = (h_1, s_0)$,
 esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
 %
+
 Bajo el comportamiento FSEC, $h_0$ fue vista por primera vez antes, por lo que si logra las
 \SPH firmas dentro del período de gracia, consolidará, y los elementos
 en el hash serán estampados con una época menor a la de $t_1$.
@@ -991,15 +1017,17 @@ Notemos que esto es completamente independiente del número de firmas que $h_1$ 
 a la cual lo haga. $h_1$ podría incluso consolidar (llegar a su firma \SPH)
 antes que $h_0$.
 %
+
 Por el otro lado, bajo el comportamiento CEC la situación es básicamente una carrera entre $h_0$ y
 $h_1$: el primero en obtener las \SPH firmas será el primero en consolidar y,
 por lo tanto, sus elementos serán estamapdos con una época más temprana.
 %
+
 Como ya se mencionó, 
 la estrategia FSEC toma en consideración no solo el momento en el cual los hashes consolidan, sino
 también el momento en que las transacciones fueron vistas por primera vez.
 %
-En principio, esta característica se puede considerar un aspeco valioso en la mitigación de ataques
+En principio, esta característica se puede considerar un aspecto valioso en la mitigación de ataques
 de front-running, dado que las transacciones observadas primero son probablmente las legítimas y
 originales.
 %At girst glance, we could think that this property is an interesting point to go against
@@ -1008,7 +1036,7 @@ Sin embargo, la estrategia FSEC viene con algunos apesctos negativos no triviale
 %
 Como la época es determinada por el momento en el cual el hash fue visto por primera vez, 
 la estrategia de alguna manera \textit{reserva} el número de época para la transacción específica.
-Si $v$ quiere que un hash $h_0$ consolide únicamente is puede hacerlo antes que otro hash
+Si $v$ quiere que un hash $h_0$ consolide únicamente si puede hacerlo antes que otro hash
 $h_1$ (y no necesita conocer los elementos de $h_1$ desde antes), $v$ podría hacer lo siguiente.
 %
 Primero, difunde la transacción de modo que todos los validadores reservan el número de época para ella.
@@ -1025,7 +1053,8 @@ con una época menor que los elementos provenientes del hash $h_1$.
 
 Esta situación es particularmente interesante porque el validador $v$ puede hacer algo
 suceder en el pasado (elemento del hash $h_0$ se estampan con época $e$) teniendo información
-del futuro (elementos del hash $h_1$ se estampan con época $e+n$). 
+del futuro (elementos del hash $h_1$ se estampan con época $e+n$). A este ataque en el contexto
+de \hashchain lo llamamos \textit{el ataque del clarividente}.
 %
 
 Es interesante notar que intentar hacer algo similar bajo el esquema CEC sería imopsible, dado
@@ -1033,11 +1062,14 @@ que una vez que el hash $h_1$ consolidó, sus elementos son estampados con un n�
 a cualquier hash que aún no consolidó.
 %
 
-Volvamos a este ataque con un ejemplo. Supongamos que hay un juego de apuesta simple en donde
+\subsubsection{Ejemplo}
+
+Volvamos a este ataque con un ejemplo. Supongamos que hay un juego de apuestas simple en donde
 las apuestas y el resultado final se publican en la \hashchain. El juego es sencillo: los usuarios
 pueden votar por A o por B. Se sabe que el resultado ganador (A o B) se publica en determinado momento,
-y todo aquel que haya votado por el resutlado ganador recibirá el premio.
+y todo aquel que haya votado por el resultado ganador recibirá el premio.
 %
+
 Si $v$ es un validador que quiere ganar este juego haciendo trampa, podría votar tanto por A
 como por B justo antes del momento en el que se sabe que la compañía publicará el resultado ganador.
 %
@@ -1051,6 +1083,101 @@ por el resultado ganador. Si obtiene las firmas necesarias durante el período d
 sus transacciones serían estampadas con un número de época anterior que la transacción de los resultados,
 y por lo tanto, $v$ ganaría el juego haciendo trampa.
 
+\subsection{Conclusión}
+
+% Blockchain technologies are facing the problem of scalability. Compared to other
+% transaction-based systems, blockchains are just too slow. We have (at least)
+% two possible ways to solve these problems, either we design faster consensus
+% algorithms or place clever solutions on top of blockchains. One example of the
+% latter is what are called Layer-2 solutions where we have a computing machine
+% on top of the blockchain consuming less resources. An example of the former is
+% Setchain.
+% Setchain presents a faster consensus algorithm based on set-consensus lifting
+% the total order of transactions of classic blockchains. The partial order Setchain
+% uses is no-order, i.e. all elements in an epoch do not follow an order. However,
+% we can say that elements from one epoch come before or later to another epoch.
+
+% In other words, we have a relative order, we can relate elements from different
+% epochs, but we cannot relate elements within the same epoch.
+% Although Setchain is a clever idea, it lacks a real-world implementation. The
+% authors presenting Setchain gave a prove-of-concept implementation to observe
+% that Setchain is faster than other algorithms in laboratory conditions. Imple-
+% menting and verifying such claims are the goals of this work in progress.
+
+La implementación de sistemas distribuídos es difícil, por lo que se decidió
+utilizar una solución prefabricada: Tendermint. Tendermint ofrece una implementación
+de mundo real de una estructura basada en blockchain, presentando una separación clara
+entre las primitivas de la blockchain y la interfaz definida por el usuario.
+% Implementing distributed algorithms is hard, and thus, we took an off-the-
+% shelf solution: Tendermint. Tendermint offers a real-world implementation of a
+% blockchain-based structure presenting a clear separation of the blockchain level
+% primitives and the user defined interface.
+
+Se presentaron tres alternativas posibles para la implementación de \setchain
+construídas sobre Tendermint. Dado que los algoritmos de \setchain presentados
+en \cite{Capretto.2022.Setchain} emplean un algoritmo de \textit{set-consensus}, 
+no es posible replicar los mismos comportamientos.
+Sin embargo, tomamos un enfoque ligeramente diferente,
+intentando obtener tanto como se pueda de lo que Tendermint es capaz de ofrecer.
+Cada alternativa presentada trata de acercarse a la implementación ideal de \setchain,
+explotando la idea de que cada época es un conjunto de elementos.
+% We presented three implementations of Setchain on top of Tendermint. Since
+% the algorithms of Setchain presented in [?] employ a set-consensus algorithm,
+% we can not replicate the same algorithms. However, we took a slightly different
+% approach trying to get as much as we can from what Tendermint can offer. Each
+% implementation tries to get closer to an ideal implementation of Setchain by ex-
+% ploiting the idea that each epoch is a set of elements.
+
+% La primera alternativa
+% (ver sección) presenta una implementación ingenua y correcta (aunque ineficiente)
+% de \setchain, donde Tendermint mantiene un conjunto de solo crecimiento.
+% La segunda estrategia (ver sección) mejora la implementación más básica usando
+% un algoritmo de compresión: las transacciones son entonces un conjunto (comprimido)
+% de elementos. Finalmente, \hashchain va más allá de la segunda implementación y
+% utiliza funcionas hash para reducir la sobrecarga de la red.
+
+% The first implementation
+% (see Section 3.1) presents a naive and correct but inefficient implementation of
+% Setchain where Tendermint only maintains a grow-only-set. The second imple-
+% mentation (see Section 3.2) improves the naive implementation using a compres-
+% sion algorithm: transactions are now a (compressed) set of elements. Finally, the
+% third algorithm 12 (see Section 3.3) goes beyond the second implementation and
+% uses hash functions to reduce network overload.
+
+\hashchain es la solución más cercana a \setchain, sin usar algoritmos de
+set-consensus, utilizando funciones hash para reducir la sobrecarga de la red.
+
+Aunque reduzca el tráfico de la red (haciendo consenso sobre transacciones pequeñas
+y de tamaño fijo), el uso de funciones hash requiere una forma de
+invertirlos para así obtener los elementos originales. Para resovler esto, se diseñó
+un algoritmo distribuído, tolerante a fallas bizantinas, que trabaja como un objeto
+distribuído de resolución de hashes. 
+% While reducing network traffic, the use of hash functions requires a way to
+% get the elements back. To solve this, we designed a new distributed Byzantine-
+% tolerant algorithm working as a hash-resolution distributed object.
+
+Considerando esto, tendríamos una implementación de \setchain de mundo real.
+Dado que los nodos no conocen de ante mano los elementos en un
+hash, el consenso consiste en elegir cuál época será la siguiente.
+% Putting both
+% solutions together, we would have a real-world Setchain implementation.
+% Hashchain is the closest solution to Setchain without using a set-consensus
+% algorithm. Since nodes do not know a priory the elements inside a hashed set,
+% consensus then consists in choosing what epoch is going to go next.
+% Sin embargo, puesto que Tendermint tiene una mempool y una red de difusión (\textit{gossip network}),
+% los elementos se difunden, y los hashes tienen el conjunto más grande de elementos conocidos
+% por el nodo que propone la próxima época.
+
+% However,
+% since in Tendermint we have a mempool and a gossip network, elements are
+% gossiped around, and hashes have the biggest set of elements known to the node
+% proposing the next epoch.
+% Our results are exciting but inconclusive. On the one hand, we presented three
+% algorithms ready to be deployed implementing Setchain specification. While on
+% the other hand, we have not yet tested and experimented on the most interesting
+% one: Hashchain. Leaving the implementation of Hashchain as future work. Fi-
+% nally, we also want to run intense tests on each of the implementations employing
+% Tendermint deployment systems.
 %%% Local Variables:
 %%% TeX-master: "article.tex"
 %%% TeX-PDF-mode: t

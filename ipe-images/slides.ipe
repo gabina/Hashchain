@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.24">
-<info created="D:20100311191937" modified="D:20240312213923" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
+<info created="D:20100311191937" modified="D:20240314172203" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
 <preamble>
 \input{preamble}</preamble>
 <bitmap id="1" width="512" height="512" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="4518" alphaLength="7522" encoding="base64">
