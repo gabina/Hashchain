@@ -37,7 +37,7 @@ colección de unidades de computación (llamadas también unidades informáticas
 abstraída a través de la noción de un proceso, interconectada a través de un medio de comunicación.
 Se asume que los procesos cooperan por un objetivo común, lo cual significa que intercambian
 información de una manera u otra. Es interesante notar que el hecho de que las entidades
-cooperen no significa la asumción de que todas las entidades se comportarán de la forma
+cooperen no significa la asunción de que todas las entidades se comportarán de la forma
 acordada, ya sea por un error (por ejemplo, en la programación o en una red) o por un comportamiento
 malintencionado.
 Se profundizará en este punto en la siguiente sección. % ~\ref{subsubsec:consensus}.
@@ -93,7 +93,7 @@ es pertienente discutir conceptos y nomenclatura básica.
 
 Los sistemas de computación confiables deben lidiar con componentes que, por mal funcionamiento,
 dan información conflictiva a diferentes partes del sistema.
-La situación puede ser exrepsada abstractamente
+La situación puede ser expresada abstractamente
 en términos de un grupo de generales de la armada bizantina que acampan con sus tropas alrededor de una
 ciudad enemiga.
 Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en una plan
@@ -195,16 +195,16 @@ dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
 %Bitcoin es una colección de conceptos y tecnologías que forman las bases de un ecosistema de dinero
 %digital.
 %
-Si bien la noción de bitcoin como criptomoneda no es imprescindible para la comprensión de las
+Si bien la noción de Bitcoin como criptomoneda no es imprescindible para la comprensión de las
 contribuciones de este trabajo, es el primer caso de uso que da particular importancia a la blockchain
 como tal, y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
 su funcionamiento, poniendo foco en el aspecto técnico del mismo (no monetario).
 
 \subsubsection{Cuentas y transacciones}
 
-Un usuario de bitcoin está necesariamente lidiando con primitivas criptográficas.
+Un usuario de Bitcoin está necesariamente lidiando con primitivas criptográficas.
 %
-Para comenzar, los usuarios de bitcoin no tienen un nombre de usuario y una contraseña
+Para comenzar, los usuarios de Bitcoin no tienen un nombre de usuario y una contraseña
 con la cual inician sesión; en lugar de eso, tienen un par de claves ECDSA (\textit{Eliptic
 Curve Digital Signature Algorithm}) que generan ellos mismos mediante la interfaz de firmas
 digitales vista en la sección anterior.
@@ -218,7 +218,7 @@ Para utilizar los BTCs que tiene disponible, el usuario firma una transacción c
 De forma simplificada, una transacción se podría pensar tan solo como un mensaje (firmado) del tipo
 \textquotedblleft Envío X BTCs a la clave pública Y\textquotedblright.
 
-Una característica fundamental de bitcoin es que no existe una base de datos real que contenga los
+Una característica fundamental de Bitcoin es que no existe una base de datos real que contenga los
 balances de cada cuenta.
 %
 En lugar de eso, los usuarios tienen BTCs dispnibles para gastar, llamados
@@ -320,9 +320,9 @@ son denominadas \textit{mineros}.
 
 \subsubsection{La forma de la blockchain}
 
-La blockchain es la bitácora pública de bitcoin, un registro ordenado, y con fecha y hora de las transacciones.
+La blockchain es la bitácora pública de Bitcoin, un registro ordenado, y con fecha y hora de las transacciones.
 %
-Cada nodo completo en la red de bitcoin guarda independientemente una blockchain que contiene solo
+Cada nodo completo en la red de Bitcoin guarda independientemente una blockchain que contiene solo
 bloques validados por ese nodo.
 %
 Cuando cierta cantidad de nodos tienen los mismos bloques en su propia blockchain
@@ -441,13 +441,13 @@ Estas propiedades razonan sobre los servidores correctos, dado que los servidore
 ninguna garantía.
 
 \begin{itemize}
-  \item Cada elemento válido agregado por un servidor correcto eventualmente es retornado en
+  \item Cada elemento válido agregado en un servidor correcto eventualmente es retornado en
   todas las futuras invocaciones a \Get hechas sobre servidores correctos.
   \item Todos los elementos válidos agregados en un servidor correcto deben eventualmente ser
   estampados con un número de época en todos los servidores correctos.
   \item Una vez que un elemento es estampado con una época, no puede ser des-estampado, ni puede
   ser estampado con otro número de época.
-  \item Dos servidores correctos cualesquieras están se acuerdo en el contenido de todas las épocas
+  \item Dos servidores correctos cualesquieras están de acuerdo en el contenido de todas las épocas
   que hayan sido computadas~\footnote{No todos los servidores correctos procesan los incrementos de
   época simultáneamente, dado que algunos pueden estar más atrasados que otros.}.
   \item Cada elemento que se estampa con una época proviene del resultado de un cliente añadiendo
@@ -540,7 +540,7 @@ La \textit{conexión de consenso} se utiliza solo cuando se hace \textit{commit}
 y comunica toda la información del bloque mediante una serie de peticiones: 
 \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
 %
-Esto significa que, cuando un bloque es acordado meidante consenso, Tendermint envía una petición \BeginBlock
+Esto significa que, cuando un bloque es acordado mediante consenso, Tendermint envía una petición \BeginBlock
 seguida por una lista de peticiones \DeliverTx (una por cada transacción en el bloque), que finalizan con las
 peticiones \EndBlock y \Commit, en ese orden.
 
