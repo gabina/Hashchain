@@ -1,0 +1,54 @@
+\section{Propiedades}\label{sec:properties}
+En esta sección se introducen las propiedades que deben cumplir las implementaciones
+correctas de \setchain.
+La especificación dada asume que los clientes interactúan con servidores correctos,
+aunque en realidad los clientes no pueden estar seguros de que el servidor que están
+contactando no sea bizantino.
+Como ya fue mencionado anteriormente, las propiedades siempren razonan sobre los servidores
+correctos, dado que los servidores bizantinos no proveen ninguna garantía.
+%
+
+Empezamos requiriendo que en \setchain toda operación \<add> y \<get> ejecutada sobre un servidor
+correcto eventualmente termine.
+Se dice que un elemento $e$ está en la época $i$ en el historial $H$ (retornado por una invocación
+a \<get>) si $e \in H(i)$.
+Se dice que un elemento $i$ está en $H$ is existe una época $i$ tal que $e \in H(i)$.
+
+% ? Esta es la property que Marga indicó que falta en el preliminar de Setchain
+La primera propiedad establece que las épocas solo contienen elementos que provienen del conjunto
+de solo crecimiento.
+
+% 1. Cada elemento válido agregado en un servidor correcto eventualmente es retor-
+% nado en todas las futuras invocaciones a get hechas sobre servidores correctos.
+La segunda propiedad declara que todo elemento añadido a un servidor correcto es eventualmente
+retornado en todas las llamadas a \<get> futuras.
+
+% ?
+La siguiente propiedad establece que los elementos presentes es un servidor correcto son propagados
+a todos los servidores correctos.
+
+Se asume en el resto de este trabajo que en cualquier punto de tiempo hay un instante futuro en el
+cual una nueva época será generada. Esto es un supuesto razonable en cual escenario práctico.
+
+% 2. Todos los elementos válidos agregados en un servidor correcto deben eventual-
+% mente ser estampados con un número de época en todos los servidores correctos.
+La siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
+con un número de época.
+
+% ?
+La siguiente propiedad establece que un elemento puede estar en a lo sumo una época,
+y que ningún elemento puede estar en dos épocas diferentes incluso si los conjuntos historiales se
+obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
+
+% 4. Dos servidores correctos cualesquieras están de acuerdo en el contenido de todas
+% las épocas que hayan sido computadas
+La siguiente propiedad establece que los servidores están de acuerdo en el contenido
+de las épocas.
+
+% 5. Cada elemento que se estampa con una época proviene del resultado de un cliente
+% añadiendo el elemento.
+Finalmente, se requiere que todo elemento in el historia provenga del resultado de un cliente
+añadiendo un elemento.
+
+
+% Faltarían las siguientes propiedades

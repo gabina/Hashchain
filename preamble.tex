@@ -37,6 +37,7 @@
 %%
 
 \usepackage{listings}
+\usepackage{amsthm}
 
 
 \newcommand\martin[1]{\todo[backgroundcolor=green!23]{Martín: {#1}}}
@@ -48,10 +49,19 @@
 \newcommand\gabina[1]{\todo[backgroundcolor=violet!23]{Gabina: {#1}}}
 \newcommand\igabina[1]{\todo[inline,backgroundcolor=violet!23]{Gabina: {#1}}}
 
-% \newtheorem{example}{Example}
-% \newtheorem{property}{Property}
-% \newtheorem{lemma}{Lemma}
-\newtheorem{monitor}{Monitor}
+%\newtheorem{property}{Propiedad}
+\newtheoremstyle{property}% name
+  {\topsep}% space above
+  {\topsep}% space below
+  {}% body font
+  {}% indent amount
+  {\itshape}% theorem head font
+  {}% punctuation after theorem head
+  {.5em}% space after theorem head
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}% theorem head spec
+\theoremstyle{property}
+\newtheorem{property}{Propiedad}
+
 
 \usepackage{wrapfig}
 
