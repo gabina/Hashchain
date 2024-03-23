@@ -127,7 +127,11 @@ Tendermint es un abordaje robusto de las bitácoras distribuídas implementado
 en \emph{Go}~\cite{donovan15go}, que presenta una separación clara entre las
 capas de bajo nivel de la blockchain,
 tales como un protocolo \textit{gossip} y un algoritmo de consenso, y los conceptos de alto
-nivel relacionados a la estructura de datos que la blockchain mantiene.
+nivel relacionados a la estructura de datos que la blockchain mantiene\footnote{Al momento
+de la realización de las implementaciones y la evaluación empírica de las mismas,
+Tendermint 0.34 era la versión de la plataforma vigente y más utilizada. Sin embargo,
+actualmente, la versión más utilizada es un \textit{fork} de Tendermint llamado \textit{CometBFT}~\cite{cometbft.repo}.
+El desarrollo planteado a lo largo de este trabajo podría en principio portarse a la nueva versión.}.
 
 %
 % What is the solution.
