@@ -1,54 +1,117 @@
-\section{Propiedades}\label{sec:properties}
-En esta sección se introducen las propiedades que deben cumplir las implementaciones
-correctas de \setchain.
-La especificación dada asume que los clientes interactúan con servidores correctos,
-aunque en realidad los clientes no pueden estar seguros de que el servidor que están
-contactando no sea bizantino.
-Como ya fue mencionado anteriormente, las propiedades siempren razonan sobre los servidores
-correctos, dado que los servidores bizantinos no proveen ninguna garantía.
+\section{Objetivo del capítulo}
+En este capítulo se presentan las pruebas de correctitud de los algoritmos presentados para
+\vanilla, \compresschain, y \hashchain en la sección~\ref{sec:impl}.
+Es decir, se prueba que dichos algoritmos satisfacen las propiedades deseadas para una
+implementación de \setchain introducidas en~\ref{subsubsec:setchain-properties}.
+\section{Propiedades de Tendermint}\label{sec:properties}
+Dado que todas las soluciones presentadas en este trabajo son construídas sobre Tendermint,
+para probar la correctitud de ellas, será necesario recapitular las propiedades que la
+plataforma Tendermint garantiza.
+
+\newcounter{prop:tendermint}
+\setcounter{prop:tendermint}{\value{property}}
+
+\begin{property}[Safety]\label{tendermint:safety}
+  Si hay menos de 1/3 del poder de voto en manos bizantinas y al menos un validador correcto
+  decide el bloque $B$, entonces ningún validador correcto decidirá un bloque distinto a $B$.
+\end{property}
+
+\begin{property}[Liveness]\label{tendermint:liveness}
+  Si hay menos de 1/3 de poder de voto en manos bizantinas, luego el procolo de Tendermint
+  no se bloquea (es decir, no hay \textit{deadlock}).
+\end{property}
+
+En el contexto de Tendermint, denotamos con \textit{n} el poder de voto total de los procesos
+en el sistema, y asumimos una cota superior \textit{f} en el poder de voto total proveniente de
+los procesos bizantinos.
+%
+El algoritmo de consenso de Tendermint asume que $n > 3f$, es decir, requiere que el poder de voto
+en manos de procesos bizantinos sea menor a 1/3 del poder de voto total.
+Por simplicidad, en ocasiones se considera $n = 3f + 1$.
+
+Tendermint resuelve el problema de la replicación de máquinas de estados ejecutando instancias de
+consenso secuencialmente para acordar cada bloque de transacciones que serán luego ejecutadas por el
+servicio siendo replicado.
+Se considera una variante del problema de consenso bizantino llamado \textit{Validity Predicate-based Byzantine consensus}
+que es motivado por los sistemas de blockchain~\cite{Crain2017LeaderRandomizationSignaturefreeBC}.
+El problema es definido por propiedades de acuerdo, terminación, y validés.
+
+Esta variante del problema de consenso bizantino tiene un predicado específico a la aplicación
+denotado \textit{valid()} que indica si un valor es válido. En el contexto de sistemas de blockchain, por ejemplo,
+un valor no es válido si no contiene un hash apropiado del último bloque añadido a la blockchain.
+
+\begin{property}[Agreement]\label{tendermint:agreement}
+  Dos procesos correctos nunca deciden valores distintos.
+\end{property}
+
+\begin{property}[Termination]\label{tendermint:termination}
+    Todos los procesos correctos deciden eventualmente un valor.
+\end{property}
+
+\begin{property}[Validity]\label{tendermint:validity}
+    Un valor decidido es válido. Es decir, satisface el predicado predefinido
+    denotado con \textit{valid}.
+\end{property}
 %
 
-Empezamos requiriendo que en \setchain toda operación \<add> y \<get> ejecutada sobre un servidor
-correcto eventualmente termine.
-Se dice que un elemento $e$ está en la época $i$ en el historial $H$ (retornado por una invocación
-a \<get>) si $e \in H(i)$.
-Se dice que un elemento $i$ está en $H$ is existe una época $i$ tal que $e \in H(i)$.
+Las propiedades ~\ref{tendermint:safety} y ~\ref{tendermint:liveness} son demostradas en ~\cite{Kwon2014TendermintC}.
+Las propiedades ~\ref{tendermint:agreement}, ~\ref{tendermint:termination} y ~\ref{tendermint:validity}
+son demostradas en ~\cite{Buchman.2018.Tendermint}.
 
-% ? Esta es la property que Marga indicó que falta en el preliminar de Setchain
-La primera propiedad establece que las épocas solo contienen elementos que provienen del conjunto
-de solo crecimiento.
+\section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
+\section{Prueba de correctitud para \compresschain}\label{sec:proof-compresschain}
+\section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
 
-% 1. Cada elemento válido agregado en un servidor correcto eventualmente es retor-
-% nado en todas las futuras invocaciones a get hechas sobre servidores correctos.
-La segunda propiedad declara que todo elemento añadido a un servidor correcto es eventualmente
-retornado en todas las llamadas a \<get> futuras.
+% En esta sección se introducen las propiedades que deben cumplir las implementaciones
+% correctas de \setchain.
+% La especificación dada asume que los clientes interactúan con servidores correctos,
+% aunque en realidad los clientes no pueden estar seguros de que el servidor que están
+% contactando no sea bizantino.
+% Como ya fue mencionado anteriormente, las propiedades siempren razonan sobre los servidores
+% correctos, dado que los servidores bizantinos no proveen ninguna garantía.
+% %
 
-% ?
-La siguiente propiedad establece que los elementos presentes es un servidor correcto son propagados
-a todos los servidores correctos.
+% Empezamos requiriendo que en \setchain toda operación \<add> y \<get> ejecutada sobre un servidor
+% correcto eventualmente termine.
+% Se dice que un elemento $e$ está en la época $i$ en el historial $H$ (retornado por una invocación
+% a \<get>) si $e \in H(i)$.
+% Se dice que un elemento $i$ está en $H$ is existe una época $i$ tal que $e \in H(i)$.
 
-Se asume en el resto de este trabajo que en cualquier punto de tiempo hay un instante futuro en el
-cual una nueva época será generada. Esto es un supuesto razonable en cual escenario práctico.
+% % ? Esta es la property que Marga indicó que falta en el preliminar de Setchain
+% La primera propiedad establece que las épocas solo contienen elementos que provienen del conjunto
+% de solo crecimiento.
 
-% 2. Todos los elementos válidos agregados en un servidor correcto deben eventual-
-% mente ser estampados con un número de época en todos los servidores correctos.
-La siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
-con un número de época.
+% % 1. Cada elemento válido agregado en un servidor correcto eventualmente es retor-
+% % nado en todas las futuras invocaciones a get hechas sobre servidores correctos.
+% La segunda propiedad declara que todo elemento añadido a un servidor correcto es eventualmente
+% retornado en todas las llamadas a \<get> futuras.
 
-% ?
-La siguiente propiedad establece que un elemento puede estar en a lo sumo una época,
-y que ningún elemento puede estar en dos épocas diferentes incluso si los conjuntos historiales se
-obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
+% % ?
+% La siguiente propiedad establece que los elementos presentes es un servidor correcto son propagados
+% a todos los servidores correctos.
 
-% 4. Dos servidores correctos cualesquieras están de acuerdo en el contenido de todas
-% las épocas que hayan sido computadas
-La siguiente propiedad establece que los servidores están de acuerdo en el contenido
-de las épocas.
+% Se asume en el resto de este trabajo que en cualquier punto de tiempo hay un instante futuro en el
+% cual una nueva época será generada. Esto es un supuesto razonable en cual escenario práctico.
 
-% 5. Cada elemento que se estampa con una época proviene del resultado de un cliente
-% añadiendo el elemento.
-Finalmente, se requiere que todo elemento in el historia provenga del resultado de un cliente
-añadiendo un elemento.
+% % 2. Todos los elementos válidos agregados en un servidor correcto deben eventual-
+% % mente ser estampados con un número de época en todos los servidores correctos.
+% La siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
+% con un número de época.
+
+% % ?
+% La siguiente propiedad establece que un elemento puede estar en a lo sumo una época,
+% y que ningún elemento puede estar en dos épocas diferentes incluso si los conjuntos historiales se
+% obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
+
+% % 4. Dos servidores correctos cualesquieras están de acuerdo en el contenido de todas
+% % las épocas que hayan sido computadas
+% La siguiente propiedad establece que los servidores están de acuerdo en el contenido
+% de las épocas.
+
+% % 5. Cada elemento que se estampa con una época proviene del resultado de un cliente
+% % añadiendo el elemento.
+% Finalmente, se requiere que todo elemento in el historia provenga del resultado de un cliente
+% añadiendo un elemento.
 
 
 % Faltarían las siguientes propiedades
