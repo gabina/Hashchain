@@ -16,7 +16,12 @@ operativos, y al de computación paralela.~\cite{raynal.dist.systems}
 La computación distribuída surge cuando se tiene que resolver un problema en términos de entidades
 distribuídas (usualmente llamadas procesos, nodos, actores, agentes, pares, etc) en donde cada
 entidad tiene conocimiento parcial sobre los diversos parámetros involucrados en el problema que
-se tiene que resolver. 
+se tiene que resolver.
+Es usual, en este contexto, hacer hincapié en dos tipos distintos fundamentales de procesos:
+los \textit{clientes} (o procesos clientes) y los \textit{servidores} (o procesos servidores).
+Así, los servidores son aquellos que proveen determinado recurso o servicio, mientras que los
+clientes son quienes los demandan.
+
 Es clave notar que el hecho de que las entidades (y la información que consume cada una de ellas)
 estén distribuídas no es una propiedad que se encuentre bajo el control de los programadores, sino 
 que es una imposición dada por las características propias del problema. En la 
@@ -381,6 +386,12 @@ de la misma época.
 %
 Por lo tanto, \setchain relaja el requerimiento de orden total impuesto por las blockchains y, en consecuencia,
 puede lograr mayor rendimiento y escalabilidad.
+
+La idea básica de funcionamiento de la \setchain involucra tanto nodos clientes como servidores.
+Los clientes se comunican con algún nodo servidor (quien mantiene la \setchain) para solicitar añadir un nuevo
+elemento.
+A su vez, los procesos clientes pueden pedirle a los servidores que les retornen el estado actual de la \setchain.
+
 
 \subsubsection{La interfaz de Setchain}
 Sea \(U\) un conjunto de elementos que los procesos clientes pueden inyectar en la \setchain.
