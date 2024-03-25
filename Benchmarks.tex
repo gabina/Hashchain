@@ -1,10 +1,103 @@
-\section{Introducción}\label{sec:benchmark}
+\section{Objetivo del capítulo}\label{sec:benchmark}
+En este capítulo se introducen los resultados de la evaluación empírica para las implementaciones
+prototípicas de las tres alternativas propuestas a lo largo del trabajo: \vanilla, \compresschain,
+y finalmente \hashchain.
+La idea de los experimentos realizados es determinar la cantidad de elementos que pueden ser
+añadidos a la \setchain por segundo, de modo de evaluar las siguientes hipótesis:
+% Write hypothesis
+\begin{itemize}
+	\item La implementación de \compresschain presenta mejor rendimiento que la de \vanilla.
+	\item La implementación de \hashchain presenta mejor rendimiento que la de \compresschain.
+\end{itemize}
 
-
-
-\subsection{Context and Configuration}
+\section{Configuración}
 %
-Benchmark experiments were done using Arbitrum txs downloaded with Alchemy API.
+La evaluación fue ejecutada sobre un servidor con 2 procesadores CPU Intel Xeon de 3GHz
+con 36 núcleos y 256GB de RAM, corriendo Ubuntu 18.04 Linux64.
+
+%
+Todas las implementaciones fueron escritas en Golang y residen en un único ejecutable, el cual se encarga
+de inicializar los siguiente servicios.
+\begin{itemize}
+	\item Un nodo de Tendermint adjunto a una versión específica de la aplicación (la cual impelementa los métodos
+	de la ABCI). Las versiones disponibles de la aplicación son: \vanilla, \compresschain, y \hashchain. Todas estas
+	versiones necesitan de una base de datos persistente para alojar la \setchain en sí.
+	\item Para \compresschain y \hashchain, un servidor \collector RPC. Este servidor se encarga de recibir transacciones,
+	armar los lotes adecuados (siguiendo la lógica correspondiente), y difundirlos mediante comunicación con el nodo
+	de Tendermint. Por su parte, el \hcollector también requiere una base de datos persistente para mapear hases a lotes
+	de elementos.
+	\item Un cliente, el cual se encarga de leer e interpretar transacciones, y enviarlas (comunicándose con el nodo de
+	Tendermint en la versión \vanilla, o con el \collector correspondiente en los otros casos). Cada cliente se comunica
+	con un único nodo servidor.
+\end{itemize}
+Para las bases de datos persistentes se utilizó \textit{BadgerDB}\cite{db.badger}.
+Para las funciones criptográficas se utilizó el paquete crypto de ethereum. 
+
+%
+Cada instancia fue empaquetada en un contenedor Docker sin límite de uso en CPU
+o RAM.
+%
+La cantidad de nodos utilizados varió según cada experimento.
+%
+Fue utilizada la herramienta Docker-Compose para iniciar y correr los contenedores necesarios,
+y proveer una red entre ellos de manera sencilla.
+
+
+\section{Experimentos}
+El funcionamiento de los experimentos llevados a cabo sigue la lógica presentada a continuación.
+%
+En principio, se inician las \textit{N} instancias que correspondan, según la configuración del experimento.
+%
+Como ya se mencionó, las instancias involucran tanto el nodo de Tendermint, como el \collector (en caso de
+ser necesario), y el cliente.
+%
+
+Una vez inicializados los \textit{N} contenedores, los clientes comienzan a procesar los elementos asignados a cada
+uno y a invocar \<add> para enviarlos.
+%
+Cada proceso cliente hace las invocaciones \<add> en el servidor que reside en su mismo contenedor. 
+%
+Esto implica (indirectamente) comunicarse con el nodo de Tendermint en el caso de \vanilla, y
+comunicarse con el \collector correspondiente en el caso de \compresschain o \hashchain.
+
+Los experimentos funcionan en rondas.
+%
+Cada experimento ejecuta X rondas, de Y segundos cada una.
+%
+Los clientes envían elementos cada Z segundos.
+%
+Luego de cada ronda, cada cliente envía una petición \<get> para registrar cuántas épocas y cuántos
+elementos fueron efectivamente añadidos a la \setchain.
+%
+Los distintos servidores pueden diferir en la respuesta (ya que algunos pueden encontrarse atrasados
+respecto a otros), por lo que se realiza un promedio de estos valores.
+%
+De este modo se logra estimar la cantidad de elementos añadidos por segundo.
+
+Tendermint posee diversos parámetros que pueden configurarse.
+Por ejemplo, el tamaño de la mempool
+(en cantidad de transacciones y en cantidad de bytes) o el tamaño del bloque.
+El valor de dichos parámetros fue tomado de \cite{tendermint.design}.
+
+
+\subsection{Elementos}
+% También se puede citar Arbitrum Nitro: A Second-Generation Optimistic Rollup
+Los elementos utilizados por los procesos clientes durante los experimentos son transacciones provenientes
+de Arbitrum~\cite{Kalodner2018Arbitrum}, una tecnología de tipo \textit{Optimistic Rollup}~\footnote{
+Arbitrum es una cadena lateral que corre en paralelo a la red principal de Ethereum.
+También conocida como una solución de escalabilidad de capa 2 (L2), Arbitrum mejora la velocidad de las transacciones así
+como los costos en comparación a la red principal.
+Arbitrum fue fundada en 2021 y es al momento una de las tecnologías de capa 2 más populares en el mercado.}.
+%
+
+La elección de las transacciones fue tomada priorizando que los experimentos sean fieles a un contexto
+real, respetando el tamaño de las transacciones, así como su contenido.
+%
+Las transacciones fueron descargadas utilizando la API de Alchemy\footnote{Disponible en \url{https://www.alchemy.com/}}.
+%
+Dicha API permite conectarse directamente a un nodo específico de Arbitrum que es parte de la red de Arbitrum,
+de modo de interactuar con los datos en la cadena y hacer las peticiones necesrias para descargar las transacciones.
+
 %
 A sample subset of those txs give us the following metrics:
 \begin{itemize}
@@ -15,11 +108,7 @@ A sample subset of those txs give us the following metrics:
 \end{itemize}
 %
 
-Configuration according to 
-https://salemal.medium.com/a-paper-review-the-design-architecture-and-performance-of-the-tendermint-blockchain-network-7402e0179bd4
-
-
-\subsection{Results}
+\section{Resultados}
 
 
 
