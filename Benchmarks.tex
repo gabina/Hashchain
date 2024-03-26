@@ -91,20 +91,26 @@ Arbitrum fue fundada en 2021 y es al momento una de las tecnologías de capa 2 m
 %
 
 La elección de las transacciones fue tomada priorizando que los experimentos sean fieles a un contexto
-real, respetando el tamaño de las transacciones, así como su contenido.
+real, respetando el contenido de las transacciones.
 %
-Las transacciones fueron descargadas utilizando la API de Alchemy\footnote{Disponible en \url{https://www.alchemy.com/}}.
-%
-Dicha API permite conectarse directamente a un nodo específico de Arbitrum que es parte de la red de Arbitrum,
+Fueron descargadas utilizando la API de Alchemy\footnote{Disponible en \url{https://www.alchemy.com/}}, la
+cual permite conectarse directamente a un nodo específico de Arbitrum que es parte de la red,
 de modo de interactuar con los datos en la cadena y hacer las peticiones necesrias para descargar las transacciones.
 
 %
-A sample subset of those txs give us the following metrics:
+Al analizar el conjunto de transacciones descargadas (alrededor de 123456 transacciones) se encontró que el tamaño de
+estas presentaba algunos valores extremos hacia la derecha.
+Es decir, mientras que la mediana rondaba los 350 bytes, y la desviación estándar los 600 bytes, los valores mínimos y máximos eran de
+110 bytes y  50 mil bytes, respectivamente.
+Por tal motivo se decidió remover los valores extremadamente altos.
+Siguiendo los valores modelo presentados en \cite{tendermint.design}, se limitó a utilizar transacciones de hasta 1KB de tamaño.
+De este modo, analizando aproximadamente 100 mil transacciones provenientes del conjunto de datos usado
+durante los experimentos (solo transacciones de hasta 1KB de tamaño), se obtuvieron los siguientes resultados.
 \begin{itemize}
-	\item Mean: 410 bytes
-	\item Mean: 211 bytes
-	\item Min: 114 bytes
-	\item Max: 4326 bytes
+	\item Mediana: 340 bytes
+	\item Desviación estándar: 220 bytes
+	\item Min: 110 bytes
+	\item Max: 1024 bytes
 \end{itemize}
 %
 
