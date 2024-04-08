@@ -12,8 +12,8 @@ añadidos a la \setchain por segundo, de modo de evaluar las siguientes hipótes
 
 \section{Configuración}
 %
-La evaluación fue ejecutada sobre un servidor con 2 procesadores CPU Intel Xeon de 3GHz
-con 36 núcleos y 256GB de RAM, corriendo Ubuntu 18.04 Linux64.
+La evaluación fue ejecutada sobre una MacBook Pro con procesador Apple M2 Max
+con 12 núcleos y 64GB de RAM.
 
 %
 Todas las implementaciones fueron escritas en Golang y residen en un único ejecutable, el cual se encarga
@@ -24,8 +24,8 @@ de inicializar los siguiente servicios.
 	versiones necesitan de una base de datos persistente para alojar la \setchain en sí.
 	\item Para \compresschain y \hashchain, un servidor \collector RPC. Este servidor se encarga de recibir transacciones,
 	armar los lotes adecuados (siguiendo la lógica correspondiente), y difundirlos mediante comunicación con el nodo
-	de Tendermint. Por su parte, el \hcollector también requiere una base de datos persistente para mapear hases a lotes
-	de elementos.
+	de Tendermint. Por su parte, el \hcollector también requiere una base de datos persistente para guardar el mapeo de
+	hashes a lotes de elementos.
 	\item Un cliente, el cual se encarga de leer e interpretar transacciones, y enviarlas (comunicándose con el nodo de
 	Tendermint en la versión \vanilla, o con el \collector correspondiente en los otros casos). Cada cliente se comunica
 	con un único nodo servidor.
@@ -34,8 +34,7 @@ Para las bases de datos persistentes se utilizó \textit{BadgerDB}\cite{db.badge
 Para las funciones criptográficas se utilizó el paquete crypto de ethereum. 
 
 %
-Cada instancia fue empaquetada en un contenedor Docker sin límite de uso en CPU
-o RAM.
+Cada instancia fue empaquetada en un contenedor Docker con uso limitado a 6 núcleros y 32GB de RAM.
 %
 La cantidad de nodos utilizados varió según cada experimento.
 %
@@ -74,10 +73,26 @@ respecto a otros), por lo que se realiza un promedio de estos valores.
 %
 De este modo se logra estimar la cantidad de elementos añadidos por segundo.
 
+\subsection{Parámetros}
 Tendermint posee diversos parámetros que pueden configurarse.
 Por ejemplo, el tamaño de la mempool
 (en cantidad de transacciones y en cantidad de bytes) o el tamaño del bloque.
 El valor de dichos parámetros fue tomado de \cite{tendermint.design}.
+
+\bigskip
+
+Así, los parámetros que se modifican en los experimentos son los siguientes:
+\begin{itemize}
+	\item \texttt{n\_nodes}: cantidad de nodos corriendo
+	\item \texttt{sleep\_time}: cantidad de tiempo que espera el cliente antes de añadir un nuevo elemento
+	\item \texttt{collector\_size}: cantidad de transacciones que el correspondiente \collector aloja antes de generar
+	un lote (no válido para \vanilla).
+\end{itemize}
+La idea es ajustar los valores de los parámetros \texttt{sleep\_time} y \texttt{collector\_size},
+de modo de obtener, para una cantidad determinada de nodos en la red, la máxima cantidad de elementos que pueden ser
+añadidos a la \setchain para \vanilla, \compresschain y \hashchain.
+Es importante notar que la cantidad de elementos enviados y añadidos a la \setchain debe mantenerse constante a lo largo
+de todas las rondas ejecutadas.
 
 
 \subsection{Elementos}
@@ -93,8 +108,9 @@ Arbitrum fue fundada en 2021 y es al momento una de las tecnologías de capa 2 m
 La elección de las transacciones fue tomada priorizando que los experimentos sean fieles a un contexto
 real, respetando el contenido de las transacciones.
 %
-Fueron descargadas utilizando la API de Alchemy\footnote{Disponible en \url{https://www.alchemy.com/}}, la
-cual permite conectarse directamente a un nodo específico de Arbitrum que es parte de la red,
+Fueron descargadas utilizando las API de Alchemy y de Chainstack\footnote{Disponibles en \url{https://www.alchemy.com/} y \url{https://chainstack.com/},
+respectivamente.}, las
+cuales permiten conectarse directamente a un nodo específico de Arbitrum que es parte de la red,
 de modo de interactuar con los datos en la cadena y hacer las peticiones necesrias para descargar las transacciones.
 
 %
@@ -116,6 +132,75 @@ durante los experimentos (solo transacciones de hasta 1KB de tamaño), se obtuvi
 
 \section{Resultados}
 
+A continuación se presentar los resultados obtenidos al ejecutar los experimentos para las tres alternativas,
+con redes de 4 y 10 nodos.
+
+\subsection{Comentarios generales}
+
+La primera observación que se hizo al analizar los resultados obtenidos, es que el ratio al que los clientes envían elementos
+debe ser elegido de modo de no saturar la mempoool.
+Esto quiere decir que debe evitarse enviar elementos a la mempool más rápidamente de lo que los elementos pueden salir de ella.
+
+Cuando un cliente invoca \<add> en un servidor cuya mempool está llena\footnote{Siguiendo los valores utilizados en
+~\cite{tendermint.design} la mempool puede alojar hasta 5000 transacciones con un tamaño máximo total de 1GiB.},
+el elemento es rechazado y el cliente recibe un error.
+A su vez, cuando se recibe un error por mempool llena, el cliente espera una cierta cantidad de tiempo para intentar
+nuevamente el envío del elemento.
+Esto produce un degradamiento en el ratio de elementos enviados por segundo.
+
+Por su parte, si a medida que pasan las rondas del experimento se envían cada vez menos elementos, menos elementos pueden ser
+añadidos a la \setchain, generando también un degradamiento en la cantidad de elementos añadidos por segundo.
+
+Es por esto que se concluye que los resultados estables son aquellos que no llegan a saturar la mempool en ningún momento del
+experimento.
+
+\subsection{\vanilla}
+Los experimentos para \vanilla fueron los más sencillos de llevar a cabo debido a que, variando la cantidad de nodos,
+el único parámetro que debía ajustarse era \texttt{sleep\_time}.
+
+A modo de ejemplo, en la Figura~\ref{fig:elements_against_sleep_time} se muestra la cantidad de elementos enviados en promedio por nodo por segundo,
+al variar el valor de \texttt{sleep\_time}, durante todas las rondas de un experimento con 4 nodos.
+Allí se puede observar que no es posible enviar mucho más de 400 elementos por segundo, dado que incluso disminuyendo el tiempo
+que se espera antes de volver a invocar \<add>, la cantidad de elementos enviados por segundo no aumenta.
+Esto es porque justamente al mandar elementos con demasiada frecuencia, la mempool se satura y los elementos comienzan a ser
+rechazados, lo que genera una degradación en el ratio de elementos enviados por segundo.
+
+A su vez, es interesante notar que la cantidad de elementos enviados en cada caso no es proporcional a la variación del valor del
+parámetro \texttt{sleep\_time}.
+Esto se explica considerando el hecho de que la invocación de \<add> tarda un tiempo no despreciable en comparación con
+los valores de \texttt{sleep\_time}.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.7]{figures/vanilla_4_nodos_elementos_enviados_segun_sleep.pdf}
+	\caption{Promedio de elementos enviados por nodo variando \texttt{sleep\_time} en un experimento con 4 nodos para \vanilla.}
+	\label{fig:elements_against_sleep_time}
+\end{figure}
+
+En la Figura~\ref{fig:vanilla_results} se muestra una comparación de la máxima cantidad de elementos añadidos en \vanilla para experimentos con
+4, 10 y 20 nodos.
+Se nota una clara degradación en la cantidad de elementos añadidos al aumentar la cantidad de nodos corriendo en el experimento.
+Esta baja es esperable, sin embargo, es importante notar el siguiente punto.
+Mientras más entidades (clientes y servidores) participen del consenso dentro de la red de Tendermint el experimento se hace más exigente en cuanto a recursos
+(procesador y memoria RAM).
+Dado que el límite de recursos destinados a Docker se mantiene constante durante todos los experimentos (independientemente de la cantidad de nodos),
+se genera una degradación en la cantidad de elementos que los clientes pueden enviar por segundo.
+Naturalmente, y como ya se mencionó antes, al disminuir el ratio de elementos enviados por segundo, invariablemente también lo hace el ratio de
+elementos añadidos por segundo.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.7]{figures/vanilla_resultados.pdf}
+	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
+	\label{fig:vanilla_results}
+\end{figure}
+% \begin{itemize}
+% 	\item Número de nodos: 4, 10, 100, 500, 1000, 2000
+% 	\item Tamaño de collector: 800, 1000, 5000, 10000
+% 	\item Sleep time: 5ms, 1ms, 100.000ns, 50.000ns, 10.000ns, 1.000ns
+% \end{itemize}
+
+% Primer experimento: bash config-benchmark.sh 4 /home/gabina/Tesina/localdeployment/txs/arbtxs /home/gabina/Tesina/localdeployment/setchain /home/gabina/Tesina/localdeployment/Dockerfile .
 
 
 %%% Local Variables:
