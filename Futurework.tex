@@ -1,0 +1,58 @@
+\section{Desarrollo de \hashchain}
+Una posible línea de trabajo futuro es la continuación del desarrollo
+de \hashchain.
+Esto involucra, por un lado, implementar la versión de \hashchain que utiliza
+\textit{consolidación de época de primera vista} (ver Sección~\ref{subsubsec:consolidation}),
+ya que en este trabajo se implementó únicamente la versión
+de \textit{consolidación de época actual}, con la cual se realizó la evaluación
+empírica.
+
+%
+Otra posibilidad de continuación de \hashchain se da a través del desarrollo de una
+\hashchain pesimista.
+Esta nueva versión cambiaría el comportamiento por defecto del resultado de \<CheckTx>
+ante la imposibilidad de correr el chequeo de un hash debido a la ausencia
+del lote original.
+Actualmente, el comportamiento por defecto es considerar un hash válido.
+Una \hashchain pesimista consideraría inválidos a los hashes como conducta predeterminada.
+Esto cambiaría el funcionamiento de la \hashchain ya que, por ejemplo, los elementos serían
+posiblemente rechazados en un principio, pero una vez consensuados podrían ser agregados
+a la \setchain quizás sin necesidad de una estrategia de consolidación.
+
+\section{\textit{Deployments} de \hashchain}
+Otro aspecto de posible trabajo futuro incluye la evaluación empírica con
+\textit{deployments}
+de \hashchain similares a los presentados en \cite{tendermint.design}.
+Es decir, utilizando un entorno distribuído geográficamente, con nodos desparramados
+uniformemente por distintas regiones en todos los continentes.
+
+De esta forma podrían analizarse cuestiones que quedaron por fuera del alcance de las
+evaluaciones realizadas en este trabajo. Por ejemplo, cómo reaccionan las distintas
+soluciones a problemas en la red (menos probables de ocurrir cuando se está utilizando
+docker compose en una misma máquina), o cómo se ve afectado el rendimiento cuando
+los nodos se encuentran a una distancia física considerable. 
+
+\section{Aplicación de \hashchain}
+Por último, una dirección de trabajo adicional comprende el desarrollo de todas las
+aplicaciones que motivan la existencia de la \setchain: aquellas que no requieren de
+un orden total.
+Por ejemplo, la implementación de mempools y sistemas de
+\textit{optimistic rollup} de capa 2 a través de Setchains.
+
+A su vez, la \setchain puede ser usada como un mecanismo para mitigar ataques de tipo
+\textit{front-running}. La mempool almacena transacciones solicitadas por los usuarios,
+por lo que observar
+la mempool permite predecir las operaciones futuras, e inyectar maliciosamente transacciones
+para que se ejecuten antes que las observadas (pagando una tarifa más alta a los mineros).
+Esto es lo que se conoce como ataque de \textit{front-running}.
+
+
+\setchain puede usarse para detectar ataques de este tipo, dado que puede servir
+como un
+mecanismo básico para construir una mempool que sea eficiente y sirva como un registro de
+solicitudes. Además, las Setchains pueden utilizarse como un bloque de construcción para
+evitar los ataque de \textit{front-running}, donde los usuarios cifran sus solicitudes
+utilizando un esquema de
+cifrado de firma múltiple, y los servidores de desencriptación de participantes desencriptan
+las solicitudes después de ser elegidos para la ejecución por los mineros una vez que el orden
+ya ha sido fijado.

@@ -350,7 +350,7 @@ entre elementos.
 % when adding the elements from the same block to a specific epoch.
 
 
-\section{Segunda implementación: Compresschain}\label{subsec:compresschain}
+\section{Segunda implementación: Compresschain}\label{sec:compresschain}
 
 Para acercanos a la especificación de \setchain, en esta sección proponemos
 empaquetar elementos en un lote y comprimir dicho lote
@@ -562,7 +562,7 @@ Este enfoque trabaja bajo la hipótesis
 de que hacer consenso sobre elementos agrupados de forma eficiente interpretados como unidad representa una
 mejora en comparación con el consenso usual, hecho sobre elementos individuales.
 
-\section{Tercera implementación: Hashchain}\label{subsec:hashchain}
+\section{Tercera implementación: Hashchain}\label{sec:hashchain}
 %
 Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
 funciones hash en lugar de compresión en Brotli.
@@ -1085,80 +1085,34 @@ y por lo tanto, $v$ ganaría el juego haciendo trampa.
 
 \subsection{Conclusión}
 
-% Blockchain technologies are facing the problem of scalability. Compared to other
-% transaction-based systems, blockchains are just too slow. We have (at least)
-% two possible ways to solve these problems, either we design faster consensus
-% algorithms or place clever solutions on top of blockchains. One example of the
-% latter is what are called Layer-2 solutions where we have a computing machine
-% on top of the blockchain consuming less resources. An example of the former is
-% Setchain.
-% Setchain presents a faster consensus algorithm based on set-consensus lifting
-% the total order of transactions of classic blockchains. The partial order Setchain
-% uses is no-order, i.e. all elements in an epoch do not follow an order. However,
-% we can say that elements from one epoch come before or later to another epoch.
+\hashchain emplea la estrategia introducida en \compresschain mediante el uso del \collector,
+agregando una capa
+intermedia entre el cliente y el Tendermint Core.
+Trabaja también sobre la misma hipótesis: hacer consenso sobre elementos agrupados de forma eficiente
+interpretados como unidad representa una mejora en comparación con el consenso usual, hecho sobre elementos
+individuales.
 
-% In other words, we have a relative order, we can relate elements from different
-% epochs, but we cannot relate elements within the same epoch.
-% Although Setchain is a clever idea, it lacks a real-world implementation. The
-% authors presenting Setchain gave a prove-of-concept implementation to observe
-% that Setchain is faster than other algorithms in laboratory conditions. Imple-
-% menting and verifying such claims are the goals of this work in progress.
-
-La implementación de sistemas distribuídos es difícil, por lo que se decidió
-utilizar una solución prefabricada: Tendermint. Tendermint ofrece una implementación
-de mundo real de una estructura basada en blockchain, presentando una separación clara
-entre las primitivas de la blockchain y la interfaz definida por el usuario.
-% Implementing distributed algorithms is hard, and thus, we took an off-the-
-% shelf solution: Tendermint. Tendermint offers a real-world implementation of a
-% blockchain-based structure presenting a clear separation of the blockchain level
-% primitives and the user defined interface.
-
-Se presentaron tres alternativas posibles para la implementación de \setchain
-construídas sobre Tendermint. Dado que los algoritmos de \setchain presentados
-en \cite{Capretto.2022.Setchain} emplean un algoritmo de \textit{set-consensus}, 
-no es posible replicar los mismos comportamientos.
-Sin embargo, tomamos un enfoque ligeramente diferente,
-intentando obtener tanto como se pueda de lo que Tendermint es capaz de ofrecer.
-Cada alternativa presentada trata de acercarse a la implementación ideal de \setchain,
-explotando la idea de que cada época es un conjunto de elementos.
-% We presented three implementations of Setchain on top of Tendermint. Since
-% the algorithms of Setchain presented in [?] employ a set-consensus algorithm,
-% we can not replicate the same algorithms. However, we took a slightly different
-% approach trying to get as much as we can from what Tendermint can offer. Each
-% implementation tries to get closer to an ideal implementation of Setchain by ex-
-% ploiting the idea that each epoch is a set of elements.
-
-% La primera alternativa
-% (ver sección) presenta una implementación ingenua y correcta (aunque ineficiente)
-% de \setchain, donde Tendermint mantiene un conjunto de solo crecimiento.
-% La segunda estrategia (ver sección) mejora la implementación más básica usando
-% un algoritmo de compresión: las transacciones son entonces un conjunto (comprimido)
-% de elementos. Finalmente, \hashchain va más allá de la segunda implementación y
-% utiliza funcionas hash para reducir la sobrecarga de la red.
-
-% The first implementation
-% (see Section 3.1) presents a naive and correct but inefficient implementation of
-% Setchain where Tendermint only maintains a grow-only-set. The second imple-
-% mentation (see Section 3.2) improves the naive implementation using a compres-
-% sion algorithm: transactions are now a (compressed) set of elements. Finally, the
-% third algorithm 12 (see Section 3.3) goes beyond the second implementation and
-% uses hash functions to reduce network overload.
-
-\hashchain es la solución más cercana a \setchain, sin usar algoritmos de
-set-consensus, utilizando funciones hash para reducir la sobrecarga de la red.
+La novedad en \hashchain es que, en lugar de usan un algoritmo de compresión, utiliza funciones hash
+para reducir la sobrecarga de la red.
+De esta forma se profundiza la idea original presentada en \compresschain, ya que una función hash
+puede ser vista como un método de compresión con un ratio potencialmente muy alto (dado que convierte
+texto plano de longitud arbitraria en un hash de longitud fija).
 
 Aunque reduzca el tráfico de la red (haciendo consenso sobre transacciones pequeñas
 y de tamaño fijo), el uso de funciones hash requiere una forma de
-invertirlos para así obtener los elementos originales. Para resovler esto, se diseñó
+invertirlos para así obtener los elementos originales.
+Para resovler esto, se diseñó
 un algoritmo distribuído, tolerante a fallas bizantinas, que trabaja como un objeto
-distribuído de resolución de hashes. 
+distribuído de resolución de hashes.
+
+
 % While reducing network traffic, the use of hash functions requires a way to
 % get the elements back. To solve this, we designed a new distributed Byzantine-
 % tolerant algorithm working as a hash-resolution distributed object.
 
-Considerando esto, tendríamos una implementación de \setchain de mundo real.
-Dado que los nodos no conocen de ante mano los elementos en un
-hash, el consenso consiste en elegir cuál época será la siguiente.
+%Considerando esto, tendríamos una implementación de \setchain de mundo real.
+%Dado que los nodos no conocen de ante mano los elementos en un
+%hash, el consenso consiste en elegir cuál época será la siguiente.
 % Putting both
 % solutions together, we would have a real-world Setchain implementation.
 % Hashchain is the closest solution to Setchain without using a set-consensus

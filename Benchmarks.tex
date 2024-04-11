@@ -132,13 +132,13 @@ durante los experimentos (solo transacciones de hasta 1KB de tamaño), se obtuvi
 
 \section{Resultados}
 
-A continuación se presentar los resultados obtenidos al ejecutar los experimentos para las tres alternativas,
-con redes de 4 y 10 nodos.
+A continuación se presentan los resultados obtenidos al ejecutar los experimentos para las tres alternativas,
+con redes de 4, 10 y 20 nodos.
 
 \subsection{Comentarios generales}
 
-La primera observación que se hizo al analizar los resultados obtenidos, es que el ratio al que los clientes envían elementos
-debe ser elegido de modo de no saturar la mempoool.
+La primera observación que se hizo al analizar los resultados obtenidos es que el ratio al que los clientes envían elementos
+debe ser elegido de modo de no saturar la mempool.
 Esto quiere decir que debe evitarse enviar elementos a la mempool más rápidamente de lo que los elementos pueden salir de ella.
 
 Cuando un cliente invoca \<add> en un servidor cuya mempool está llena\footnote{Siguiendo los valores utilizados en
@@ -151,8 +151,10 @@ Esto produce un degradamiento en el ratio de elementos enviados por segundo.
 Por su parte, si a medida que pasan las rondas del experimento se envían cada vez menos elementos, menos elementos pueden ser
 añadidos a la \setchain, generando también un degradamiento en la cantidad de elementos añadidos por segundo.
 
-Es por esto que se concluye que los resultados estables son aquellos que no llegan a saturar la mempool en ningún momento del
-experimento.
+Es por esto que los resultados estables son aquellos que no llegan a saturar la mempool en ningún momento del
+experimento. Con \textit{resultado estable} nos referimos a que la cantidad de elementos enviados por parte de
+los clientes así como también la cantidad de elementos añadidos a la \setchain se mantiente similar en cada
+una de las rondas. 
 
 \subsection{\vanilla}
 Los experimentos para \vanilla fueron los más sencillos de llevar a cabo debido a que, variando la cantidad de nodos,
@@ -194,6 +196,8 @@ elementos añadidos por segundo.
 	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
 	\label{fig:vanilla_results}
 \end{figure}
+\subsection{\compresschain}
+\subsection{\hashchain}
 % \begin{itemize}
 % 	\item Número de nodos: 4, 10, 100, 500, 1000, 2000
 % 	\item Tamaño de collector: 800, 1000, 5000, 10000

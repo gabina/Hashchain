@@ -1,99 +1,101 @@
-\section{Conclusion}\label{sec:conclusion}
+\section{Resumen y conclusión final}\label{sec:conclusion}
 %
-Blockchain technologies are facing the problem of scalability.
+Las tecnologías blockchain están atravesando un problema de escalabilidad.
 %
-Compared to other transaction-based systems, blockchains are just too slow.
+Comparado a otros sistemas basasdos en transacciones, las blockchains son simplemente
+demasiado lentas.
 %
-We have (at least) two possible ways to solve these problems, either we design
-faster consensus algorithms or place clever solutions on top of blockchains.
-%
-One example of the latter is what are called \emph{Layer-2} solutions where we
-have a computing machine on top of the blockchain consuming less resources.
-%
-An example of the former is Setchain.
+Existen, por lo menos, dos formas posibles de resolver estos problemas: o bien
+diseñando algoritmos de consenso más rápidos, o bien colocando soluciones por
+encima de la blockchain.
 
-Setchain presents a faster consensus algorithm based on set-consensus lifting
-the total order of transactions of classic blockchains.
-% and uses another order
-% instead.
 %
-The partial order Setchain uses is no-order, i.e. all elements in an epoch do
-not follow an order.
+Un ejemplo de lo primero es lo que se conoce como soluciones de \emph{Layer-2}
+(capa 2),
+donde se tiene una máquina de computación sobre la blockchain que consume menos
+recursos que si se actuara directamente sobre ella.
 %
-However, we can say that elements from one epoch come before or later to another
-epoch.
-%
-In other words, we have a relative order, we can relate elements from different
-epochs, but we cannot relate elements within the same epoch.
+Un ejemplo de lo segundo es \setchain.
 
-Although Setchain is a clever idea, it lacks a real-world implementation.
+\setchain presenta un algoritmo de consenso más rápido, basado en
+\textit{set-consensus},
+que abandona el clásico orden total de las transacciones en las blockchains.
 %
-The authors presenting Setchain gave a prove-of-concept implementation to
-observe that Setchain is faster than other algorithms in laboratory conditions.
+El orden parcial de \setchain establece que no es posible comparar los elementos
+en una misma época.
 %
-Implementing and verifying such claims are the goals of this work in progress.
+Sin embargo, se puede decir que los elementos de una época ocurrieron antes o después
+que los elementos de otra.
+%
+Esto es, \setchain propone un orden relativo, en donde los elementos
+de distintas épocas se pueden relacionar, pero no es posible relacionar elementos
+en la misma época.
 
-Implementing distributed algorithms is hard, and thus, we took an off-the-shelf
-solution: Tendermint.
+Aunque \setchain es una idea inteligente, carecía al momento de una implementación
+de mundo real.
 %
-Tendermint offers a real-world implementation of a blockchain-based structure
-presenting a clear separation of the blockchain level primitives and the user
-defined interface.
+Los autores de \setchain dieron una implementación a modo de prueba de concepto,
+que les permitió observar que, en condiciones de laboratorio,
+era más rápido que otros algoritmos de consenso.
+%
 
-We presented three implementations of Setchain on top of Tendermint.
-%
-Since the algorithms of Setchain presented in~\cite{Capretto.2022.Setchain}
-employ a set-consensus algorithm, we can not replicate the same algorithms.
-%
-However, we took a slightly different approach trying to get as much as we can
-from what Tendermint can offer.
-%
-Each implementation tries to get closer to an ideal implementation of Setchain
-by exploiting the idea that each epoch is a set of elements.
-%
-The first implementation (see Section~\ref{subsec:vanilla}) presents a naive and
-correct but inefficient implementation of Setchain where Tendermint only
-maintains a grow-only-set.
-%
-The second implementation (see Section~\ref{subsec:compresschain}) improves the
-naive implementation using a compression algorithm: transactions are now a
-(compressed) set of elements.
-%
-Finally, the third algorithm~\footnote{Implementation lacking at the moment of
-writing the document.} (see Section~\ref{subsec:hashchain}) goes beyond the
-second implementation and uses hash functions to reduce network overload.
+% Implementing and verifying such claims are the goals of this work in progress.
+La implementación de sistemas distribuídos es difícil, por lo que en este trabajo
+se decidió utilizar una solución prefabricada: Tendermint.
+Tendermint ofrece una implementación
+de mundo real de una estructura basada en blockchain, presentando una separación clara
+entre las primitivas de la blockchain y la interfaz definida por el usuario.
 
-While reducing network traffic, the use of hash functions requires a way to get
-the elements back.
-%
-To solve this, we designed a \textbf{new} distributed Byzantine-tolerant
-algorithm working as a hash-resolution distributed object.
-%
-Putting both solutions together, we would have a real-world Setchain
-implementation.
 
-Hashchain is the closest solution to Setchain without using a set-consensus
-algorithm.
-%
-Since nodes do not know \emph{a priory} the elements inside a hashed set,
-consensus then consists in choosing what epoch is going to go next.
-%
-However, since in Tendermint we have a mempool and a gossip network, elements
-are gossiped around, and hashes have the biggest set of elements known to the
-node proposing the next epoch.
+Se presentaron tres alternativas posibles para la implementación
+de \setchain construídas sobre Tendermint. Dado que los algoritmos de \setchain
+presentados en \cite{Capretto.2022.Setchain} emplean un algoritmo de
+\textit{set-consensus}\cite{redbelly}, 
+no es posible replicar los mismos comportamientos.
+Sin embargo, tomamos un enfoque ligeramente diferente,
+intentando obtener tanto como se pueda de lo que Tendermint es capaz de ofrecer.
+Cada alternativa presentada trata de acercarse a la implementación ideal de \setchain,
+explotando la idea de que cada época es un conjunto de elementos.
 
-Our results are exciting but inconclusive.
 %
-On the one hand, we presented three algorithms ready to be deployed implementing
-Setchain specification.
+La primera solución (ver Sección~\ref{sec:vanilla}) presenta una simple y
+correcta pero ineficiente implementación de \setchain donde Tendermint solo mantiene
+un conjunto de solo crecimiento.
+
 %
-While on the other hand, we have not yet tested and experimented on the most
-interesting one: Hashchain.
+La segunda solución (ver Sección~\ref{sec:compresschain}) mejor la alternativa anterior
+usando un algoritmo de compresión: las transacciones de Tendermint ahora son conjuntos
+de elementos (comprimidos).
+
 %
-Leaving the implementation of Hashchain as future work.
+Finalmente, la tercera solución (ver Sección~\ref{sec:hashchain}) va más allá de la
+segunda alternativa y usa funciones hash para reducir la sobrecarga en la red.
+Aunque reduzca el tráfico de la red (haciendo consenso sobre transacciones pequeñas
+y de tamaño fijo), el uso de funciones hash requiere una forma de
+invertirlos para así obtener los elementos originales.
+Para resovler esto, se diseñó
+un algoritmo distribuído, tolerante a fallas bizantinas, que trabaja como un objeto
+distribuído de resolución de hashes.
+Estos dos aspectos funcionando juntos conforman una implementación de \setchain
+de mundo real.
+
 %
-Finally, we also want to run intense tests on each of the implementations
-employing Tendermint deployment systems.
+\hashchain es la solución más cercana a \setchain sin usar un algoritmo de set-consensus.
+Dado que los nodos no conocen los elementos dentro de un hash \emph{a priori}, el
+consenso consiste en elegir cuál época irá próxima.
+%
+
+% No entiendo a qué va esta idea:
+%However, since in Tendermint we have a mempool and a gossip network, elements
+%are gossiped around, and hashes have the biggest set of elements known to the
+%node proposing the next epoch.
+
+Los números provistos por la evaluación empírica son emocionantes, indicando que,
+efectivamente, \hashchain permite un rendimiento de X veces lo que \vanilla, e Y veces
+lo que \compresschain.
+Estos resultados se presentan a favor de la hipótesis de que hacer consenso sobre
+elementos agrupados de forma eficiente interpretados como unidad representa una
+mejora en comparación con el consenso usual, hecho sobre elementos individuales. 
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"
