@@ -9,7 +9,7 @@ empírica.
 
 %
 Otra posibilidad de continuación de \hashchain se da a través del desarrollo de una
-\hashchain pesimista.
+\textit{Hashchain pesimista}.
 Esta nueva versión cambiaría el comportamiento por defecto del resultado de \<CheckTx>
 ante la imposibilidad de correr el chequeo de un hash debido a la ausencia
 del lote original.
@@ -33,7 +33,7 @@ docker compose en una misma máquina), o cómo se ve afectado el rendimiento cua
 los nodos se encuentran a una distancia física considerable. 
 
 \section{Aplicación de \hashchain}
-Por último, una dirección de trabajo adicional comprende el desarrollo de todas las
+Por último, una dirección de trabajo adicional comprende el desarrollo de las
 aplicaciones que motivan la existencia de la \setchain: aquellas que no requieren de
 un orden total.
 Por ejemplo, la implementación de mempools y sistemas de
@@ -46,13 +46,12 @@ la mempool permite predecir las operaciones futuras, e inyectar maliciosamente t
 para que se ejecuten antes que las observadas (pagando una tarifa más alta a los mineros).
 Esto es lo que se conoce como ataque de \textit{front-running}.
 
-
 \setchain puede usarse para detectar ataques de este tipo, dado que puede servir
 como un
 mecanismo básico para construir una mempool que sea eficiente y sirva como un registro de
 solicitudes. Además, las Setchains pueden utilizarse como un bloque de construcción para
-evitar los ataque de \textit{front-running}, donde los usuarios cifran sus solicitudes
+evitar los ataques de \textit{front-running}, donde los usuarios cifran sus solicitudes
 utilizando un esquema de
-cifrado de firma múltiple, y los servidores de desencriptación de participantes desencriptan
-las solicitudes después de ser elegidos para la ejecución por los mineros una vez que el orden
-ya ha sido fijado.
+cifrado de firma múltiple. Una vez que el orden de las solicitudes fue fijado, los servidores
+de desencriptación de los participantes desencriptan
+las solicitudes.

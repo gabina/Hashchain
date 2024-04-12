@@ -5,7 +5,7 @@ Las tecnologías blockchain están atravesando un problema de escalabilidad.
 Comparado a otros sistemas basasdos en transacciones, las blockchains son simplemente
 demasiado lentas.
 %
-Existen, por lo menos, dos formas posibles de resolver estos problemas: o bien
+Existen, por lo menos, dos formas posibles de resolver este problema: o bien
 diseñando algoritmos de consenso más rápidos, o bien colocando soluciones por
 encima de la blockchain.
 
@@ -18,7 +18,7 @@ recursos que si se actuara directamente sobre ella.
 Un ejemplo de lo segundo es \setchain.
 
 \setchain presenta un algoritmo de consenso más rápido, basado en
-\textit{set-consensus},
+\textit{set-consensus}\cite{redbelly},
 que abandona el clásico orden total de las transacciones en las blockchains.
 %
 El orden parcial de \setchain establece que no es posible comparar los elementos
@@ -50,7 +50,7 @@ entre las primitivas de la blockchain y la interfaz definida por el usuario.
 Se presentaron tres alternativas posibles para la implementación
 de \setchain construídas sobre Tendermint. Dado que los algoritmos de \setchain
 presentados en \cite{Capretto.2022.Setchain} emplean un algoritmo de
-\textit{set-consensus}\cite{redbelly}, 
+\textit{set-consensus}, 
 no es posible replicar los mismos comportamientos.
 Sin embargo, tomamos un enfoque ligeramente diferente,
 intentando obtener tanto como se pueda de lo que Tendermint es capaz de ofrecer.
@@ -63,14 +63,14 @@ correcta pero ineficiente implementación de \setchain donde Tendermint solo man
 un conjunto de solo crecimiento.
 
 %
-La segunda solución (ver Sección~\ref{sec:compresschain}) mejor la alternativa anterior
+La segunda solución (ver Sección~\ref{sec:compresschain}) mejora la alternativa anterior
 usando un algoritmo de compresión: las transacciones de Tendermint ahora son conjuntos
 de elementos (comprimidos).
 
 %
 Finalmente, la tercera solución (ver Sección~\ref{sec:hashchain}) va más allá de la
 segunda alternativa y usa funciones hash para reducir la sobrecarga en la red.
-Aunque reduzca el tráfico de la red (haciendo consenso sobre transacciones pequeñas
+Aunque reduzca el tráfico (haciendo consenso sobre transacciones pequeñas
 y de tamaño fijo), el uso de funciones hash requiere una forma de
 invertirlos para así obtener los elementos originales.
 Para resovler esto, se diseñó
