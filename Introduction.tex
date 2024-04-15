@@ -70,7 +70,7 @@ La blockchain es un \textit{objeto distribuído} que contiene las transacciones 
 en nombre de los usuarios, empaquetadas en bloques, y toalmente
 ordenadas~\cite{anta2018formalizing,anta2021principles}.
 %
-En implementaciones de mundo real, el objeto blockchain es mantenido por múltiples servidores
+En entornos reales, el objeto blockchain es mantenido por múltiples servidores
 sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
 ataques bizantinos.
 %
@@ -104,6 +104,11 @@ de barreras ocasionales.
 Distintos algoritmos bizantinos distribuídos que implementan \setchain fueron
 propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
 los requerimientos de una aplicación del mundo real.
+Es decir, una aplicación capaz de soportar un \textit{deployment} con miles de nodos\footnote{Si bien
+es difícil saber con exactitud cuántos nodos existen en la red de Blockcahin o Ethereum, se estima
+que este número varía entre aproximadamente 10000 y 50000 nodos.}
+distribuídos geográficamente en todos los continentes, con clientes enviando peticiones para
+añadir nuevas transacciones a los servidores constantemente.
 
 \section{Contribuciones}
 En este trabajo se propone una familia de implementaciones robustas de \setchain,
