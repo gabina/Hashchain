@@ -20,8 +20,10 @@ Todas las implementaciones fueron escritas en Golang y residen en un único ejec
 de inicializar los siguiente servicios.
 \begin{itemize}
 	\item Un nodo de Tendermint adjunto a una versión específica de la aplicación (la cual impelementa los métodos
-	de la ABCI). Las versiones disponibles de la aplicación son: \vanilla, \compresschain, y \hashchain. Todas estas
-	versiones necesitan de una base de datos persistente para alojar la \setchain en sí.
+	de la ABCI). Las versiones disponibles de la aplicación son: \vanilla, \compresschain, y \hashchain.
+	La versión de \hashchain utilizada implementa la estrategia de consolidación de época actual.
+	Todas estas versiones de la 
+	aplicación necesitan de una base de datos persistente para alojar la \setchain en sí.
 	\item Para \compresschain y \hashchain, un servidor \collector RPC. Este servidor se encarga de recibir transacciones,
 	armar los lotes adecuados (siguiendo la lógica correspondiente), y difundirlos mediante comunicación con el nodo
 	de Tendermint. Por su parte, el \hcollector también requiere una base de datos persistente para guardar el mapeo de
@@ -114,7 +116,7 @@ cuales permiten conectarse directamente a un nodo específico de Arbitrum que es
 de modo de interactuar con los datos en la cadena y hacer las peticiones necesrias para descargar las transacciones.
 
 %
-Al analizar el conjunto de transacciones descargadas (alrededor de 123456 transacciones) se encontró que el tamaño de
+Al analizar el conjunto de transacciones descargadas (alrededor de X transacciones) se encontró que el tamaño de
 estas presentaba algunos valores extremos hacia la derecha.
 Es decir, mientras que la mediana rondaba los 350 bytes, y la desviación estándar los 600 bytes, los valores mínimos y máximos eran de
 110 bytes y  50 mil bytes, respectivamente.
@@ -128,7 +130,6 @@ durante los experimentos (solo transacciones de hasta 1KB de tamaño), se obtuvi
 	\item Min: 110 bytes
 	\item Max: 1024 bytes
 \end{itemize}
-%
 
 \section{Resultados}
 
