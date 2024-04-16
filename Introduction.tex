@@ -145,12 +145,12 @@ El desarrollo planteado a lo largo de este trabajo podría en principio portarse
 La familia de implementaciones que se presenta en este trabajo
 sigue un enfoque incremental, proveyendo diversas aproximaciones
 a la solución final y más compleja; consta de tres variantes:
-\begin{enumerate}
+\begin{itemize}
   \item \textit{\vanilla}, una primera solución básica de \setchain,
-  \item \textit{Compresschain}, una variante intermedia utilizando un algoritmo de compresión, y
+  \item \textit{Compresschain}, una variante intermedia utilizando un algoritmo de compresión,
   \item \textit{Hashchain}, la contribución principal de este trabajo, una solución 
   a \setchain usando funciones hash.
-\end{enumerate}
+\end{itemize}
 %
 Hashchain explota el poder de compresión de las funciones hash para reducir la
 comunicación necesaria durante difusión y consenso, comunicando un hash de tamaño
