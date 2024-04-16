@@ -55,7 +55,7 @@
                     	    \State \texttt{epochHash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
             				%\Comment{Hash epoch (elements and number).}
                 			\State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{epochHash}, privateKey)}
-               			\State \<add>(\texttt{epochProof})
+               			\State \Call{\<add>}{\texttt{epochProof}}
                		 \Else
                		 	\State \textbf{break}
                     	\EndIf

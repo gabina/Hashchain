@@ -3,7 +3,7 @@
   \begin{adjustbox}{minipage=[t]{\columnwidth}}
     \begin{algorithm}[H]
       \renewcommand{\thealgorithm}{Compresschain ABCI}         
-      \caption{\small ABCI implementation of Compresschain}%
+      \caption{\small }%
       \label{alg:abci-brotli}%
       \small
       \begin{algorithmic}[1]
@@ -49,7 +49,7 @@
                 	\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[epoch]}, \texttt{epoch})
             		\Comment{Hash epoch (elements and number).}
                 \State \texttt{epochProof} $\leftarrow$  \<Sign>(\texttt{hash}, privateKey)
-                \State \<add>(\texttt{epochProof})
+                \State \Call{\<add>}{\texttt{epochProof}}
                 	
                 	\State \texttt{epoch} $\leftarrow$ \texttt{epoch} + 1
                 \State \textbf{return}

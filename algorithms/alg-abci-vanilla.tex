@@ -1,9 +1,9 @@
-% Vanilla ABCI - alg0
+% Vanilla ABCI - alg1
 \begin{figure}[t!]
   \begin{adjustbox}{minipage=[t]{\columnwidth}}
     \begin{algorithm}[H]
-      \renewcommand{\thealgorithm}{Vanilla ABCI}         
-      \caption{\small ABCI implementation of Setchain Vanilla}%
+      \renewcommand{\thealgorithm}{ABCI Vanilla}         
+      \caption{}%
       \label{alg:abci-vanilla}%
       \small
       \begin{algorithmic}[1]
@@ -23,17 +23,17 @@
             
             \Function{\<EndBlock>}{\null}\label{alg:van_end_block}
             		\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[epoch]}, \texttt{epoch})
-            		\Comment{Hashear los elementos y número de época.}
+            		\Comment{Calcular el hash de la época.}
                 \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, privateKey)}
-                \State \<add>(\texttt{epochProof})
+                \State \Call{\<add>}{\texttt{epochProof}}
                 \State \(\<epoch> \, <- \<epoch> + 1\)
                 \Comment{Cada bloque de Tendermint define una época.}
                 \State \textbf{return}
             \EndFunction
             
              \Function{\<Query>}{\null}\label{alg:van_query}
-                \State \textbf{return} \texttt{history} up to \<epoch>\ - 1
-            \EndFunction
+                \State \textbf{return} (\texttt{history}, \texttt{history} up to \<epoch>\ - 1, \<epoch>\ - 1)            
+             \EndFunction
             
             \Function{\<isValidTransaction>}{$transaction$}\label{alg:van_is_valid_tx}
                 \State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$}
