@@ -7,7 +7,7 @@
       \label{alg:abci-vanilla}%
       \small
       \begin{algorithmic}[1]
-            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}
+            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{-1}, \texttt{next\_epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}
 
             \Function{\<CheckTx>}{$transaction$}\label{alg:van_check_tx}
                 \State \textbf{return} \Call{\<isValidTransaction>}{$transaction$}
@@ -16,23 +16,25 @@
             \Function{\<DeliverTx>}{$transaction$}\label{alg:van_deliver_tx}
                 \If {\Call{\<isValidTransaction>}{$transaction$}}
                 		\State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$}
-                		\State  \texttt{history[epoch]} \(<- \, \texttt{history}[\texttt{epoch}] \cup \<element>\)
+                    \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \<element>\)
+                		\State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \<element>\)
                 	\EndIf
                 	\State \textbf{return}
             \EndFunction
             
             \Function{\<EndBlock>}{\null}\label{alg:van_end_block}
-            		\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[epoch]}, \texttt{epoch})
+            		\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[next\_epoch]}, \texttt{next\_epoch})
             		\Comment{Calcular el hash de la época.}
                 \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, privateKey)}
                 \State \Call{\<add>}{\texttt{epochProof}}
-                \State \(\<epoch> \, <- \<epoch> + 1\)
+                \State \(\<epoch>  <- \, \texttt{next\_epoch}\)
+                \State \texttt{next\_epoch} \( \, <- \texttt{next\_epoch} + 1\)
                 \Comment{Cada bloque de Tendermint define una época.}
                 \State \textbf{return}
             \EndFunction
             
              \Function{\<Query>}{\null}\label{alg:van_query}
-                \State \textbf{return} (\texttt{history}, \texttt{history} up to \<epoch>\ - 1, \<epoch>\ - 1)            
+                \State \textbf{return} (\texttt{the\_set}, \texttt{history} up to \texttt{epoch}, \texttt{epoch})            
              \EndFunction
             
             \Function{\<isValidTransaction>}{$transaction$}\label{alg:van_is_valid_tx}

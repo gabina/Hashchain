@@ -8,56 +8,6 @@
 \mathlig{++}{\mathbin{{+}\mspace{-10mu}{+}}}
 \mathlig{->>}{\twoheadrightarrow}
 \mathlig{<-}{\leftarrow}
-%\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\textcolor[HTML]{A6CE39}{\aiOrcid}}}
-
-%\def\orcidID#1{\smash{\href{http://orcid.org/#1}{\protect\raisebox{-1.25pt}{\protect\includegraphics{orcid_color.eps}}}}}
-
-%\newcommand{\mod}{\ensuremath{{\%}}}
-%\newcommand{\tupleof}[1]{\ensuremath{(#1)}}
-\newcommand \tupleof[1] { \left\langle #1 \right \rangle}
-
-% \newcommand{\Mec}[1]{\ensuremath{\textit{#1}}\xspace}
-\newcommand{\Mec}[1]{\textit{#1}\xspace}
-\newcommand{\Monitor}{\Mec{Monitor}}
-
-
-%Types
-\newcommand{\Storage}{\textit{S}}
-\newcommand{\Address}{\mathcal{A}}
-\newcommand{\Tezos}{\mathcal{T}}
-\newcommand{\Gas}{\mathcal{G}}
-\newcommand{\TStorage}{\mathcal{S}}
-\newcommand{\Effect}{\mathcal{E}}
-\newcommand{\From}{\textit{FROM}}
-% \newcommand{\Om}{\textit{OM}}
-\newcommand{\Om}{\textit{TM}}
-\newcommand{\Tm}{\textit{TM}}
-
-\newcommand{\Bool}{\mathds{B}}
-\newcommand{\Nat}{\mathds{N}}
-\newcommand{\Decision}{\mathds{D}}
-
-
-\newcommand{\BcState}{\Sigma}
-\newcommand{\BcContext}{\Delta}
-
-\newcommand{\Sc}{\textit{Sc}}
-\newcommand{\Sch}{\textit{Sch}}
-\newcommand{\St}{\textit{St}}
-\newcommand{\gas}{\textit{gas}}
-%\newcommand{\listof}{\textit{listof}}
-\newcommand{\Fail}{\textit{Fail}}
-\newcommand{\NoFail}{\textit{NoFail}}
-\newcommand{\run}{\textit{Run}}
-
-%Scheduler operations
-\reservestyle{\scheduler}{\textit}
-\scheduler{empty,isEmpty,nxt[next],insertSch,pop,bfs,dfs,mon}
-\newcommand{\init}{\<empty>}
-\newcommand{\isEmpty}{\<isEmpty>}
-\newcommand{\nxt}{\<nxt>}
-\newcommand{\insertSch}{\<insertSch>}
-\newcommand{\pop}{\<pop>}
 
 \reservestyle{\functions}{\texttt}
 \functions{isValidElement,isValidTransaction,getElementFromTransaction,
@@ -119,6 +69,7 @@ shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
 \newcommand{\CheckTx}{\<CheckTx>\xspace}
 \newcommand{\Commit}{\<Commit>\xspace}
 \newcommand{\DeliverTx}{\<DeliverTx>\xspace}
+\newcommand{\Query}{\<Query>\xspace}
 
 %Operation memory
 \newcommand{\OpMem}{\Mec{Operation Memory}}
@@ -201,18 +152,6 @@ shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
 }
 \makeatother
 
-%\newcommand{\Abegin}{\ensuremath{A_{\textit{begin}}}\xspace}
-\newcommand{\Abegin}{\ensuremath{A_{\<begin>}}}
-
-\newcommand{\Aend}{\ensuremath{A_{\<end>}}}
-\newcommand{\Ainit}{\ensuremath{A_{\<init>}}}
-\newcommand{\Aterm}{\ensuremath{A_{\<term>}}\xspace}
-\newcommand{\Lenderinit}{\ensuremath{\textit{Lender}_{\<init>}}\xspace}
-\newcommand{\Lenderterm}{\ensuremath{\textit{Lender}_{\<term>}}\xspace}
-
-\newcommand{\partTo}{\rightharpoonup}
-\newcommand{\Addr}{\rightharpoonup}
-
 \newcommand{\isValidElement}{\textit{isValidElement}}
 
 
@@ -223,8 +162,8 @@ shouldConsolidateHash,reset,newEpoch,Sign,isValidSignature}
 \newcommand{\HISTORY}{\<history>}
 \newcommand{\THESET}{\<theset>}
 \newcommand{\epochs}{Setchain\xspace}
-\newcommand{\Get}{\PR{get}\xspace}
-\newcommand{\Add}{\PR{add}\xspace}
+%\newcommand{\Get}{\PR{get}\xspace}
+%\newcommand{\Add}{\PR{add}\xspace}
 \newcommand{\BRBdeliver}{\<BRB>.\<Deliver>}
 \newcommand{\BRBbroadcast}{\<BRB>.\<Broadcast>}
 \newcommand{\BABdeliver}{\<BAB>.\<Deliver>}

@@ -1,6 +1,6 @@
-\section{Implementaciones}\label{sec:impl}
+\section{Objetivo del capítulo}
 
-En esta sección se presenta una familia de implementaciones de \setchain de mundo
+En este capítulo se presenta una familia de implementaciones de \setchain de mundo
 real construídas sobre Tendermint.
 %
 En particular, se exponen tres alternativas diferentes, comenzando con una
@@ -8,9 +8,10 @@ solución inocente pero trivialmente correcta, y finalizando con un algoritmo
 complejo que implementa \setchain utilizando funciones hash.
 %
 
-Para evitar repeticiones, las definciones de funciones que permanezcan sin cambios
+\section{Consideraciones generales}\label{sec:impl}
+Para evitar repeticiones, las definciones de métodos que permanezcan sin cambios
 de una versión a la siguiente, no serán re-escritas.
-Solo se volverán a presentar aquellas funciones para las cuales la definición se
+Solo se volverán a presentar aquellos métodos para los cuales la definición se
 vea modificada.
 %
 A su vez, con la intención de mantener consistencia en la nomenclatura,
@@ -24,7 +25,7 @@ Tendermint puede contener uno o más elementos a ser agregados.
 % \subsection{General Considerations about Implementation}\label{subsec:general}
 
 Las implementaciones correctas de \setchain implementan dos métodos~(ver sección
-~\ref{sec:setchain}): \Add y \Get, y por lo tanto, cada solución provee definiciones
+~\ref{sec:setchain}): \<add> y \<get>, y por lo tanto, cada solución provee definiciones
 para ambas.
 %
 Por su parte, Tendermint provee dos \textit{endpoints} RPC principales.
@@ -46,7 +47,7 @@ Nótese que el cliente siempre se comunica con un nodo particular de la red.
 % as nodes with the tx in their mempool may crash before they get to propose.
 
 Por lo tanto, desde el punto de vista del cliente de la \setchain, solo existen dos
-métodos (\Add y \Get).
+métodos (\<add> y \<get>).
 %
 Sin embargo, hay dos métodos adicionales que se utilizan para comunicarse con la
 red de Tendermint subyacente (los ya mencionados \texttt{Tendermint.Broadcast} y
@@ -59,8 +60,8 @@ cuándo un elemento es válido para ser admitido en el conjunto.
 En esta sección, dicho predicado se referencia con la función \isValidElement.
 
 %
-A continuación se presentan diferentes definiciones de métodos y funciones
-necesarias para que la aplicación corriendo sobre Tendermint implemente \setchain.
+A continuación se presentan diferentes definiciones de métodos
+necesarios para que la aplicación corriendo sobre Tendermint implemente \setchain.
 Esto involucra, por un lado, los métodos presentados como parte de la API de
 \setchain y, por el otro, los perteniences a la interfaz de aplicación de
 blockchain ~(ver sección ~\ref{sec:tendermint}).
@@ -71,7 +72,7 @@ blockchain ~(ver sección ~\ref{sec:tendermint}).
 utilizando Tendermint.
 %
 La característica principal que le otorga sencillez a esta solución es que
-un cliente invocando \Add(e) se traduce en una nueva transacción de Tendermint en la red,
+un cliente invocando \<add>(e) se traduce en una nueva transacción de Tendermint en la red,
 que representa a ese y solo a ese elemento a añadir a la \setchain.
 %
 Que $e$ sea finalmente añadido a la \setchain dependerá de si la transacción asociada
@@ -80,7 +81,7 @@ subyacente de Tendermint.
 
 \subsection{Flujo de mensajes}
 En la Figura~\ref{fig:vanilla-flow} se muestra el flujo usual de mensajes que se inicia
-cuando un cliente invoca \Add(e).
+cuando un cliente invoca \<add>(e).
 %
 
 El proceso comienza con el sistema en su estado inicial (Figura (a)), a la espera de que algún cliente
@@ -89,7 +90,7 @@ El Tendermint Core expone sus puntos de entrada RPC, que serán utilizados por p
 \setchain. Por su parte, la aplicación mantiene una instancia de la \setchain.
 %
 
-En la Figura (b) se observa el resultado de un cliente invocando \Add(e): el cliente, mediante
+En la Figura (b) se observa el resultado de un cliente invocando \<add>(e): el cliente, mediante
 la API de \setchain, envía un elemento $e$, y la API de \setchain, a su vez, se comunica con el
 punto de entrada del Tendermint Core para enviar una transacción $t_e$ que representa a $e$.
 Es importante notar que el cliente envía \textit{elementos}, pero en la red de Tendermint
@@ -130,43 +131,14 @@ en donde uno de sus elementos es $e$.
 
 \begin{figure}
   \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/vanilla-flow-0.png}} 
-  \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}}\\
+  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}}\\
   \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}}
   \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}}\\
   \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}}
-  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}} 
+  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}}
   \caption{Flujo usual de mensajes para \vanilla}
   \label{fig:vanilla-flow}
 \end{figure}
-
-% \begin{figure}
-%   \begin{subfigure}{.7\textwidth}
-%     \centering
-%     \includegraphics[width=.8\linewidth]{figures/vanilla-flow-0.png}
-%     \caption{1a}
-%     \label{fig:sfig1}
-%   \end{subfigure}%
-%   \begin{subfigure}{.7\textwidth}
-%     \centering
-%     \includegraphics[width=.8\linewidth]{figures/vanilla-flow-1.png}
-%     \caption{1b}
-%     \label{fig:sfig2}
-%   \end{subfigure}
-%   \begin{subfigure}{.7\textwidth}
-%     \centering
-%     \includegraphics[width=.8\linewidth]{figures/vanilla-flow-2.png}
-%     \caption{1a}
-%     \label{fig:sfig1}
-%   \end{subfigure}%
-%   \begin{subfigure}{.7\textwidth}
-%     \centering
-%     \includegraphics[width=.8\linewidth]{figures/vanilla-flow-3.png}
-%     \caption{1b}
-%     \label{fig:sfig2}
-%   \end{subfigure}
-%   \caption{plots of....}
-%   \label{fig:fig}
-%   \end{figure}
 
 \subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %
@@ -272,7 +244,7 @@ la implementación de la versión \vanilla.
 En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
 de \setchain.
 %
-Los clientes agregan elementos invocando (indirectamente) a la función
+Los clientes agregan elementos invocando (indirectamente) a
 \texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
 la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}.
 %
@@ -286,7 +258,7 @@ deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
 \vanilla.
 %
-Solo se definen \CheckTx, \DeliverTx, y \EndBlock; el resto tiene implementaciones
+Solo se definen \CheckTx, \DeliverTx, \EndBlock, y \Query; el resto tiene implementaciones
 triviales.
 
 En esta versión, chequear si una transacción es válida consiste simplemente en chequear
@@ -326,13 +298,30 @@ En este algoritmo, la finalización de un bloque desencadena un incremento de é
 y, por lo tanto, cada bloque de Tendermint define una época distitna de \setchain.
 %
 
-Finalmente, cuando los clientes invocan \Get, indirectamente inician una llamada
-a la función \<abciquery>, que retorna la \setchain hasta la época \texttt{epoch - 1}.
-Nótese que la época actual (\texttt{epoch}) puede estar siendo modificada en el momento
-en que \<abciquery> se invoca, por lo que no sería correcto que \Get la retorne, puesto que
-podría ser una visión parcial de la misma. 
+Finalmente, cuando los clientes invocan \<get>, indirectamente inician una llamada
+a \<abciquery>, que retorna los valores de $\THESET $, $\HISTORY $, y $\EPOCH $, de acuerdo
+a la definición de \setchain. 
 
-[COMPLETAR. EXPLICITAR QUÉ PINTA TIENE ESTO.]
+%
+
+En este caso, $\THESET $ contendrá
+todos los elementos para los cuales se hizo \DeliverTx.
+Esto incluye elementos desde la época 0 hasta la época que se está construyendo actualmente
+(indicada por la variable \texttt{next\_epoch}).
+Nótese que los elementos pertenecientes a dicha época pueden estar siendo agregados
+a la variable \texttt{history} en 
+el momento en que \<abciquery> se invoca, por lo que el valor de \texttt{history[\texttt{next\_epoch}]}
+podría ser una visión parcial.
+Es por esto que se retorna $\HISTORY $ up to $\EPOCH$ y no directamente el valor de la variable
+$\HISTORY $.
+De otro modo, podría no cumplirse la propiedad \textit{Consistent Gets}
+presentada en~\ref{subsubsec:setchain-properties}.
+%Es por esto que no sería correcto que $\HISTORY $ incluya elementos
+%pertenecientes a la época actual, puesto que podría no cumplir la propiedad \textit{Consistent Gets}
+%presentada en~\ref{subsubsec:setchain-properties}.
+
+%$\HISTORY = history up to epoch - 1$, y $\EPOCH = epoch$
+%[COMPLETAR. EXPLICITAR QUÉ PINTA TIENE ESTO.]
 
 \subsection{Conclusión}
 Si bien los algoritmos descriptos en esta sección implementan \setchain, no se está explotando su idea
@@ -377,7 +366,7 @@ Una transacción es, entonces, un lote de elementos comprimido.
 
 \subsection{Flujo de mensajes}
 Al igual que como se hizo para la versión \vanilla, se presentará el flujo de mensajes usual
-que se inicia cuando un cliente invoca \Add(e).
+que se inicia cuando un cliente invoca \<add>(e).
 En la Figura~\ref{fig:compresschain-flow} se muestran los distintos pasos de
 este flujo en el contexto de \compresschain.
 %
@@ -387,7 +376,7 @@ se encuentra la nueva pieza intermedia \collector. Esto se muestra en la Figura 
 
 %
 
-El primer paso se da cuando el ciente envía un elemento $e$, mediante la invocación a \Add(e) (ver
+El primer paso se da cuando el ciente envía un elemento $e$, mediante la invocación a \<add>(e) (ver
 Figura (b)).
 Desde el punto de vista del cliente, no hay diferencias en relación a la versión \vanilla, ya que
 la existencia del \collector es transparente para él.
@@ -429,7 +418,7 @@ a la transacción que contiene al elemento $e$.
 
 \begin{figure}
   \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/compresschain-flow-0.png}}
-  \subfloat[El cliente invoca \Add(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-1.png}}\\
+  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-1.png}}\\
   \subfloat[El lote está listo y es difundido]{\includegraphics[width = 3.5in]{figures/compresschain-flow-2.png}}
   \subfloat[El lote se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}}\\
   \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}}
@@ -523,11 +512,11 @@ los bloques fueron consensuados.} a un nodo no debería privar a los elementos v
 ser añadidos a la \setchain.
 
 %
-Sin embargo, como se ilustra en la función \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
+Sin embargo, como se ilustra en el método \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
 mientras que los inválidos simplemente se descartan.
 %
 Finalmente, en Compresschain, los bloques no delimitan épocas por lo que no se peresenta una definición para
-la función \<EndBlock>.
+el método \<EndBlock>.
 
 %
 En este caso, las épocas se definen como transacciones: cada lote de elementos define una época.
@@ -954,7 +943,7 @@ Finalmente, en relación a la definición de la ABCI, se muestra una posible imp
 \hashchain utilizando la estrategia de consolidación de época actual en el Algoritmo ~\ref{alg:abci-hash1}
 y ~\ref{alg:abci-hash2}.
 
-Es importante notar que en el algoritmo la función \<Query> inicia la construcción de \<history>, además de
+Es importante notar que en el algoritmo el método \<Query> inicia la construcción de \<history>, además de
 la difusión de pruebas de época.
 %
 Aunque este enfoque es empleado para claridad, un nodo que recibe consultas
