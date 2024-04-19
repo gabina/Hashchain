@@ -9,10 +9,10 @@ complejo que implementa \setchain utilizando funciones hash.
 %
 
 \section{Consideraciones generales}\label{sec:impl}
-Para evitar repeticiones, las definciones de métodos que permanezcan sin cambios
+Para evitar repeticiones, algunas definciones de métodos que permanezcan sin cambios
 de una versión a la siguiente, no serán re-escritas.
-Solo se volverán a presentar aquellos métodos para los cuales la definición se
-vea modificada.
+Esto será debidamente aclarado al momento de la presentación de los algoritmos.
+
 %
 A su vez, con la intención de mantener consistencia en la nomenclatura,
 el término \textit{transacción} se utiliza siempre para referirse a las
@@ -316,6 +316,8 @@ Es por esto que se retorna $\HISTORY $ up to $\EPOCH$ y no directamente el valor
 $\HISTORY $.
 De otro modo, podría no cumplirse la propiedad \textit{Consistent Gets}
 presentada en~\ref{subsubsec:setchain-properties}.
+Por otro lado, la variable $\EPOCH$ retornada indica el máximo número de época que fue agregado de
+manera completa en $\HISTORY $.
 %Es por esto que no sería correcto que $\HISTORY $ incluya elementos
 %pertenecientes a la época actual, puesto que podría no cumplir la propiedad \textit{Consistent Gets}
 %presentada en~\ref{subsubsec:setchain-properties}.
@@ -517,10 +519,11 @@ mientras que los inválidos simplemente se descartan.
 %
 Finalmente, en Compresschain, los bloques no delimitan épocas por lo que no se peresenta una definición para
 el método \<EndBlock>.
-
-%
 En este caso, las épocas se definen como transacciones: cada lote de elementos define una época.
 
+%
+
+Por último, el método \<Query> se comporta de la misma forma que en \vanilla.
 % %
 % definition was given in this case, as the block does not
 % delimit the epoch anymore, but the epoch is defined by all the elements
@@ -949,7 +952,7 @@ la difusión de pruebas de época.
 Aunque este enfoque es empleado para claridad, un nodo que recibe consultas
 no muy frecuentemente podría experimentar retrasos en la generación de pruebas de época.
 %
-Para evitar esto, el proceso de contrucción de \<history> y las pruebas de época podrían ser ejecutadas
+Para evitar esto, el proceso de construcción de \<history> y las pruebas de época podrían ser ejecutadas
 periódicamente mediante planificación, independientemente de la petición de consultas.
 
 \input{algorithms/alg-abci-hash}

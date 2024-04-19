@@ -2,12 +2,12 @@
 \begin{figure}[t!]
   \begin{adjustbox}{minipage=[t]{\columnwidth}}
     \begin{algorithm}[H]
-      \renewcommand{\thealgorithm}{ABCI Hashchain - Parte 1}         
+      \renewcommand{\thealgorithm}{ABCI Hashchain - Parte 1}
       \caption{Consolidación de época actual}%
       \label{alg:abci-hash1}%
       \small
       \begin{algorithmic}[1]
-            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{hashToSignatures} $\leftarrow$ \{\}, \texttt{epochToHash} $\leftarrow$ \{\}, \texttt{hashToBatch} $\leftarrow$ \{\}
+            \State \textbf{Init:} \texttt{next\_epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}, \texttt{hashToSignatures} $\leftarrow$ \{\}, \texttt{epochToHash} $\leftarrow$ \{\}, \texttt{hashToBatch} $\leftarrow$ \{\}
 
             \Function{\<CheckTx>}{$hash, signature$}\label{alg:hash_check_tx}
             		\Comment{Discuss how the validation is done}
@@ -30,8 +30,8 @@
             		\If {\<isValidSignature>($hash, signature$)}
             			\State \texttt{hashToSignatures}[$hash$] $\leftarrow$ \texttt{hashToSignatures}[$hash$] $\cup$  $signature$
             			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
-            				\State \texttt{epochToHash[epoch]} $\leftarrow$ $hash$
-            				\State \texttt{epoch} $\leftarrow$ \texttt{epoch} + 1
+            				\State \texttt{epochToHash[next\_epoch]} $\leftarrow$ $hash$
+            				\State \texttt{next\_epoch} $\leftarrow$ \texttt{next\_epoch} + 1
             				\If {not \texttt{hashToBatch}[$hash$] \textbf{exists}}
                 				\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
                 			\EndIf
@@ -42,13 +42,15 @@
             
             \Function{\<Query>}{\null}
             		\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history})
-            		\For{\texttt{i in (\texttt{lastEpochInHistory, epoch})}}
+            		\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
             			\State \texttt{hash} $\leftarrow$  \texttt{epochToHash[i]}
              		\If {\texttt{hashToBatch}[\texttt{hash}] \textbf{exists}}
                 			\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hashToBatch}[\texttt{hash}]}
             				\For{\texttt{e in elements}}
-             				\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
-                					\State \texttt{history[i]}.AddElement(e)
+             					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
+									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \texttt{e}\)
+									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \texttt{e}\)
+									%\State \texttt{history[i]}.AddElement(e)
                 					\Comment{Only add new valid elements.}
                     	 		\EndIf
                     	 	\EndFor
@@ -57,10 +59,11 @@
                 			\State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{epochHash}, privateKey)}
                			\State \Call{\<add>}{\texttt{epochProof}}
                		 \Else
+						\State \texttt{epoch} \(<- \, \texttt{i - 1}\)
                		 	\State \textbf{break}
                     	\EndIf
                 	\EndFor
-            		\State \textbf{return} \texttt{history}
+            		\State \textbf{return} (\texttt{the\_set}, \texttt{history}, \texttt{epoch}) 
             	\EndFunction
 
         \end{algorithmic}
