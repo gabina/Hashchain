@@ -7,11 +7,11 @@
       \label{alg:abci-hash-first-seen}%
       \small
       \begin{algorithmic}[1]
-            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{hashToOriginal} $\leftarrow$ \{\}, \texttt{hashToSignatures} $\leftarrow$ \{\}, \texttt{mBlocksHashes} $\leftarrow$ \{\}
+            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{hashToOriginal} $\leftarrow$ \{\}, \texttt{hash\_to\_signatures} $\leftarrow$ \{\}, \texttt{mBlocksHashes} $\leftarrow$ \{\}
       
             \Function{DeliverTx}{$transaction$}\label{alg4:deliver_tx}
             		\State \texttt{hash, signature} $\leftarrow$ $transaction$
-            		\State \texttt{hashToSignatures}[\texttt{hash}] $\leftarrow$ \texttt{hashToSignatures}[\texttt{hash}] $\cup$  \texttt{signature}
+            		\State \texttt{hash\_to\_signatures}[\texttt{hash}] $\leftarrow$ \texttt{hash\_to\_signatures}[\texttt{hash}] $\cup$  \{\texttt{signature}\}
             		\If {not (\texttt{hash} in \texttt{mBlocksHashes})}
 					\State \texttt{mBlocksHashes}.Push(\texttt{hash}) 
             		\EndIf

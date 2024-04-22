@@ -16,8 +16,8 @@
             \Function{\<DeliverTx>}{$transaction$}\label{alg:van_deliver_tx}
                 \If {\Call{\<isValidTransaction>}{$transaction$}}
                 		\State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$}
-                    \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \<element>\)
-                		\State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \<element>\)
+                    \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\<element>\}\)
+                		\State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \{\<element>\}\)
                 	\EndIf
                 	\State \textbf{return}
             \EndFunction
@@ -25,7 +25,7 @@
             \Function{\<EndBlock>}{\null}\label{alg:van_end_block}
             		\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[next\_epoch]}, \texttt{next\_epoch})
             		\Comment{Calcular el hash de la época.}
-                \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, privateKey)}
+                \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, PRIVATE\_KEY)}
                 \State \Call{\<add>}{\texttt{epochProof}}
                 \State \(\<epoch>  <- \, \texttt{next\_epoch}\)
                 \State \texttt{next\_epoch} \( \, <- \texttt{next\_epoch} + 1\)

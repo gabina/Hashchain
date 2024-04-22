@@ -37,8 +37,8 @@
             \EndFunction
             
             \Function{\<getElementsFromBatch>}{$batch$}\label{alg:brotli_get_element}
-                \State \texttt{decompressedBatch} $\leftarrow$ \texttt{Brotli.Decompress}($batch$)
-                \State \texttt{elements} $\leftarrow$ \texttt{RLP.Decode}(\texttt{decompressedBatch})
+                \State \texttt{decompressed\_batch} $\leftarrow$ \texttt{Brotli.Decompress}($batch$)
+                \State \texttt{elements} $\leftarrow$ \texttt{RLP.Decode}(\texttt{decompressed\_batch})
                 \State \textbf{return} \texttt{elements}
             \EndFunction
             
@@ -46,14 +46,14 @@
             		\For{\texttt{e in} $elements$}
                 \Comment{Agregar solo elementos nuevos y válidos.}
              	    \If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
-                        \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \texttt{e}\)
-                        \State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \texttt{e}\)
+                        \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)
+                        \State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \{\texttt{e}\}\)
                     \EndIf
                 	\EndFor
                 	
                 	\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[next\_epoch]}, \texttt{next\_epoch})
             		\Comment{Calcular el hash de la época.}
-                \State \texttt{epochProof} $\leftarrow$  \<Sign>(\texttt{hash}, privateKey)
+                \State \texttt{epochProof} $\leftarrow$  \<Sign>(\texttt{hash}, PRIVATE\_KEY)
                 \State \Call{\<add>}{\texttt{epochProof}}
                 \State \(\<epoch>  <- \, \texttt{next\_epoch}\)
                 \State \texttt{next\_epoch} \( \, <- \texttt{next\_epoch} + 1\)

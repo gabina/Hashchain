@@ -7,20 +7,19 @@
       \label{alg:abci-hash1}%
       \small
       \begin{algorithmic}[1]
-            \State \textbf{Init:} \texttt{next\_epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}, \texttt{hashToSignatures} $\leftarrow$ \{\}, \texttt{epochToHash} $\leftarrow$ \{\}, \texttt{hashToBatch} $\leftarrow$ \{\}
+            \State \textbf{Init:} \texttt{next\_epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}, \texttt{hash\_to\_signatures} $\leftarrow$ \{\}, \texttt{epoch\_to\_hash} $\leftarrow$ \{\}, \texttt{hash\_to\_batch} $\leftarrow$ \{\}
 
             \Function{\<CheckTx>}{$hash, signature$}\label{alg:hash_check_tx}
-            		\Comment{Discuss how the validation is done}
 				\If {\<isValidSignature>($hash, signature$)}
-            			\If {\texttt{hashToBatch}[$hash$] \textbf{exists}}
-            				\State \textbf{return} \Call{\<isValidBatch>}{\texttt{hashToBatch}[$hash$]}
+            			\If {\texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
+            				\State \textbf{return} \Call{\<isValidBatch>}{\texttt{hash\_to\_batch}[$hash$]}
             			\EndIf
-            		
-            			\Comment{If the node does not have the original batch, it spawns an asynchronous routine that requests the batch.}
+
+						\Comment{Si el nodo no tiene el lote original, lanzar una rutina asíncrona que solicita el lote.}
             		
                 		\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
                 		\State \textbf{return True}
-                		\Comment {In case of absence of information, it returns True.}
+						\Comment{En caso de ausencia de información, retornar True.}
                 	\Else
                 		\State \textbf{return False}
                 	\EndIf
@@ -28,11 +27,11 @@
       
             \Function{\<DeliverTx>}{$hash, signature$}\label{alg:hash_deliver_tx}
             		\If {\<isValidSignature>($hash, signature$)}
-            			\State \texttt{hashToSignatures}[$hash$] $\leftarrow$ \texttt{hashToSignatures}[$hash$] $\cup$  $signature$
+            			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}
             			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
-            				\State \texttt{epochToHash[next\_epoch]} $\leftarrow$ $hash$
+            				\State \texttt{epoch\_to\_hash[next\_epoch]} $\leftarrow$ $hash$
             				\State \texttt{next\_epoch} $\leftarrow$ \texttt{next\_epoch} + 1
-            				\If {not \texttt{hashToBatch}[$hash$] \textbf{exists}}
+            				\If {not \texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
                 				\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
                 			\EndIf
                	 	\EndIf
@@ -43,20 +42,20 @@
             \Function{\<Query>}{\null}
             		\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history})
             		\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
-            			\State \texttt{hash} $\leftarrow$  \texttt{epochToHash[i]}
-             		\If {\texttt{hashToBatch}[\texttt{hash}] \textbf{exists}}
-                			\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hashToBatch}[\texttt{hash}]}
+            			\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}
+             		\If {\texttt{hash\_to\_batch}[\texttt{hash}] \textbf{exists}}
+                			\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hash\_to\_batch}[\texttt{hash}]}
             				\For{\texttt{e in elements}}
+								\Comment{Agregar solo elementos nuevos y válidos.}
              					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
-									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \texttt{e}\)
-									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \texttt{e}\)
+									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)
+									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\)
 									%\State \texttt{history[i]}.AddElement(e)
-                					\Comment{Only add new valid elements.}
                     	 		\EndIf
                     	 	\EndFor
                     	    \State \texttt{epochHash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
             				%\Comment{Hash epoch (elements and number).}
-                			\State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{epochHash}, privateKey)}
+                			\State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{epochHash}, PRIVATE\_KEY)}
                			\State \Call{\<add>}{\texttt{epochProof}}
                		 \Else
 						\State \texttt{epoch} \(<- \, \texttt{i - 1}\)
@@ -82,9 +81,9 @@
             	\Function{\<revertHash>}{$hash, signature$}\label{alg:hash_revert}
                 \State \texttt{originalBatch} $\leftarrow$ requestHash($hash, signature$)
                 \If {Hash(\texttt{originalBatch}) = $hash$}
-					\State \texttt{hashToBatch}[$hash$]  $\leftarrow$ \texttt{originalBatch}     
+					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{originalBatch}     
                 		\If {\Call{\<isValidBatch>}{\texttt{originalBatch}}}
-                			\State \texttt{mySignature} $\leftarrow$ \<Sign>($hash$, privateKey)
+                			\State \texttt{mySignature} $\leftarrow$ \<Sign>($hash$, PRIVATE\_KEY)
                 			\State \texttt{Tendermint.Broadcast}($hash$, mySignature)
 					\EndIf   
 				\EndIf             	

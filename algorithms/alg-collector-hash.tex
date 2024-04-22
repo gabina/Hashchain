@@ -11,7 +11,7 @@
       
             \Function{AddTx}{$transaction$}\label{alg3:add_tx}
             		\State \texttt{encodedTransaction} $\leftarrow$ \textbf{RLP.Encode}($transaction$)
-				\State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \texttt{encodedTransaction}
+				\State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \{\texttt{encodedTransaction}\}
             
              	\If {\textit{isBigEnough(batch)}}
              		\State \texttt{compressedBatch} $\leftarrow$  \textbf{Brotli.Compress}(\texttt{batch})
