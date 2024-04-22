@@ -53,7 +53,7 @@
                 	
                 	\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[next\_epoch]}, \texttt{next\_epoch})
             		\Comment{Calcular el hash de la época.}
-                \State \texttt{epochProof} $\leftarrow$  \<Sign>(\texttt{hash}, PRIVATE\_KEY)
+                \State \texttt{epochProof} $\leftarrow$  \<Sign>(\texttt{hash}, \texttt{PRIVATE\_KEY})
                 \State \Call{\<add>}{\texttt{epochProof}}
                 \State \(\<epoch>  <- \, \texttt{next\_epoch}\)
                 \State \texttt{next\_epoch} \( \, <- \texttt{next\_epoch} + 1\)

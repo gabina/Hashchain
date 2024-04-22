@@ -59,6 +59,7 @@
                			\State \Call{\<add>}{\texttt{epochProof}}
                		 \Else
 						\State \texttt{epoch} \(<- \, \texttt{i - 1}\)
+						\Comment{Guardar el número de la última época completa.}
                		 	\State \textbf{break}
                     	\EndIf
                 	\EndFor
@@ -79,19 +80,19 @@
       \small
       \begin{algorithmic}[1]
             	\Function{\<revertHash>}{$hash, signature$}\label{alg:hash_revert}
-                \State \texttt{originalBatch} $\leftarrow$ requestHash($hash, signature$)
-                \If {Hash(\texttt{originalBatch}) = $hash$}
-					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{originalBatch}     
-                		\If {\Call{\<isValidBatch>}{\texttt{originalBatch}}}
-                			\State \texttt{mySignature} $\leftarrow$ \<Sign>($hash$, PRIVATE\_KEY)
-                			\State \texttt{Tendermint.Broadcast}($hash$, mySignature)
+                \State \texttt{original\_batch} $\leftarrow$ requestHash($hash, signature$)
+                \If {Hash(\texttt{original\_batch}) = $hash$}
+					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch}     
+                		\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}
+                			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})
+                			\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})
 					\EndIf   
 				\EndIf             	
                 	\State \textbf{return}
             \EndFunction
             
              \Function{\<shouldConsolidateHash>}{$hash$}\label{alg:hash_consolidated}
-            		\State \textbf{return} \textbf{\#}\texttt{hashToSignatures}[$hash$] = \texttt{SIGNATURES\_PER\_HASH}
+            		\State \textbf{return} \textbf{\#}\texttt{hash\_to\_signatures}[$hash$] = \texttt{SIGNATURES\_PER\_HASH}
             \EndFunction
 
         \end{algorithmic}

@@ -25,7 +25,7 @@
             \Function{\<EndBlock>}{\null}\label{alg:van_end_block}
             		\State \texttt{hash} $\leftarrow$ \<Hash>(\texttt{history[next\_epoch]}, \texttt{next\_epoch})
             		\Comment{Calcular el hash de la época.}
-                \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, PRIVATE\_KEY)}
+                \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, PRIVATE\_KEY})
                 \State \Call{\<add>}{\texttt{epochProof}}
                 \State \(\<epoch>  <- \, \texttt{next\_epoch}\)
                 \State \texttt{next\_epoch} \( \, <- \texttt{next\_epoch} + 1\)
