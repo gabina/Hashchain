@@ -33,10 +33,12 @@ de inicializar los siguiente servicios.
 	con un único nodo servidor.
 \end{itemize}
 Para las bases de datos persistentes se utilizó \textit{BadgerDB}\cite{db.badger}.
-Para las funciones criptográficas se utilizó el paquete crypto de ethereum. 
+El servidor RPC del \collector se implementó utilizando el paquete \textit{net/rpc} de la librería estándar de Go.
+Para las funciones criptográficas se utilizó el paquete \textit{crypto} de \textit{go-ethereum} (la implementación
+del protocolo de Ethereum en Golang). 
 
 %
-Cada instancia fue empaquetada en un contenedor Docker con uso limitado a 6 núcleros y 32GB de RAM.
+Cada instancia fue empaquetada en un contenedor Docker con uso limitado a 6 núcleos y 32GB de RAM.
 %
 La cantidad de nodos utilizados varió según cada experimento.
 %
@@ -63,9 +65,10 @@ comunicarse con el \collector correspondiente en el caso de \compresschain o \ha
 
 Los experimentos funcionan en rondas.
 %
-Cada experimento ejecuta X rondas, de Y segundos cada una.
+Cada experimento ejecuta 5 rondas, de 120 segundos cada una.
 %
-Los clientes envían elementos cada Z segundos.
+Los clientes envían elementos cada \textit{N} segundos (determinado en función del valor
+de \texttt{sleep\_time}).
 %
 Luego de cada ronda, cada cliente envía una petición \<get> para registrar cuántas épocas y cuántos
 elementos fueron efectivamente añadidos a la \setchain.
@@ -93,8 +96,9 @@ Así, los parámetros que se modifican en los experimentos son los siguientes:
 La idea es ajustar los valores de los parámetros \texttt{sleep\_time} y \texttt{collector\_size},
 de modo de obtener, para una cantidad determinada de nodos en la red, la máxima cantidad de elementos que pueden ser
 añadidos a la \setchain para \vanilla, \compresschain y \hashchain.
-Es importante notar que la cantidad de elementos enviados y añadidos a la \setchain debe mantenerse constante a lo largo
-de todas las rondas ejecutadas.
+Es importante notar que la búsqueda del valor máximo siempre debe hacerse sobre ejecuciones en donde la cantidad de elementos
+enviados y añadidos a la \setchain se mantenga constante a lo largo de todas las rondas.
+En caso contrario, los resultados se descartan.
 
 
 \subsection{Elementos}
@@ -134,7 +138,8 @@ durante los experimentos (solo transacciones de hasta 1KB de tamaño), se obtuvi
 \section{Resultados}
 
 A continuación se presentan los resultados obtenidos al ejecutar los experimentos para las tres alternativas,
-con redes de 4, 10 y 20 nodos.
+con redes de 4, 10 y 20 nodos. A su vez, los tamaños de \collector utilizados fueron de
+800, 5000 y 10000 transacciones.
 
 \subsection{Comentarios generales}
 
@@ -175,13 +180,21 @@ los valores de \texttt{sleep\_time}.
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.7]{figures/vanilla_4_nodos_elementos_enviados_segun_sleep.pdf}
+	\includegraphics[scale=0.5]{figures/sleep_time_2.pdf}
 	\caption{Promedio de elementos enviados por nodo variando \texttt{sleep\_time} en un experimento con 4 nodos para \vanilla.}
 	\label{fig:elements_against_sleep_time}
 \end{figure}
 
 En la Figura~\ref{fig:vanilla_results} se muestra una comparación de la máxima cantidad de elementos añadidos en \vanilla para experimentos con
 4, 10 y 20 nodos.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{figures/vanilla_añadidos.pdf}
+	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
+	\label{fig:vanilla_results}
+\end{figure}
+
 Se nota una clara degradación en la cantidad de elementos añadidos al aumentar la cantidad de nodos corriendo en el experimento.
 Esta baja es esperable, sin embargo, es importante notar el siguiente punto.
 Mientras más entidades (clientes y servidores) participen del consenso dentro de la red de Tendermint el experimento se hace más exigente en cuanto a recursos
@@ -191,14 +204,81 @@ se genera una degradación en la cantidad de elementos que los clientes pueden e
 Naturalmente, y como ya se mencionó antes, al disminuir el ratio de elementos enviados por segundo, invariablemente también lo hace el ratio de
 elementos añadidos por segundo.
 
+\subsection{\compresschain}
+
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.7]{figures/vanilla_resultados.pdf}
-	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
-	\label{fig:vanilla_results}
+	\includegraphics[scale=0.5]{figures/compresschain_results.pdf}
+	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \compresschain.}
+	\label{fig:compresschain_results}
 \end{figure}
-\subsection{\compresschain}
+
+En los experimentos para \compresschain se utilizaron los tres parámetros ya mencionados: \texttt{n\_nodes},
+\texttt{sleep\_time} y \texttt{collector\_size}.
+La cantidad de nodos varió, al igual que para \vanilla, en 4, 10 y 20 nodos.
+Para ajustar el parámetro \texttt{sleep\_time} se utilizó el mismo criterio que para \vanilla, pero se obtuvieron valores 
+menores para los cuales los experimentos resultaron estables y sin saturación de la mempool.
+Por otro lado, para el \collector se utilizaron tamaños de 800 y 5000 transacciones.
+No fue posible utilizar un tamaño de 10000 transacciones puesto que el lote comprimido era más grande
+que lo que la configuracion usada de Tendermint permitía. 
+
+Una observación que se hizo al realizar estos experimentos es que, para los mismos valores de \texttt{sleep\_time},
+el cliente es capaz de enviar más elementos en \compresschain que en \vanilla.
+Esto se atribuye principalmente a dos motivos.
+
+Por un lado, la mempool no se satura tan fácilmente. Esto evita, por ejemplo, que el cliente espere un determinado tiempo
+extra (más allá del \texttt{sleep\_time}) para volver a intentar el envío de un elemento cuando recibe un mensaje de error por mempool llena,
+como fue mencionado en la sección anterior.
+Decimos que no es tan fácil saturar la mempool puesto que no llegan a ella los elementos directamente enviados por el cliente,
+sino que llegan los lotes construidos por el \collector.
+Esto significa que, aunque el cliente envíe la misma cantidad de elementos en \vanilla que en \compresschain, a la mempool llegan
+muchos menos (dependiendo del tamaño del \collector utilizado).
+
+Por otro lado, durante los experimentos se comprobó que las llamadas por parte del cliente al servidor RPC del \collector
+son considerablemente más rápidas que las llamadas al servidor RPC nativo de Tendermint.
+Esto tiene como consecuencia directa que, a mismo \texttt{sleep\_time}, la cantidad de elementos enviados por parte del cliente
+sean menores en \vanilla que en \compresschain.
+
+
+En cuanto al tamaño del \collector, los resultados arrojados por los experimentos de 4 nodos no mostraron diferencias significativas
+al usar uno o el otro.
+Sin embargo, en experimentos con 10 o 20 nodos, el uso de un \collector de mayor tamaño implica una mayor diferencia en la cantidad
+de elementos añadidos a la \setchain por los distintos nodos.
+Esto es esperable dado que, cuanta más cantidad de elementos contenga un lote, mayor será la diferencia de elementos totales añadidos
+entre un nodo que ya agregó un determinado lote y un nodo que aún no lo hizo.
+
+En la Figura~\ref{fig:compresschain_results} se muestra una comparación de la máxima cantidad de elementos añadidos en \compresschain para experimentos con
+4, 10 y 20 nodos.
+
+
 \subsection{\hashchain}
+
+En el caso de \hashchain, los experimentos fueron ejecutados variando el tamaño del \collector en 800, 5000 y 10000 transacciones.
+Al igual que en \compresschain, al aumentar la cantidad de transacciones que conforman un lote, aumenta la diferencia en la cantidad
+de elementos añadidos por los distintos nodos, lo que se hace aún más notable en experimentos con 10 y 20 nodos en la red.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{figures/hashchain_results.pdf}
+	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \hashchain.}
+	\label{fig:hashchain_results}
+\end{figure}
+
+En la Figura~\ref{fig:hashchain_results} se muestra una comparación de la máxima cantidad de elementos añadidos en \hashchain para experimentos con
+4, 10 y 20 nodos.
+
+
+\subsection{Conclusión}
+En la Figura~\ref{fig:resultados_comparados} se muestra la comparación de todos los resultados presentados previamente.
+Allí se puede observar que el rendimiento de \hashchain es mejor que para las otras alternativas en todos los casos. 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.6]{figures/comparativos.pdf}
+	\caption{Elementos añadidos a la \setchain por segundo según cantidad de nodos y versión.}
+	\label{fig:resultados_comparados}
+\end{figure}
+
 % \begin{itemize}
 % 	\item Número de nodos: 4, 10, 100, 500, 1000, 2000
 % 	\item Tamaño de collector: 800, 1000, 5000, 10000
