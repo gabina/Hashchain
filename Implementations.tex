@@ -956,12 +956,13 @@ Para evitar esto, el proceso de construcción de \<history> y las pruebas de ép
 periódicamente mediante planificación, independientemente de la petición de consultas.
 
 %
-A diferencia de lo visto para \<Query> en \vanilla y \compresschain, en este caso, $\THESET $ y $\HISTORY $
-contienen los mismos elementos, puesto que el proceso de construcción de épocas es atómico (no hay épocas a medio construir).
+A diferencia de lo visto para \<Query> en \vanilla y \compresschain, en este caso, la diferencia entre $\THESET $ y $\HISTORY $
+no radica en las épocas a medio construir, puesto que el proceso de construcción de épocas es atómico.
+En este contexto, en $\THESET $ se encuentran todos los elementos que el nodo firma y difunde, aún antes de ser estampados con un
+número de época. Notemos que esto es correcto puesto que eventualmente todos los nodos correctos van a recibir el lote correspondiente
+y firmarlo, por lo que con seguridad sus elementos tendrán un número de época asignado en el futuro.
 \input{algorithms/alg-abci-hash}
 %As mentioned above, Hashchain First Seen Consolidation version uses an idea of grace period in which the hashes are either consolidated or discarded. In this case, we will define the grace period in terms of number of blocks, meaning that if a hash has been seen for the first time in block $B$, and the grace period is $P$ blocks, then on block $B$ + $P$ we will determine if the hash is consolidated (hence, their elements are added to the \setchain), or is discarded. To implement this, we will keep a fixed capacity queue (with capacity $P + 1$), in which the \textit{i}-th element has a list of hashes seen for first time in block $current block - (P - i)$. Notice that the first element of the queue has the list of hashes that were seen for first time in block $current block - P$, meaning that those hashes will be decided in the current block. The last element of the queue has the list of hashes first seen at the current block. Algorithm ~\ref{alg:abci-hash-first-seen} illustrates this behavior.
-
-%\input{algorithms/alg-abci-hash-first-seen}
 
 \subsection{Front-running en \hashchain: el ataque del clarividente}
 En el contexto de las blockchains, un ataque de \textit{front-running}~\cite{frontrunning} refiere a una situación en donde

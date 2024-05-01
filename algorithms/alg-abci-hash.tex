@@ -48,15 +48,14 @@
             				\For{\texttt{e in elements}}
 								\Comment{Agregar solo elementos nuevos y válidos.}
              					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
-									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)
 									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\)
 									%\State \texttt{history[i]}.AddElement(e)
                     	 		\EndIf
                     	 	\EndFor
-                    	    \State \texttt{epochHash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
+                    	    \State \texttt{epoch\_hash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
             				%\Comment{Hash epoch (elements and number).}
-                			\State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{epochHash}, PRIVATE\_KEY)}
-               			\State \Call{\<add>}{\texttt{epochProof}}
+                			\State \texttt{epoch\_proof} $\leftarrow$  \texttt{Sign(\texttt{epoch\_hash}, PRIVATE\_KEY)}
+               			\State \Call{\<add>}{\texttt{epoch\_proof}}
                		 \Else
 						\State \texttt{epoch} \(<- \, \texttt{i - 1}\)
 						\Comment{Guardar el número de la última época completa.}
@@ -84,6 +83,11 @@
                 \If {Hash(\texttt{original\_batch}) = $hash$}
 					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch}     
                 		\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}
+							\For{\texttt{e in original\_batch}}
+								\If {\<isValidElement>(\texttt{e})}
+									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)
+								\EndIf
+							\EndFor
                 			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})
                 			\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})
 					\EndIf   
