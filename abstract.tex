@@ -6,24 +6,26 @@
   Un aspecto clave en la adopción de tecnologías \textit{blockchain} es el rendimiento,
   usualmente medido en términos de número de transacciones por segundo.
   %
-  En consecuencia, diversas técnicas que buscan mejorar la escalabilidad de las blockchains
+  En consecuencia, diversas técnicas que buscan mejorar el rendimiento de las blockchains
   están siendo estudiadas y desarrolladas.
   %
   Las blockchains actuales requieren algoritmos de consenso que garanticen que las
   transacciones, empaquetadas en bloques, estén totalmente ordenadas.
   %
   Dado que esta imposición de un orden total puede ser innecesaria para algunas aplicaciones,
-  un enfoque prometedor para mejorar la escalabilidad se basa en relajar esta exigencia.
+  un enfoque prometedor para mejorar el rendimiento se basa en relajar esta exigencia.
   %
 
-  Bajo esta idea subyacente nace \textit{Setchain}, un tipo de
-  datos concurrente que implementa conjuntos de solo crecimiento distribuídos 
+  Bajo esta idea subyacente nace \textit{Setchain}, una estructura de
+  datos concurrente que implementa conjuntos distribuídos que solo crecen
   (\textit{distributed grown-only sets}).
   %
-  \setchain
-  es tolerante a comportamientos bizantinos, y provee barreras o puntos de sincronización
+  \setchain provee barreras o puntos de sincronización
   (llamados épocas), que dotan a la estructura de un orden parcial.
-  %
+  Esto implica que las épocas en sí presentan un orden entre ellas,
+  pero que entre los elementos pertenecientes a una misma época no
+  se puede establecer un orden.
+
   De esta forma, relaja el requerimiento de orden total buscando lograr mayor
   rendimiento y escalabilidad.
   %
@@ -32,6 +34,8 @@
   de barreras ocasionales.
   
   %
+  A su vez, \setchain es tolerante a comportamientos bizantinos, lo que significa que
+  está preparado para que algunos de .
   
   Distintos algoritmos bizantinos distribuídos que implementan \setchain fueron
   propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
