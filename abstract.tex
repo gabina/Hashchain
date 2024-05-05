@@ -33,31 +33,42 @@
   en donde los elementos en la blockchain no necesitan estar ordenados, excepto a través
   de barreras ocasionales.
   
-  %
-  A su vez, \setchain es tolerante a comportamientos bizantinos, lo que significa que
-  está preparado para que algunos de .
+  % Setchain en sí no es tolerante a comportamientos bizantinos. Sus implementaciones lo son.
+  %A su vez, \setchain es tolerante a comportamientos bizantinos. Esto significa que
+  %tiene la capacidad de llegar a un consenso sobre los elementos y las épocas,
+  %aún si un cierto número de entidades participantes del sistema
+  %distribuído se comporten de manera arbitraria (distinta a la establecida por el protocolo
+  %de \setchain).
   
-  Distintos algoritmos bizantinos distribuídos que implementan \setchain fueron
-  propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
+  Distintos algoritmos distribuídos tolerantes a comportamientos bizantinos que
+  implementan \setchain fueron propuestos, pero no existía al momento ninguna
+  implementacion eficiente compatible con
   los requerimientos de una \textit{aplicación del mundo real}.
   
   %
   % What is the solution.
   %
   En el presente trabajo se propone una familia de implementaciones de \setchain 
-  de mundo real construidas sobre \textit{Tendermint}, una plataforma de
-  aplicación de blockchain.  
+  de mundo real y tolerantes a fallas bizantinas construidas sobre \textit{Tendermint}.
+  Tendermint es una plataforma madura de aplicación de blockchain usada en distintos
+  proyectos de blockchain, como Cosmos o Tezos. 
   % 
-  La mayor contribución es \textit{Haschain}, la cual explota el poder de compresión de las
+  
+  La familia de implementaciones que se presenta en este trabajo sigue un enfoque
+  incremental, proveyendo diversas aproximaciones a la solución final y más compleja;
+  consta de tres variantes.
+  Se comienza por la solución más básica de \setchain, llamada \vanilla.
+  \compresschain es una variante intermedia utilizando un algoritmo de compresión.
+  La mayor contribución es \hashchain, la cual explota el poder de compresión de las
   funciones hash para reducir la comunicación necesaria durante difusión y consenso,
   comunicando un hash de tamaño fijo en lugar de cientos o miles de elementos.
   %
   El precio a pagar es un algoritmo distribuído adicional para obtener el conjunto de
-  elementos desde un hash. Esto se realiza garantizando tolerancia a servidores bizantinos.
+  elementos desde un hash.
   %
-  En este trabajo se discute una implementación práctica de \hashchain construida enteramente
-  sobre Tendermint, una plataforma madura usada en distintos proyectos de blockchain, como
-  Cosmos o Tezos.
+
+  % En este trabajo se discute una implementación práctica de \hashchain construida enteramente
+  % sobre Tendermint, una plataforma madura
   % Ver qué se dice sobre las pruebas mas o menos formales que existen
 
 %%% Local Variables:
