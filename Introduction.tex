@@ -67,7 +67,7 @@ gobierno decentralizado, Web3, etc.
 %
 
 La blockchain es un \textit{objeto distribuído} que contiene las transacciones realizadas
-en nombre de los usuarios, empaquetadas en bloques, y toalmente
+en nombre de los usuarios, empaquetadas en bloques, y totalmente
 ordenadas~\cite{anta2018formalizing,anta2021principles}.
 %
 En entornos reales, el objeto blockchain es mantenido por múltiples servidores
@@ -76,23 +76,24 @@ ataques bizantinos.
 %
 
 Un aspecto clave en la adopción de las tecnologías blockchain es \emph{su rendmiento}, medido
-en términos del número de transacciones por segundo.
+en términos del número de transacciones añadidas por segundo.
 %
-Consecuentemente, diversas técnicas para mejorar la escalabilidad de las blockchains
-están siendo desarrolladas.
+Consecuentemente, diversas técnicas para mejorarlo están siendo desarrolladas.
 %
+
 Las blockchains actuales requieren de algoritmos de consenso que garanticen que las
 transacciones, empaquetadas en bloques, estén totalmente ordenadas.
 %
 Esta imposición de un orden total puede ser innecesario para algunas aplicaciones.
 
 %
-Un enfoque prometedor para mejorar la escalabilidad es \textit{Setchain}~\cite{Capretto.2022.Setchain},
+Un enfoque prometedor para escalar la cantidad de transacciones agregadas por segundo
+es \textit{Setchain}~\cite{Capretto.2022.Setchain},
 un tipo de datos concurrente que implementa conjuntos de solo crecimiento distribuídos,
-proveyendo barreras o puntos de sincronización (llamados épocas). A su vez,
-\textit{Setchain} es tolerante a comportamientos bizantinos.
+proveyendo barreras o puntos de sincronización (llamados épocas).
+% A su vez, \textit{Setchain} es tolerante a comportamientos bizantinos.
 %
-\setchain relaja el requerimiento de orden total y, por lo tanto, puede lograr mayor
+\setchain relaja el requerimiento de orden total y, por lo tanto, logra mayor
 rendimiento y escalabilidad.
 %
 Las \setchains se pueden usar para aquellas aplicaciones, como los registros digitales,
