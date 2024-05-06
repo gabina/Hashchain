@@ -126,8 +126,8 @@ obtenidos gracias al protocolo de consenso.
 
 %
 Las firmas digitales son una de las primitivas más poderosas de la criptografía.
-Son similares a las firmas de puño y letra, en el sentido de que apuntan a cumplir las mismas propiedades
-(pero, al ser firmas criptográficas, presentan garantías):
+Son similares a las firmas de puño y letra, en el sentido de que apuntan a cumplir las mismas propiedades.
+Sin embargo, al ser firmas criptográficas, presentan garantías:
 \begin{itemize}
   \item La firma solo puede ser utilizada por su dueño para firmar mensajes arbritarios.
   \item Cualquiera puede verificar la firma de un mensaje.
@@ -340,6 +340,8 @@ En la sección de datos de un bloque
 se agrupan y alojan una o más transacciones nuevas. Copias de cada transacción se hashean, los hashes luego
 se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un único hash: la raíz de un
 \textit{merkle tree}~\cite{merkle.tree}. 
+En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
+La raíz del merkle tree se aloja en el encabezado del bloque.
 
 \begin{figure}[h]
   \centering
@@ -347,10 +349,6 @@ se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un
   \caption{Versión simplificada de la blockchain}
   \label{fig:blockchain}
 \end{figure}
-
-
-En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
-La raíz del merkle tree se aloja en el encabezado del bloque.
 
 %
 Cada bloque además contiene el hash del encabezado del bloque anterior, encadenándolos.
@@ -377,31 +375,30 @@ que la contiene y todos los bloques siguientes~\cite{bitcoin}.
 
 \subsection{Setchain}~\label{sec:setchain}
 
-\setchain~\cite{Capretto.2022.Setchain} es un tipo de datos concurrente y distribuído que implementa
-conjuntos distribuídos de solo crecimiento, con barreras de sincronización (llamadas épocas), y tolerante
-a comportamientos bizantinos.
+\setchain~\cite{Capretto.2022.Setchain} es una estructura de datos concurrente y distribuída que implementa
+conjuntos distribuídos que solo crecen, con barreras de sincronización (llamadas épocas).
 %
+
 Las barreras imponen un orden entre elementos pertenecientes a diferentes épocas pero no entre elementos
 de la misma época.
 %
 Por lo tanto, \setchain relaja el requerimiento de orden total impuesto por las blockchains y, en consecuencia,
-puede lograr mayor rendimiento y escalabilidad.
+logra mayor rendimiento y escalabilidad.
 
 La idea básica de funcionamiento de la \setchain involucra tanto nodos clientes como servidores.
 Los clientes se comunican con algún nodo servidor (quien mantiene la \setchain) para solicitar añadir un nuevo
 elemento.
 A su vez, los procesos clientes pueden pedirle a los servidores que les retornen el estado actual de la \setchain.
 
-
 \subsubsection{La interfaz de Setchain}
-Sea \(U\) un conjunto de elementos que los procesos clientes pueden inyectar en la \setchain.
+Sea \(U\) el universo de elementos que los procesos clientes pueden inyectar en la \setchain.
 %
 Sea \<isValidElement> una función que los nodos pueden usar para validar elementos en \(U\)
 localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos para los cuales
 $\<isValidElement>(e)$ retorne verdadero.
 %
-Luego, una \setchain es una estructura de datos distribuída donde una colleción de nodos servidores
-mantienen:
+Luego, una \setchain se define como una estructura de datos distribuída donde cada de nodo servidor
+(correcto) mantiene:
 \begin{itemize}
   \item un conjunto $\THESET \subseteq U$ de elementos agregados;
   \item un número natural $\EPOCH \in \mathds{N}$;
@@ -415,15 +412,13 @@ mantienen:
 %La operación \<add> agrega un elemento, mientras que la operación \<get> retorna la terna (\THESET,\HISTORY,\EPOCH) mantenida
 % por el nodo.
 
-% %
-
-%Se usará notación de punto para invocar estas operaciones. Sea $v$ un nodo servidor, y $e$ un elemento:
 %se notará $v.\<add>(e)$ para solicitarle añadir el elemento $e$ al nodo $v$, y $v.\<get>$ para pedirle al nodo $v$
 %que retorne la terna en cuestión.
 
-Cada nodo servidor $v$ soporta dos operaciones, disponibles para todos los procesos clientes:
+Cada nodo servidor $v$ soporta dos operaciones, \<add> y \<get>, disponibles para todos los procesos clientes.
+Se usa notación de punto para invocar estas operaciones. De este modo:
 \begin{itemize}
-  \item $v.\<add>(e)$: solicita agregar el elemento $e$ a $\THESET$.
+  \item $v.\<add>(e)$: solicita agregar el elemento $e$ a $\THESET$ (a la versión de $\THESET$ que $v$ mantiene).
   \item $v.\<get>()$: retorna los valores de $\THESET $, $\HISTORY $,
     y $\EPOCH $, según $v$.
 \end{itemize}
@@ -433,8 +428,17 @@ deciden cuáles elementos añadidos son estampados con la época actual, y se in
 %
 Estos eventos se llaman \textit{incrementos de época}.
 %
-Se asume que las barreras de sincronización se lanzan periódicamente.
+En este trabajo se asume que las barreras de sincronización se lanzan periódicamente.
 %
+Sin embargo, en la interfaz original de \setchain, un nodo servidor $v$ también provee una operación para
+forzar un incremento de época, $v.\<epocinc>(h)$.
+%
+Debe cumplirse $h = \EPOCH + 1$.
+
+Informalmente, un proceso cliente $p$ invoca $v.\<get>()$ sobre un servidor $v$ para obtener $(S, H, h)$,
+el punto de vista de $v$ sobre $v.\THESET$, y $v.\HISTORY$ con dominio $[1...h]$.
+%
+El proceso $p$ invoca $v.\<add>(e)$ para insertar un nuevo elemento $e$ en $v.\THESET$.
 
 Un flujo de trabajo típico desde el punto de vista del cliente es como sigue: un cliente invoca $\<add>(e)$ en
 uno (o más) servidores para insertar un nuevo elemento válido $e$ en la \setchain.
