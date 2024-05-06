@@ -124,12 +124,13 @@ Tendermint~\cite{Buchman.2018.Tendermint} es una plataforma novedoza y popular p
 replicación segura y consistente de aplicaciones en distintas máquinas.
 %
 \textit{Segura} en este contexto significa que Tendermint funciona incluso si a lo sumo
-un tercio de las máquinas fallan de formas arbitrarias.
+un tercio de las máquinas falla de formas arbitrarias, brindando información conflictiva
+a las diferentes partes del sistema.
 %
 \textit{Consistente} refiere a que toda máquina correcta verá el mismo lote de
 transacciones y computará el mismo estado.
 %
-Tendermint es un abordaje robusto de las bitácoras distribuídas implementado
+Tendermint es un abordaje robusto de las blockchains implementado
 en \emph{Go}~\cite{donovan15go}, que presenta una separación clara entre las
 capas de bajo nivel de la blockchain,
 tales como un protocolo \textit{gossip} y un algoritmo de consenso, y los conceptos de alto
@@ -137,7 +138,7 @@ nivel relacionados a la estructura de datos que la blockchain mantiene\footnote{
 de la realización de las implementaciones y la evaluación empírica de las mismas,
 Tendermint 0.34 era la versión de la plataforma vigente y más utilizada. Sin embargo,
 actualmente, la versión más utilizada es un \textit{fork} de Tendermint llamado \textit{CometBFT}~\cite{cometbft.repo}.
-El desarrollo planteado a lo largo de este trabajo podría en principio portarse a la nueva versión.}.
+El desarrollo planteado a lo largo de este trabajo podría en principio portarse a la nueva versión sin demasiado esfuerzo.}.
 
 %
 % What is the solution.
@@ -147,10 +148,15 @@ La familia de implementaciones que se presenta en este trabajo
 sigue un enfoque incremental, proveyendo diversas aproximaciones
 a la solución final y más compleja; consta de tres variantes:
 \begin{itemize}
-  \item \textit{\vanilla}, una primera solución básica de \setchain,
-  \item \textit{Compresschain}, una variante intermedia utilizando un algoritmo de compresión,
-  \item \textit{Hashchain}, la contribución principal de este trabajo, una solución 
-  a \setchain usando funciones hash.
+  \item \textit{\vanilla}, una primera solución básica de \setchain, en donde cada operación
+  \<add> se traduce como una transacción en la blockchain.
+  \item \textit{\compresschain}, una variante intermedia que usa un algoritmo de compresión,
+  en la cual muchos elementos pertenecientes a una misma época de la \setchain se insertan
+  comprimidos en la blockchain como una única transacción.
+  \item \textit{\hashchain}, la contribución principal de este trabajo, una solución 
+  a \setchain usando funciones hash. Sigue una lógica similar a \compresschain,
+  en donde las transacciones en la blockchain son
+  hashes de lotes de elementos de la \setchain pertenecientes a una misma época.
 \end{itemize}
 %
 Hashchain explota el poder de compresión de las funciones hash para reducir la
