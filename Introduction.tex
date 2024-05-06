@@ -151,12 +151,13 @@ a la solución final y más compleja; consta de tres variantes:
   \item \textit{\vanilla}, una primera solución básica de \setchain, en donde cada operación
   \<add> se traduce como una transacción en la blockchain.
   \item \textit{\compresschain}, una variante intermedia que usa un algoritmo de compresión,
-  en la cual muchos elementos pertenecientes a una misma época de la \setchain se insertan
-  comprimidos en la blockchain como una única transacción.
+  en la cual los elementos enviados por los clientes son agrupados en un lote, que se comprime antes
+  de transmitirse como una transacción. Luego, las transacciones en la blockchain son
+  lotes comprimidos de elementos.
   \item \textit{\hashchain}, la contribución principal de este trabajo, una solución 
   a \setchain usando funciones hash. Sigue una lógica similar a \compresschain,
-  en donde las transacciones en la blockchain son
-  hashes de lotes de elementos de la \setchain pertenecientes a una misma época.
+  en donde los elementos se agrupan y se les aplica una función hash antes de ser transmitidos
+  como una única transacción de tamaño fijo.
 \end{itemize}
 %
 Hashchain explota el poder de compresión de las funciones hash para reducir la
