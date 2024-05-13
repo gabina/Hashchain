@@ -394,10 +394,10 @@ A su vez, los procesos clientes pueden pedirle a los servidores que les retornen
 Sea \(U\) el universo de elementos que los procesos clientes pueden inyectar en la \setchain.
 %
 Sea \<isValidElement> una función que los nodos pueden usar para validar elementos en \(U\)
-localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos para los cuales
+localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
 $\<isValidElement>(e)$ retorne verdadero.
 %
-Luego, una \setchain se define como una estructura de datos distribuída donde cada de nodo servidor
+Luego, una \setchain se define como una estructura de datos distribuída en donde cada nodo servidor
 (correcto) mantiene:
 \begin{itemize}
   \item un conjunto $\THESET \subseteq U$ de elementos agregados;
@@ -406,6 +406,12 @@ Luego, una \setchain se define como una estructura de datos distribuída donde c
   de $U$.} que describe los conjuntos de elementos que fueron estampados con un número de época.
 \end{itemize}
 
+Si bien $\HISTORY $ está definido formalmente como una función, también se utilizará notación de conjuntos sobre dicho símbolo.
+Es decir, utilizaremos $e \in \HISTORY$ para referirnos a que existe algún $i$ en el dominio de $\HISTORY$ para el cual
+$e \in \HISTORY(i)$.
+%Si bien $\HISTORY $ está definido formalmente como una función que, para cada número de época, devuelve el conjunto de elementos
+%asociados a dicha época, se hará cierto abuso de notación. 
+Inicialmente, tanto $\THESET $ como $\HISTORY $ son vacíos y $\EPOCH = 0$ en todo servidor correcto. 
 %
 %Los nodos servidores soportan dos operaciones: \<add> y \<get>.
 %
@@ -416,11 +422,12 @@ Luego, una \setchain se define como una estructura de datos distribuída donde c
 %que retorne la terna en cuestión.
 
 Cada nodo servidor $v$ soporta dos operaciones, \<add> y \<get>, disponibles para todos los procesos clientes.
-Se usa notación de punto para invocar estas operaciones. De este modo:
+Se usa notación de punto para invocar estas operaciones, así como también para hacer referencia a las versiones
+de $\THESET$, $\EPOCH$ y $\HISTORY$ que dicho servidor mantiene. De este modo:
 \begin{itemize}
-  \item $v.\<add>(e)$: solicita agregar el elemento $e$ a $\THESET$ (a la versión de $\THESET$ que $v$ mantiene).
-  \item $v.\<get>()$: retorna los valores de $\THESET $, $\HISTORY $,
-    y $\EPOCH $, según $v$.
+  \item $v.\<add>(e)$: solicita agregar el elemento $e$ a $v.\THESET$ (a la versión de $\THESET$ que $v$ mantiene).
+  \item $v.\<get>()$: retorna los valores de $v.\THESET $, $v.\HISTORY $,
+    y $v.\EPOCH $.
 \end{itemize}
   
 Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
@@ -428,10 +435,11 @@ deciden cuáles elementos añadidos son estampados con la época actual, y se in
 %
 Estos eventos se llaman \textit{incrementos de época}.
 %
-En este trabajo se asume que las barreras de sincronización se lanzan periódicamente.
+En este trabajo se asume que las barreras de sincronización se lanzan periódicamente y, por lo tanto, que
+siempre existe un instante futuro en el cual un nuevo incremento de época ocurre.
 %
 Sin embargo, en la interfaz original de \setchain, un nodo servidor $v$ también provee una operación para
-forzar un incremento de época, $v.\<epocinc>(h)$.
+que los clientes puedan forzar un incremento de época, $v.\<epocinc>(h)$.
 %
 Debe cumplirse $h = \EPOCH + 1$.
 
@@ -469,8 +477,8 @@ de solo crecimiento.
   Luego, para cada $i\leq h, H(i) \subseteq S$.
 \end{property}
 %
-La segunda propiedad declara que todo elemento añadido a un servidor correcto es eventualmente
-retornado en todas las llamadas a \<get> futuras.
+La segunda propiedad declara que todo elemento añadido a un servidor correcto $v$ es eventualmente
+retornado en todas las llamadas futuras a $v$.\<get>.
 %
 \begin{property}[Add-Get-Local]\label{api:history->theset-local}
   Sea $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
@@ -478,19 +486,22 @@ retornado en todas las llamadas a \<get> futuras.
   Luego, eventualmente todas las invocaciones $(S,H,h)=v.\<get>()$ 
   satisfacen $e\in S$.
 \end{property}
-La siguiente propiedad establece que los elementos presentes es un servidor correcto son propagados
+La siguiente propiedad establece que los elementos presentes en un servidor correcto son propagados
 a todos los servidores correctos.
 
 \begin{property}[Get-Global]\label{api:history->theset}
-  Sean $v$ y $w$ dos servidores correctos, sea $e \in U$ y
-  $(S,H,h)=v.\<get>()$.
+  Sean $v$ y $w$ dos servidores correctos,
+  ${(S,H,h)=v.\<get>()}$ y $e \in U$.
   %
   Si $e \in S$, luego eventualmente todas las invocaciones
   $(S',H',h')=w.\<get>()$ satisfacen que $e \in S'$.
 \end{property}
 %
 
-La siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
+Como ya se mencionó anteriormente, a lo largo de este trabajo se asume que en cualquier momento
+existe un instante futuro en el cual ocurre el próximo incremento de época.
+Esta suposición es razonable ya que puede ser garantizada usando \textit{timeouts} en cualquier escenario práctico.
+Luego, la siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
 con un número de época.
 %
 \begin{property}[Eventual-Get]\label{api:theset->history}
@@ -500,35 +511,37 @@ con un número de época.
   $(S',H',h')=v.\<get>()$ satisfacen que $e \in H'$.
 \end{property}
 
-%
-Las tres propiedaes previas implican la siguiente propiedad.
-%
-\begin{property}[Get-After-Add]\label{api:get-after-add}
-  Sea $v.\<add>(e)$ una operación invocada en un servidor correcto $v$ con $e \in U$.
-  %
-  Luego, eventualmente todas las invocaciones $(S,H,h)=w.\<get>()$ en servidores correctos
-  $w$ satisfaccen que $e\in H$.
-\end{property}
-%
+% % No sé si vale la pena poner una propiedad que se infiere de las anteriores
+% Las tres propiedaes previas implican la siguiente propiedad.
+% %
+% \begin{property}[Get-After-Add]\label{api:get-after-add}
+%   Sea $v.\<add>(e)$ una operación invocada en un servidor correcto $v$ con $e \in U$.
+%   %
+%   Luego, eventualmente todas las invocaciones $(S,H,h)=w.\<get>()$ en servidores correctos
+%   $w$ satisfaccen que $e\in H$.
+% \end{property}
+% %
 
-La siguiente propiedad establece que un elemento puede estar en a lo sumo una época,
-y que ningún elemento puede estar en dos épocas diferentes incluso si los conjuntos historiales se
+La siguiente propiedad establece que un elemento puede estar en a lo sumo una época.
+Es más, ningún elemento puede estar en dos épocas diferentes, incluso si los conjuntos que
+definen las épocas se
 obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
 
 %
 \begin{property}[Unique Epoch]\label{api:local_unique_stamp}
-  Sean $v$ un servidor correcto,
-  $(S,H,h)=v.\<get>()$, y
-  $i,i'\leq{}h$ con $i\neq i'$.
+  Sea $v$ un servidor correcto,
+  $(S,H,h)=v.\<get>()$, e
+  ${i,i'\leq{}h}$ con ${i\neq i'}$.
   %
   Luego, $H(i)\cap{}H(i')=\emptyset$.
 \end{property}
 %
+
 La siguiente propiedad establece que los servidores están de acuerdo en el contenido
 de las épocas.
 %
 \begin{property}[Consistent Gets]\label{api:consistent-gets}
-  Sean $v,w$ servidores correctos, $(S,H,h)=v.\<get>()$ y
+  Sean $v$ y $w$ servidores correctos, $(S,H,h)=v.\<get>()$ y
   $(S',H',h')=w.\<get>()$, y sea $i\leq \min(h,h')$. Luego
   $H(i)=H'(i)$.
 \end{property}
@@ -543,7 +556,7 @@ de las épocas.
 % $\<theset>$ part of $\<get>$ obtained from two correct servers may not
 % be contained in one another.
 
-Finalmente, se requiere que todo elemento in el historia provenga del resultado de un cliente
+Finalmente, se requiere que todo elemento en $\HISTORY$ provenga del resultado de un cliente
 añadiendo un elemento.
 
 %
@@ -558,7 +571,9 @@ Propiedades~\ref{api:consistent-set}, \ref{api:local_unique_stamp},
 \ref{api:consistent-gets} y \ref{api:get->add} son propiedades de \textit{safety}.
 %
 Propiedades~\ref{api:history->theset-local}, \ref{api:history->theset},
-\ref{api:theset->history} y \ref{api:get-after-add} son propiedades de \textit{liveness}.
+\ref{api:theset->history} y
+%\ref{api:get-after-add}
+son propiedades de \textit{liveness}.
 
 % \begin{itemize}
 %   \item Cada elemento válido agregado en un servidor correcto eventualmente es retornado en
