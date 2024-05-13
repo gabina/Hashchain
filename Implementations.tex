@@ -215,7 +215,7 @@ Consecuentemente, es necesario diferenciar entre elementos regulares, y elemento
 La validez de los elementos regulares se chequea a través de la ya mencionada función
 \<isValidElement>.
 %
-Sin enmbargo, un elemento de prueba de época necesita ser validado de otra manera: verificando la firma.
+Sin embargo, un elemento de prueba de época necesita ser validado verificando la firma.
 %
 
 \subsubsection{Detalles de implementación}
@@ -351,12 +351,12 @@ entre elementos.
 
 \section{Segunda implementación: Compresschain}\label{sec:compresschain}
 
-Para acercanos a la especificación de \setchain, en esta sección proponemos
-empaquetar elementos en un lote y comprimir dicho lote
-previamente a su difusión.
+Para acercanos al objetivo de \setchain, en esta sección proponemos
+%empaquetar elementos en un lote y comprimir dicho lote
+%previamente a su difusión.
 %
-
-Se propone una implementación nueva, llamada \compresschain, que explora
+%Se propone
+una implementación nueva, llamada \compresschain, que explora
 la relajación de orden propuesta por \setchain, aún ejecutando el algoritmo de
 consenso de Tendermint por detrás.
 %
@@ -374,6 +374,12 @@ El lote de elementos se comprime antes de inyectarse en la red de Tendermint, de
 %
 Una transacción es, entonces, un lote de elementos comprimido.
 
+En este caso, cada una de las transacciones en un bloque de Tendermint define una
+nueva época de la \setchain, la cual contiene todos los elementos pertenecientes al lote
+comprimido.
+Por lo tanto, un mismo bloque de Tendermint involucrará diferentes épocas en la \setchain
+(una por cada transacción dentro del bloque).
+
 \subsection{Flujo de mensajes}
 Al igual que como se hizo para la versión \vanilla, se presentará el flujo de mensajes usual
 que se inicia cuando un cliente invoca \<add>(e).
@@ -381,13 +387,14 @@ En la Figura~\ref{fig:compresschain-flow} se muestran los distintos pasos de
 este flujo en el contexto de \compresschain.
 %
 
-El proceso comienza con el sistema en su estado inicial. Ahora, detrás de la API de \setchain
-se encuentra la nueva pieza intermedia \collector. Esto se muestra en la Figura ~\ref{subfig:compress-flow-a}.
+El sistema comienza en su estado inicial.
+Como se muestra en la Figura ~\ref{subfig:compress-flow-a}, detrás de la API de \setchain
+se encuentra la nueva pieza intermedia \collector.
 
 %
 
-El primer paso se da cuando el ciente envía un elemento $e$, mediante la invocación a \<add>(e) (ver
-Figura ~\ref{subfig:compress-flow-b}).
+El primer paso se da cuando el cliente envía un elemento $e$, mediante la invocación a \<add>(e), como se
+ilustra en la Figura ~\ref{subfig:compress-flow-b}.
 Desde el punto de vista del cliente, no hay diferencias en relación a la versión \vanilla, ya que
 la existencia del \collector es transparente para él.
 
@@ -395,14 +402,14 @@ la existencia del \collector es transparente para él.
 
 En la Figura ~\ref{subfig:compress-flow-c} se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
 en un lote.
-Un lote contiene potencialmente varios elementos enviados por uno o más clientes a una misma instancia
-corriendo el Tendermint Core, la aplicación, y el \collector.
-Una vez que el lote se encuentra listo, el \collector tiene una nueva transacción para inyectar en la red de Tendermint.
+Un lote contiene potencialmente varios elementos enviados por uno o más clientes a un mismo nodo servidor
+que corre el Tendermint Core, la aplicación, y el \collector.
+Cuando el lote se encuentra listo, el \collector tiene una nueva transacción para inyectar en la red de Tendermint.
 Esta transacción se presenta en las figuras con un \textit{símbolo de carpeta} gris.
 
 %
 
-A partir de acá el proceso es el mismo que el explicado en la sección anterior para \vanilla: la transacción
+Una vez que el lote fue comprimido, el flujo es el mismo que el explicado en la sección anterior para \vanilla: la transacción
 que representa al elemento $e$ (y a otros) se chequea contra \CheckTx para determinar si debe ser insertada
 en la mempool o descartada.
 %
@@ -451,7 +458,7 @@ a la transacción que contiene al elemento $e$.
 % terms of size per element broadcasted,  is used.
 %
 
-Como ya se mencionó, en lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
+En \compresschain, en lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
 primero se recolectan y se comprimen para ser enviados como una única transacción.
 Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo
 \textit{Recursive Length Prefix} (RLP)~\cite{ethereum} para codificar los elementos individualmente
@@ -487,7 +494,7 @@ Sin embargo, esto puede resolverse sencillamente gracias al uso de candados.
 % instead of being constant in the number of batches, as it is desired.
 
 %
-Para completar nuestra definición, se provee la definición del ABCI de Compresschain en el
+Para completar nuestra definición, se provee el pseudocódigo para la ABCI de Compresschain en el
 Algoritmo~\ref{alg:abci-brotli}.
 %
 Existen varias diferencias con respecto a la implementación previa de \setchain.
@@ -501,17 +508,15 @@ son lotes comprimidos de elementos.
 Más aún, para recuperar elementos dentro de las transacciones, se necesita primero descomprimir
 el lote y, una vez que se tiene el lote original, debe RLP-decodificarse para así obtener los elementos
 originales enviados por los clientes.
-
-Aquellos elementos son los que deben ser agregados a la \setchain. La función \textit{getElementsFromTransaction()}
+%
+Aquellos elementos son los que deben ser agregados a la \setchain. La función \texttt{getElementsFromTransaction()}
 muestra este comportamiento.
 
 En la definición de Compresschain, las transacciones de Tendermint pueden contener tanto elementos válidos
 como inválidos.
 %
-
 Se necesita definir un nuevo criterio para determinar cuándo una transacción (es decir, un lote de elementos
 comprimido) se considera válida.
-
 %
 La función \<isValidBatch>~(en el Algoritmo~\ref{alg:abci-brotli}) implementa este nuevo criterio, permitiendo
 a las transacciones ser consideradas válidas si al menos uno de sus elementos es válido.
@@ -520,7 +525,6 @@ La elección de este criterio está relacionado con el hecho de que alguien envi
 Los elementos pueden ser válidos al momento en que los clientes los envían, pero ser inválidos una vez que
 los bloques fueron consensuados.} a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
 ser añadidos a la \setchain.
-
 %
 Sin embargo, como se ilustra en el método \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
 mientras que los inválidos simplemente se descartan.
@@ -557,7 +561,7 @@ a una nueva época de la \setchain.
 %
 
 El uso de un algoritmo de compresión previo a la inyección de una nueva transacción es una apuesta para mejorar
-el rendimiento (cantidad de elementos por segundos que pueden ser añadidos a la \setchain).
+el rendimiento, medido en cantidad de elementos por segundos, que pueden ser añadidos a la \setchain.
 Este enfoque trabaja bajo la hipótesis
 de que hacer consenso sobre elementos agrupados de forma eficiente interpretados como unidad representa una
 mejora en comparación con el consenso usual, hecho sobre elementos individuales.
@@ -742,6 +746,7 @@ se pueden tener transacciones en la blockchain sin conocer los elementos de ést
 Aún más, una transacción puede terminar siendo parte de la blockchain sin que nadie
 la haya chequeado previamente, pero pasando el chequeo por el comportamiento optimista.
 %
+
 De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
 en la blockchain (fue consensuado sin que los nodos hayan chequeado realmente los elementos
 del lote).
