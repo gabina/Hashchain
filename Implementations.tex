@@ -4,7 +4,7 @@ En este capítulo se presenta una familia de implementaciones de \setchain de mu
 real construidas sobre Tendermint.
 %
 En particular, se exponen tres alternativas diferentes, comenzando con una
-solución inocente pero trivialmente correcta, y finalizando con un algoritmo
+solución simple pero trivialmente correcta, y finalizando con un algoritmo
 complejo que implementa \setchain utilizando funciones hash.
 %
 
@@ -29,7 +29,7 @@ Las implementaciones correctas de \setchain implementan dos métodos~(ver secci�
 para ambas.
 %
 Por su parte, Tendermint provee dos \textit{endpoints} RPC principales.
-Nótese que el cliente siempre se comunica con un nodo particular de la red.
+Nótese que el cliente siempre se comunica con un nodo particular de la red de servidores.
 \begin{itemize}
   \item \texttt{Tendermint.Broadcast} se utiliza para enviar transacciones.
   Cuando una transacción es enviada, se chequea si dicha transacción
@@ -49,8 +49,9 @@ Nótese que el cliente siempre se comunica con un nodo particular de la red.
 Por lo tanto, desde el punto de vista del cliente de la \setchain, solo existen dos
 métodos (\<add> y \<get>).
 %
-Sin embargo, hay dos métodos adicionales que se utilizan para comunicarse con la
-red de Tendermint subyacente (los ya mencionados \texttt{Tendermint.Broadcast} y
+Sin embargo, hay dos métodos adicionales que se utilizan internamente (es decir, desde
+el punto de vista de la programadora) para comunicarse
+con la red de Tendermint subyacente (los ya mencionados \texttt{Tendermint.Broadcast} y
 \texttt{Tendermint.Query}).
 %
 
@@ -72,28 +73,34 @@ blockchain ~(ver sección ~\ref{sec:tendermint}).
 utilizando Tendermint.
 %
 La característica principal que le otorga sencillez a esta solución es que
-un cliente invocando \<add>(e) se traduce en una nueva transacción de Tendermint en la red,
+un cliente invocando $v.$\<add>(e) sobre un servidor correcto $v$ se
+traduce en una nueva transacción de Tendermint en la red,
 que representa a ese y solo a ese elemento a añadir a la \setchain.
 %
 Que $e$ sea finalmente añadido a la \setchain dependerá de si la transacción asociada
 al mismo se incluye en un bloque que, a su vez, eventualmente se agrega a la blockchain
-subyacente de Tendermint. 
+subyacente de Tendermint.
+
+A su vez, otro aspecto fundamental de esta solución es que cada bloque de Tendermint
+define una única época de \setchain, a la cual pertenecen todos los elementos asociados
+a las transacciones en dicho bloque.
 
 \subsection{Flujo de mensajes}
 En la Figura~\ref{fig:vanilla-flow} se muestra el flujo usual de mensajes que se inicia
-cuando un cliente invoca \<add>(e).
+cuando un cliente invoca $v.$\<add>(e) sobre un servidor correcto $v$.
 %
 
-El proceso comienza con el sistema en su estado inicial (Figura (a)), a la espera de que algún cliente
+El sistema comienza en su estado inicial (Figura \ref{subfig:vanilla-flow-a}), a la espera de que algún cliente
 se conecte con esa instancia particular (una máquina conectada a la red) para agregar un elemento.
 El Tendermint Core expone sus puntos de entrada RPC, que serán utilizados por parte de la API de
-\setchain. Por su parte, la aplicación mantiene una instancia de la \setchain.
+\setchain. Por su parte, la aplicación es quien se encargará de acceder a la base de datos persistente que
+mantiene una instancia de la \setchain.
 %
 
-En la Figura (b) se observa el resultado de un cliente invocando \<add>(e): el cliente, mediante
+En la Figura \ref{subfig:vanilla-flow-b} se observa el resultado de un cliente invocando \<add>(e): el cliente, mediante
 la API de \setchain, envía un elemento $e$, y la API de \setchain, a su vez, se comunica con el
 punto de entrada del Tendermint Core para enviar una transacción $t_e$ que representa a $e$.
-Es importante notar que el cliente envía \textit{elementos}, pero en la red de Tendermint
+Si bien el cliente envía \textit{elementos}, en la red de Tendermint
 lo que circulan son \textit{transacciones}.
 %
 
@@ -101,14 +108,14 @@ Para determinar si la nueva transacción debe ser difundida en la red, Tendermin
 sea válida por medio de \CheckTx, y si lo es, entonces inserta la transacción en la mempool.
 En caso contrario, la descartará, el flujo de dicha transacción terminará, y el elemento $e$
 asociado a ella no será agregado a la \setchain.
-La petición \CheckTx se muestra en la Figura (c).
+La petición \CheckTx se muestra en la Figura \ref{subfig:vanilla-flow-c}.
 
 %
 Si la transacción $t_e$ llega a la mempool, luego de un tiempo, es esperable que sea añadida a un
 bloque de Tendermint, propuesto como siguiente bloque en la cadena, como parte del algoritmo de
 consenso.
 Una vez que dicho bloque obtiene todos los votos necesarios para ser considerado
-\textit{commited by the network}, comenzará una nueva instancia de consenso. En la Figura (d)
+\textit{commited by the network}, comenzará una nueva instancia de consenso. En la Figura \ref{subfig:vanilla-flow-d}
 se representa que el siguiente bloque fue consensuado por parte del Tendermint Core.
 
 %
@@ -123,19 +130,19 @@ puede ser persistido.
 %
 Si la transacción $t_e$ de Tendermint asociada a $e$ es parte de dicho bloque,
 entonces con seguridad, una de las llamadas a \DeliverTx tendrá como argumento a $t_e$.
-Esto se visualiza en la Figura (e).
+Esto se visualiza en la Figura \ref{subfig:vanilla-flow-e}.
 
 %
-El último paso en este flujo (Figura (f)) muestra que una nueva época se agregó a la \setchain,
+El último paso en este flujo (Figura \ref{subfig:vanilla-flow-f}) muestra que una nueva época se agregó a la \setchain,
 en donde uno de sus elementos es $e$.
 
 \begin{figure}
-  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/vanilla-flow-0.png}} 
-  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}}\\
-  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}}
-  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}}\\
-  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}}
-  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}}
+  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/vanilla-flow-0.png}\label{subfig:vanilla-flow-a}}
+  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}\label{subfig:vanilla-flow-b}}\\
+  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}\label{subfig:vanilla-flow-c}}
+  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}\label{subfig:vanilla-flow-d}}\\
+  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}\label{subfig:vanilla-flow-e}}
+  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}\label{subfig:vanilla-flow-f}}
   \caption{Flujo usual de mensajes para \vanilla}
   \label{fig:vanilla-flow}
 \end{figure}
@@ -157,9 +164,12 @@ sea correcto.
 % An extension to Setchain presented an optimistic client with the following
 % approach.
 %
+Se asume que una cota superior $f$ de servidores
+bizantinos es conocida y, por lo tanto, se requiere contactar a $f+1$ servidores.
 
 En este trabajo se utilizará la extensión a Setchain presentada como
-\textit{cliente optimista}~\cite{Capretto.2022.Setchain}. El enfoque se introduce a continuación.
+\textit{cliente optimista}~\cite{Capretto.2022.Setchain}, que usa un sistema de firmas
+criptográficas. El mecanismo se introduce a continuación.
 
 Los nodos correctos firman criptográficamente un hash del conjunto de elementos
 pertenecientes a una época, e insertan este hash como un elemento en la \setchain.
@@ -167,16 +177,15 @@ pertenecientes a una época, e insertan este hash como un elemento en la \setcha
 A esos hashes los llamamos \textit{elementos de prueba de época}.
 %
 Las pruebas de época en principio contienen: el número de época al cual pertenece
-la prueba, la clave pública del validador que firma, y la firma de los elementos 
+la prueba, la clave pública del validador que firma y la firma de los elementos 
 de la época dada (ordenados de una forma específica y conocida).
 %
-De esta manera, los clientes solo ejecutan una única petición $\<add>(e)$ a un
-determinado servidor, esperando que sea correcto. 
+De esta manera, los clientes solo ejecutan una única petición $v.\<add>(e)$ a un
+determinado servidor $v$, esperando que sea correcto. 
 %
 Luego de esperar cierto tiempo, los clientes pueden invocar  \<get> (también a un
 único nodo) y chequear si el elemento $e$ pertenece a alguna época y existen suficientes
-pruebas para dicha época\footnote{Se asume que una cota superior $f$ de número de servidores
-bizantinos es conocida y, por lo tanto, se requieren $f+1$ firmas.}. De este modo, se garantiza
+pruebas para dicha época. De este modo, se garantiza
 que al menos un servidor correcto la firmó.
 %
 
@@ -191,7 +200,7 @@ Las claves públicas de los validadores necesitan ser públicamente conocidas pa
 Si un elemento $e$ pertenece a una época que tiene suficientes pruebas, los clientes pueden
 concluír que la época es correcta y que $e$ fue éxitosamente insertado en la \setchain.
 %
-Nótese que, en caso de comunicarse con nodos correctos, solo se requieren una llamada a \<add> y
+En caso de comunicarse con nodos correctos, solo se requieren una llamada a \<add> y
 una llamada a \<get> para estar seguros de que el elemento fue añadido a la \setchain.
 %
 
@@ -214,8 +223,7 @@ Sin enmbargo, un elemento de prueba de época necesita ser validado de otra mane
 %como sistema de firmas.
 
 La implementación de los elementos de prueba de época se hace a través de la librería
-Golang criptográfica \textit{crypto} de Ethereum
-~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
+Golang criptográfica \textit{crypto} de Ethereum~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
 %
 Esta librería provee una función \texttt{Sign} que cacula una firma ECDSA.
 %
@@ -244,9 +252,9 @@ la implementación de la versión \vanilla.
 En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
 de \setchain.
 %
-Los clientes agregan elementos invocando (indirectamente) a
+Los clientes agregan elementos invocando indirectamente a
 \texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
-la \setchain invocando (también de forma indirecta) a \texttt{Tendermint.Query}.
+la \setchain invocando también de forma indirecta a \texttt{Tendermint.Query}.
 %
 
 Para dar una implementación completa de \setchain utilizando Tendermint, además se
@@ -258,23 +266,23 @@ deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
 \vanilla.
 %
-Solo se definen \CheckTx, \DeliverTx, \EndBlock, y \Query; el resto tiene implementaciones
-triviales.
+Solo se muestran las definiciones de \CheckTx, \DeliverTx, \EndBlock, y \Query;
+el resto tiene implementaciones triviales.
 
-En esta versión, chequear si una transacción es válida consiste simplemente en chequear
+Chequear si una transacción es válida consiste simplemente en chequear
 la validez del elemento, dado que las transacciones contienen un único elemento.
 %
 Puede parecer absurdo definir la función \texttt{getElementFromTransaction()}
-en este caso (dado que es la función identidad). Sin embargo, la decisión de dar
+en este caso, debido a que es la función identidad. Sin embargo, la decisión de dar
 la definición explícita se basa en enfatizar la diferencia conceptual entre una
-transacción de Tendermint, y los elementos a añadir en la \setchain.
+transacción de Tendermint y los elementos a añadir en la \setchain.
 %
 
-El Tendermint core envía peticiones \DeliverTx asíncronamente (pero en orden)
+El Tendermint Core envía peticiones \DeliverTx asíncronamente pero en orden
 una vez por cada transacción en el bloque.
 %
-Nótese que las transacciones ya fueron ordenadas en el consenso global por el protocolo
-de Temndermint cuando \DeliverTx se ejecuta.
+Cuando \DeliverTx se ejecuta, las transacciones ya fueron ordenadas en el consenso global por el protocolo
+de Tendermint.
 %
 Para este algoritmo, la única acción a realizar por parte de la ABCI cuando se recibe una
 transacción es añadir el elemento subyacente a la \setchain siempre y cuando el mismo
@@ -374,18 +382,18 @@ este flujo en el contexto de \compresschain.
 %
 
 El proceso comienza con el sistema en su estado inicial. Ahora, detrás de la API de \setchain
-se encuentra la nueva pieza intermedia \collector. Esto se muestra en la Figura (a).
+se encuentra la nueva pieza intermedia \collector. Esto se muestra en la Figura ~\ref{subfig:compress-flow-a}.
 
 %
 
 El primer paso se da cuando el ciente envía un elemento $e$, mediante la invocación a \<add>(e) (ver
-Figura (b)).
+Figura ~\ref{subfig:compress-flow-b}).
 Desde el punto de vista del cliente, no hay diferencias en relación a la versión \vanilla, ya que
 la existencia del \collector es transparente para él.
 
 %
 
-En la Figura (c) se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
+En la Figura ~\ref{subfig:compress-flow-c} se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
 en un lote.
 Un lote contiene potencialmente varios elementos enviados por uno o más clientes a una misma instancia
 corriendo el Tendermint Core, la aplicación, y el \collector.
@@ -406,7 +414,7 @@ la secuencia correspondiente de pedidos a la aplicación.
 %
 Una de las peticiones será \DeliverTx, entregando la transacción correspondiente al lote que contiene a $e$.
 %
-Esto se observa en las Figuras (d), (e) y (f).
+Esto se observa en las Figuras ~\ref{subfig:compress-flow-d}. ~\ref{subfig:compress-flow-e} y ~\ref{subfig:compress-flow-f}.
 
 %
 En el último paso de este flujo se agregan las nuevas épocas a la \setchain.
@@ -419,13 +427,13 @@ a la transacción que contiene al elemento $e$.
 
 
 \begin{figure}
-  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/compresschain-flow-0.png}}
-  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-1.png}}\\
-  \subfloat[El lote está listo y es difundido]{\includegraphics[width = 3.5in]{figures/compresschain-flow-2.png}}
-  \subfloat[El lote se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}}\\
-  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}}
-  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/compresschain-flow-5.png}}\\
-  \subfloat[Se agrega la nuevas épocas a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}} 
+  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/compresschain-flow-0.png}\label{subfig:compress-flow-a}}
+  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/compresschain-flow-1.png}\label{subfig:compress-flow-b}}\\
+  \subfloat[El lote está listo y es difundido]{\includegraphics[width = 3.5in]{figures/compresschain-flow-2.png}\label{subfig:compress-flow-c}}
+  \subfloat[El lote se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}\label{subfig:compress-flow-d}}\\
+  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}\label{subfig:compress-flow-e}}
+  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/compresschain-flow-5.png}\label{subfig:compress-flow-f}}\\
+  \subfloat[Se agrega la nuevas épocas a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}\label{subfig:compress-flow-g}} 
   \caption{Flujo usual de mensajes para compresschain}
   \label{fig:compresschain-flow}
 \end{figure}
@@ -668,24 +676,24 @@ en el proceso de inversión.
 \begin{figure}
   \centering
   %\subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/hash-reversal-0.png}}\\
-  \subfloat[La aplicación requiere la inversión de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-1.png}}\\
-  \subfloat[El \hcollector conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-2.png}}\\
-  \subfloat[El \hcollector no conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-3.png}}\\
-  \subfloat[Se anuncia a la red el conocimiento de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-4.png}}
+  \subfloat[La aplicación requiere la inversión de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-1.png}\label{subfig:hash-flow-a}}\\
+  \subfloat[El \hcollector conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-2.png}\label{subfig:hash-flow-b}}\\
+  \subfloat[El \hcollector no conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-3.png}\label{subfig:hash-flow-c}}\\
+  \subfloat[Se anuncia a la red el conocimiento de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-4.png}\label{subfig:hash-flow-d}}
   \caption{Flujo usual de mensajes para \vanilla}
   \label{fig:hash-inversion-flow}
 \end{figure}
 
 %
 En el momento en que la aplicación necesita invertir un hash, se comunica con el \hcollector
-para solicitárselo. Esto se observa en la Figura (a).
+para solicitárselo. Esto se observa en la Figura ~\ref{subfig:hash-flow-a}.
 %
 Si el \hcollector conoce el lote original del hash (por ejemplo, porque fue el \hcollector creador
 del mismo), entonces directamente devuelve los elementos asociados a él a la aplicación.
-Esto se representa en la Figura (b).
+Esto se representa en la Figura ~\ref{subfig:hash-flow-b}.
 %
 
-Por el contrario, en la Figura (c) se muestra el caso en que el \hcollector no posee el lote original,
+Por el contrario, en la Figura ~\ref{subfig:hash-flow-c} se muestra el caso en que el \hcollector no posee el lote original,
 por lo que debe pedírselo al \hcollector correspondiente. Gracias a la firma, es posible determinar
 quién es el \hcollector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
 futuras peticiones, y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
@@ -693,7 +701,7 @@ cómo se resuelve el proceso de inversión.
 
 %
 
-En la Figura (d) se muestra el último paso posible de esta comunicación: la aplicación
+En la Figura ~\ref{subfig:hash-flow-d} se muestra el último paso posible de esta comunicación: la aplicación
 anuncia a la red sobre el conocimiento de un nuevo hash. Esto ocurre solo cuando la aplicación
 efectivamente toma conocimiento de un nuevo hash, ya que anunciar más de una vez que se conoce un
 determinado hash generaría tráfico innecesario en la red. Por otro lado, solo se firma el hash si al
