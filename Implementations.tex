@@ -4,7 +4,7 @@ En este capítulo se presenta una familia de implementaciones de \setchain de mu
 real construidas sobre Tendermint.
 %
 En particular, se exponen tres alternativas diferentes, comenzando con una
-solución simple pero trivialmente correcta, y finalizando con un algoritmo
+solución simple pero trivialmente correcta y finalizando con un algoritmo
 complejo que implementa \setchain utilizando funciones hash.
 %
 
@@ -35,7 +35,7 @@ Nótese que el cliente siempre se comunica con un nodo particular de la red de s
   Cuando una transacción es enviada, se chequea si dicha transacción
   es válida contra la aplicación (mediante la llamada a \<CheckTx>), y en caso
   afirmativo, se añade
-  a la mempool, se difunde a los otros nodos, y eventualmente se incluye en
+  a la mempool, se difunde a los otros nodos y eventualmente se incluye en
   un bloque.
   \item \<abciquery> se utiliza para consultar el estado de la
   aplicación.
@@ -106,7 +106,7 @@ lo que circulan son \textit{transacciones}.
 
 Para determinar si la nueva transacción debe ser difundida en la red, Tendermint chequea que
 sea válida por medio de \CheckTx, y si lo es, entonces inserta la transacción en la mempool.
-En caso contrario, la descartará, el flujo de dicha transacción terminará, y el elemento $e$
+En caso contrario, la descartará, el flujo de dicha transacción terminará y el elemento $e$
 asociado a ella no será agregado a la \setchain.
 La petición \CheckTx se muestra en la Figura \ref{subfig:vanilla-flow-c}.
 
@@ -125,7 +125,7 @@ un nuevo bloque,
 una lista de llamadas a \DeliverTx por cada transacción agregada (en el orden en que fueron
 consensuadas dentro del bloque)\footnote{En esta implementación
 una \textit{transacción} agregada coincide con un \textit{elemento} agregado.},
-\EndBlock para indicar la finalización del bloque, y \Commit para señalizar que el nuevo estado
+\EndBlock para indicar la finalización del bloque y \Commit para señalizar que el nuevo estado
 puede ser persistido.
 %
 Si la transacción $t_e$ de Tendermint asociada a $e$ es parte de dicho bloque,
@@ -190,7 +190,7 @@ que al menos un servidor correcto la firmó.
 %
 
 Los clientes pueden verificar si las pruebas de época son válidas generando el hash de elementos
-en la época dada, y verificando (a través de la clave pública) si la firma de la prueba es válida
+en la época dada y verificando, a través de la clave pública, si la firma de la prueba es válida
 para el hash obtenido. Este proceso se corresponde con la verificación de firmas vista en la
 sección~\ref{subsec:signatures}.
 
@@ -205,12 +205,12 @@ una llamada a \<get> para estar seguros de que el elemento fue añadido a la \se
 %
 
 Las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
-un cliente, y elementos de prueba de época; significando que cada elemento de prueba de época
+un cliente y elementos de prueba de época; significando que cada elemento de prueba de época
 pertenece a su vez a una época. Sin embargo, los elementos de prueba de época no necesitan ser
 incluídos como elementos en el hash firmado que es parte de la prueba de época para una época
 dada.
 %
-Consecuentemente, es necesario diferenciar entre elementos regulares, y elementos de prueba de época.
+Consecuentemente, es necesario diferenciar entre elementos regulares y elementos de prueba de época.
 %
 La validez de los elementos regulares se chequea a través de la ya mencionada función
 \<isValidElement>.
@@ -229,7 +229,7 @@ Esta librería provee una función \texttt{Sign} que cacula una firma ECDSA.
 %
 La firma producida se encuentra en el formato $[R || S || V]$, donde $V$ es 0 o 1.
 %
-El valor de $V$ es usualmente llamado \textit{bit de recuperación}, y permite utilizar
+El valor de $V$ es usualmente llamado \textit{bit de recuperación} y permite utilizar
 la función \texttt{Ecrecover}, la cual dado un hash y una firma, retorna la clave pública
 (en formato descomprimido) que creó dicha firma.
 %
@@ -266,7 +266,7 @@ deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
 \vanilla.
 %
-Solo se muestran las definiciones de \CheckTx, \DeliverTx, \EndBlock, y \Query;
+Solo se muestran las definiciones de \CheckTx, \DeliverTx, \EndBlock y \Query;
 el resto tiene implementaciones triviales.
 
 Chequear si una transacción es válida consiste simplemente en chequear
@@ -307,7 +307,7 @@ y, por lo tanto, cada bloque de Tendermint define una época distitna de \setcha
 %
 
 Finalmente, cuando los clientes invocan \<get>, indirectamente inician una llamada
-a \<abciquery>, que retorna los valores de $\THESET $, $\HISTORY $, y $\EPOCH $, de acuerdo
+a \<abciquery>, que retorna los valores de $\THESET $, $\HISTORY $ y $\EPOCH $, de acuerdo
 a la definición de \setchain. 
 
 %
@@ -403,7 +403,7 @@ la existencia del \collector es transparente para él.
 En la Figura ~\ref{subfig:compress-flow-c} se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
 en un lote.
 Un lote contiene potencialmente varios elementos enviados por uno o más clientes a un mismo nodo servidor
-que corre el Tendermint Core, la aplicación, y el \collector.
+que corre el Tendermint Core, la aplicación y el \collector.
 Cuando el lote se encuentra listo, el \collector tiene una nueva transacción para inyectar en la red de Tendermint.
 Esta transacción se presenta en las figuras con un \textit{símbolo de carpeta} gris.
 
@@ -555,7 +555,7 @@ son difundidos dentro de la red de Tendermint como una única transacción.
 El algoritmo de consenso
 decide el orden de estas transacciones, ignorando por completo cuáles y cuántos elementos hay dentro de ellas.
 Si bien los elementos del cliente agrupados dentro de un lote naturalmente tienen un orden específico,
-este orden no se decide como parte del consenso, y por eso se ignora cuando los elementos son agregados
+este orden no se decide como parte del consenso y por eso se ignora cuando los elementos son agregados
 a una nueva época de la \setchain.
 
 %
@@ -570,17 +570,15 @@ mejora en comparación con el consenso usual, hecho sobre elementos individuales
 %
 Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
 funciones hash en lugar de compresión en Brotli.
-
-%Hashchain follows a similar idea introduced in Compresschain but employing hash
-%functions instead of Brotli compression.
 %
 Mientras que el poder de compresión de las funciones hash puede ser enorme, dado que estas funciones
-mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles. Esto
-significa que un método no trivial para recuperar el lote original de elementos debe proveerse.
+mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles.
+%
+Esto significa que debe proveerse un método no trivial para recuperar el lote original de elementos.
 
 % Esto capaz debería sacarlo porque no es claro.
-La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes,
-y una estrategia distribuída para invertir hashes y obtener los lotes originales.
+La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes
+y una estrategia distribuída de inversión de hashes para obtener los lotes originales de elementos.
 %
 % We shouldn't mention "consolidated hashes" before explaining it:
 %Therefore, we now have to maintain an inverse function for the consolidated
@@ -605,18 +603,15 @@ de la vida de un elemento en el contexto de \hashchain.
 
 Retomando la Figura ~\ref{fig:compresschain-flow} de la sección anterior, podemos pensar que el flujo de mensajes
 debería ser similar. El cliente se comunica con la API de \setchain, mientras que el \hcollector colecciona elementos
-hasta que el próximo lote esté listo para ser hasheado y enviado al Tendermint core.
+hasta que el próximo lote esté listo para ser hasheado y enviado al Tendermint Core.
 Una vez allí es sometido a
 \<CheckTx> para determinar si debe ser añadido a la mempool o descartado.
 
-%
 
-En \compresschain, para decidir si una transacción es válida, debe revertirse el proceso hecho a la misma para
-así obtener los elementos de cliente que la componen, y analizarlos de forma individual.
-
-%
-
-La primera pregunta que surge, cuando se piensa en la contraparte para \hashchain, es cómo se determina si una
+En \compresschain, para decidir si una transacción es válida, debe revertirse el proceso hecho a la misma.
+Es decir, descomprimir la transacción para
+así obtener los elementos de cliente que la componen y analizarlos de forma individual.
+Cuando se piensa en la contraparte para \hashchain, una de las primeras preguntas que surge es cómo se determina si una
 transacción (un hash) es válida para ser agregada a la mempool, siendo que no es trivial recuperar los
 elementos originales teniendo un hash.
 
@@ -625,12 +620,12 @@ elementos originales teniendo un hash.
 La misma pregunta surge luego,
 cuando después de consensuado el siguiente bloque llegan las peticiones de la ABCI.
 %
-\<DeliverTx> dará la indicación de agregar una nueva época a la \setchain, para lo cual también
+El evento \<DeliverTx> dará la indicación de agregar una nueva época a la \setchain, para lo cual también
 será necesario conocer los elementos originales con los cuales se formó el hash que está siendo entregado.
 
-Por lo tanto, dado que en este escenario, tanto \<CheckTx> como \<DeliverTx> reciben hashes como transacciones,
-el flujo de mensajes implicará resolver la obtención de elementos originales provenientes del hash, lo que llamaremos
-\textit{inversión de hashes}.
+Por lo tanto, dado que en el escenario propuesto por \hashchain, tanto \<CheckTx> como \<DeliverTx> reciben hashes como transacciones,
+el flujo de mensajes implicará resolver el problema de la obtención de elementos originales provenientes del hash.
+A este proceso lo llamaremos \textit{inversión de hashes}.
 
 
 \subsection{Algoritmo distribuído para la inversión de hashes}
@@ -644,17 +639,16 @@ Debido a la naturaleza irreversible de un hash, una máquina corriendo la \setch
 inmediatamente hashes para obtener su lote de elementos original.
 %
 La ausencia del lote original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
-en la transacción, y que \<DeliverTx> no pueda añadir elementos a la \setchain.
+en la transacción y que \<DeliverTx> no pueda añadir elementos a la \setchain.
 %
 En este punto, nuestro algoritmo distribuído para la inversión de hashes entra en juego.
 %
 
-La idea principal es comunicarnos con un nodo de Tendermint que \textit{conoce el hash}, es decir,
+La propuesta que se hace en este trabajo es comunicarse con un nodo de Tendermint que \textit{conoce el hash}, es decir,
 conoce los elementos del cual proviene.
 %
 Inicialmente, el único nodo que conoce un hash es el creador del mismo.
 %
-
 Para distribuír la información sobre quiénes conocen los datos de un hash, las transacciones contienen
 no solo el hash del lote, sino además una firma criptográfica.
 %
@@ -666,7 +660,7 @@ De esta forma, las transacciones se representan con una tupla $(h, s)$, donde $h
 el valor del hash y $s$ representa la firma obtenida al firmar $h$ con la clave privada
 del nodo que conoce el hash.
 %
-Gracias a la firma es posible comunicarse con el nodo que afirma conocer los datos, y obtener
+Gracias a la firma es posible comunicarse con el nodo que afirma conocer los datos y obtener
 el lote original (si el nodo se comporta apropiadamente).
 %
 El proceso de petición de inversión de hashes se corre de forma asíncrona para evitar potenciales
@@ -700,7 +694,7 @@ Esto se representa en la Figura ~\ref{subfig:hash-flow-b}.
 Por el contrario, en la Figura ~\ref{subfig:hash-flow-c} se muestra el caso en que el \hcollector no posee el lote original,
 por lo que debe pedírselo al \hcollector correspondiente. Gracias a la firma, es posible determinar
 quién es el \hcollector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
-futuras peticiones, y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
+futuras peticiones y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
 cómo se resuelve el proceso de inversión.
 
 %
@@ -767,7 +761,7 @@ sean considerados elementos a añadir a la \setchain.
 
 %
 Estamos únicamente interesados en hashes firmados por al menos \SPH
-nodos, y a dichos hashes los llamamos \textit{hashes consolidados}.
+nodos. A dichos hashes los llamamos \textit{hashes consolidados}.
 
 El número \SPH se define de manera tal que se garantiza que si un hash
 consolidó entonces al menos un nodo correcto conoce el lote original del cual proviene.
@@ -782,7 +776,7 @@ Los elementos de hashes consolidados son los candidatos a pertenecer a la \setch
 % validation against it, and
 %Moreover, if at least one element in the batch is valid, the node verifying the
 Cuando un nodo solicita la inversión de un hash, si al menos un elemento en el lote
-es válido, el nodo firma el hash (con sus propia clave privada), y difunde el hash junto
+es válido, el nodo firma el hash, con sus propia clave privada, y difunde el hash junto
 con su propia firma.
 
 %
@@ -868,7 +862,7 @@ El hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que pri
 
 %
 Por un lado, la estrategia de consolidación de época actual asigna la época tan pronto como
-el hash consolida, estampando los elementos en el hash $k$ con época $a$ primero, y luego
+el hash consolida, estampando los elementos en el hash $k$ con época $a$ primero y luego
 a los elementos en el hash $j$ con la época $a+1$.
 
 %
@@ -877,7 +871,7 @@ apenas éste consolida, porque el hash $j$ fue visto por primera vez antes que $
 %
 Dado que el hash $j$ consolida justo después que el hash $k$, los elementos del hash $j$ son
 estampados
-con la época $a$, y los elementos del hash $k$ son estampados con la época $a+1$. 
+con la época $a$ y los elementos del hash $k$, con la época $a+1$. 
 
 
 \begin{figure}
@@ -1019,10 +1013,10 @@ esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
 %
 
 Bajo el comportamiento FSEC, $h_0$ fue vista por primera vez antes, por lo que si logra las
-\SPH firmas dentro del período de gracia, consolidará, y los elementos
+\SPH firmas dentro del período de gracia, consolidará y los elementos
 en el hash serán estampados con una época menor a la de $t_1$.
 %
-Notemos que esto es completamente independiente del número de firmas que $h_1$ logre, y la velocidad
+Notemos que esto es completamente independiente del número de firmas que $h_1$ logre y la velocidad
 a la cual lo haga. $h_1$ podría incluso consolidar (llegar a su firma \SPH)
 antes que $h_0$.
 %
@@ -1082,7 +1076,7 @@ y todo aquel que haya votado por el resultado ganador recibirá el premio.
 Si $v$ es un validador que quiere ganar este juego haciendo trampa, podría votar tanto por A
 como por B justo antes del momento en el que se sabe que la compañía publicará el resultado ganador.
 %
-Dado que $v$ difundió dos transacciones (una votando por A, y otra votando por B) antes de que la
+Dado que $v$ difundió dos transacciones (una votando por A y otra votando por B) antes de que la
 transacción con el resultado ganador aparezca, todos los validadores reserverán un número de época
 anterior al del resultado. Después de esto, $v$ no revertirá el hash asociado con estas transacciones
 hasta que esté seguro de cuál es el resultado ganador (que efectivamente será añadido a la \hashchain).
