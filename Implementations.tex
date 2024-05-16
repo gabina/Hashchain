@@ -714,7 +714,6 @@ funcionan a nivel nodo: aplicaicón y \hcollector comparten una misma clave.
 
 Después de dejar el \hcollector, se espera que los hashes sean chequeados contra \<CheckTx>
 para, o bien ser añadidos a la mempool, o bien ser descartados.
-
 %
 Para determinar la validez de un hash se necesita chequear los elementos en él. Similar a
 \compresschain, los hashes son considerados válidos si al menos un elemento
@@ -735,18 +734,14 @@ La naturaleza optimista de Hashchain tiene consecuencia notables.
 Como el comportamiento por defecto de  \<CheckTx> es retornar \texttt{True},
 se pueden tener transacciones en la blockchain sin conocer los elementos de éstas
 (solo conociendo los hashes).
-
 %
 Aún más, una transacción puede terminar siendo parte de la blockchain sin que nadie
 la haya chequeado previamente, pero pasando el chequeo por el comportamiento optimista.
 %
-
 De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
-en la blockchain (fue consensuado sin que los nodos hayan chequeado realmente los elementos
-del lote).
-
+en la blockchain, ya que fue consensuado sin que los nodos hayan chequeado realmente los elementos
+del lote.
 %
-
 %Therefore, we need a way to extract the elements inside the transactions and
 %provide the user a uniform view, that of a Setchain.
 Por lo tanto, necesitamos definir un criterio para determinar cuándo es seguro
@@ -755,19 +750,21 @@ que los elementos en un hash que está en la blockchain sean parte de la \setcha
 % the HashChain living in
 % Tendermint, and the \setchain we want to build.
 %
-Para lograr eso, se define un número natural \SPH que establece
+Se define un número natural \SPH que establece
 el número de firmas que un hash tiene que tener para que los elementos del lote asociado a él
 sean considerados elementos a añadir a la \setchain.
-
 %
 Estamos únicamente interesados en hashes firmados por al menos \SPH
 nodos. A dichos hashes los llamamos \textit{hashes consolidados}.
 
 El número \SPH se define de manera tal que se garantiza que si un hash
 consolidó entonces al menos un nodo correcto conoce el lote original del cual proviene.
-
 %
 Los elementos de hashes consolidados son los candidatos a pertenecer a la \setchain.
+%
+Existen casos en los que algunos de dichos elementos pueden no ser añadidos a la \setchain,
+por ejemplo, si no son elementos nuevos.
+Es decir, si esos elementos ya fueron estampados con un número de época.
 
 %Following the same criteria as in Compresschain, we consider a transaction to
 %be valid if we can get the data and validate at least one of its elements.
@@ -776,16 +773,15 @@ Los elementos de hashes consolidados son los candidatos a pertenecer a la \setch
 % validation against it, and
 %Moreover, if at least one element in the batch is valid, the node verifying the
 Cuando un nodo solicita la inversión de un hash, si al menos un elemento en el lote
-es válido, el nodo firma el hash, con sus propia clave privada, y difunde el hash junto
+es válido, el nodo firma el hash con sus propia clave privada y difunde el hash junto
 con su propia firma.
-
 %
 Al difundir el hash y su firma, el nodo anuncia a la red que conoce el lote detrás de ese hash.
 %
 De esta forma, los lotes válidos eventualmente consolidarán, significando que sus elementos
 serán añadidos a la \setchain.
 
-Para que esto funcione, se necesita mantener un registro de cuántas firmas tiene un hash,
+Para que el algoritmo mencionado funcione, se necesita mantener un registro de cuántas firmas tiene un hash,
 así como también un mapeo de hashes a lotes.
 %
 Durante la ejecución de \<DeliverTx> se chequea la validez de la firma.
@@ -816,10 +812,9 @@ es actualizado con el nuevo descubrimiento.
 
 \subsection{Consolidación de épocas}\label{subsubsec:consolidation}
 
-En esta implementación las épocas se definen por todos los elementos en una transacción
+En esta implementación las épocas están definidas por todos los elementos en una misma transacción
 (es decir, un hash), similar
 a la implementación de \compresschain.
-
 %
 En otras palabras, los elementos que provienen del mismo hash consolidado pertenecen a la
 misma época.
@@ -835,8 +830,7 @@ misma época.
 
 %
 
-En este trabajo se presentan dos alternativas para asignar un número de época a un hash consolidado.
-
+Se presentan dos alternativas para asignar un número de época a un hash consolidado.
 %
 La primera se llama \textit{Consolidación de época actual} (CEC), que significa que 
 una vez que un hash consolida, todos sus elementos subyacentes son añadidos a la época actual
@@ -852,19 +846,17 @@ por lo tanto ambas estrategias pueden determinar cuál hash ocurrió o consolid�
 todos los nodos correctos estarán de acuerdo en eso.
 
 %
-
-En la Figura~\ref{fig:consolidation_epoch} se muestra un ejemplo de estas dos estrategias para asignar
+Para ver claramente la diferencia entre estas dos alternativas se presenta un ejemplo.
+%
+En la Figura~\ref{fig:consolidation_epoch} se ilustran estas dos estrategias para asignar
 un número de época a un hash que consolidó cuando \SPH es 3.
-
 %
 El hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que primero consolida
 (es decir, el primero en obtener su tercera firma).
-
 %
 Por un lado, la estrategia de consolidación de época actual asigna la época tan pronto como
 el hash consolida, estampando los elementos en el hash $k$ con época $a$ primero y luego
 a los elementos en el hash $j$ con la época $a+1$.
-
 %
 Por el otro lado, la consolidación de época de primera vista no asigna la época al hash $k$
 apenas éste consolida, porque el hash $j$ fue visto por primera vez antes que $k$.
@@ -894,16 +886,15 @@ antes que el hash $k$, una vez consolidados, los elementos provenientes del hash
 serían estampados con la época $E$, mientras que los elementos del hash $k$ serían estampados
 con una época $F$ \textgreater \ $E$.
 %
-
-Sea $j$ un hash que fue visto por primera vez en un momento tal que, una vez consolidado,
-se le asignaría la época $E$.
+Ahora bien, 
+%Sea $j$ un hash que fue visto por primera vez en un momento tal que, una vez consolidado,
+%se le asignaría la época $E$.
 %
-Si el hash $j$ nunca logra obtener las \SPH firmas para
-consolidar, un hash $k$ más nuevo (es decir, un hash que fue visto por primera vez
+si el hash $j$ nunca lograse obtener las \SPH firmas para
+consolidar, el hash $k$ (que es \textit{más nuevo} porque fue visto por primera vez
 después de $j$) no podría consolidar, dado que sus elementos subyacentes no podrían ser
 estampados con una época $F$ \textgreater \ $E$, si la época $E$ no fue definida aún.
 %
-
 En la Figura~\ref{fig:grace_period} se muestra un ejemplo de lo mencionado. Los hashes
 $k$ y $l$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o sea rechazada.
 
@@ -916,7 +907,7 @@ $k$ y $l$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o
 
 %
 Se concluye entonces que un período de gracia es necesario para garantizar la evolución
-éxitosa de la \hashchain. 
+exitosa de la \hashchain. 
 %
 Vale la pena notar que el aspecto crucial en la consolidación de FSEC radica en la ocurrencia
 de las \SPH firmas dentro de una ventana equivalente a la duración
@@ -956,7 +947,7 @@ y ~\ref{alg:abci-hash2}.
 Es importante notar que en el algoritmo el método \<Query> inicia la construcción de \<history>, además de
 la difusión de pruebas de época.
 %
-Aunque este enfoque es empleado para claridad, un nodo que recibe consultas
+Aunque este enfoque es empleado por su claridad, un nodo que recibe consultas
 no muy frecuentemente podría experimentar retrasos en la generación de pruebas de época.
 %
 Para evitar esto, el proceso de construcción de \<history> y las pruebas de época podrían ser ejecutadas
