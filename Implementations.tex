@@ -578,7 +578,7 @@ Esto significa que debe proveerse un método no trivial para recuperar el lote o
 
 % Esto capaz debería sacarlo porque no es claro.
 La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes
-y una estrategia distribuída de inversión de hashes para obtener los lotes originales de elementos.
+y una estrategia distribuida de inversión de hashes para obtener los lotes originales de elementos.
 %
 % We shouldn't mention "consolidated hashes" before explaining it:
 %Therefore, we now have to maintain an inverse function for the consolidated
@@ -628,7 +628,7 @@ el flujo de mensajes implicará resolver el problema de la obtención de element
 A este proceso lo llamaremos \textit{inversión de hashes}.
 
 
-\subsection{Algoritmo distribuído para la inversión de hashes}
+\subsection{Algoritmo distribuido para la inversión de hashes}
 
 %Como ya se mencionón, el \textit{hash collector} adopta un concepto similar al \textit{compression collector}
 %de Compresschain. Sin embargo, la definición de la ABCI para Hashchain es considerablemente más compleja.
@@ -641,7 +641,7 @@ inmediatamente hashes para obtener su lote de elementos original.
 La ausencia del lote original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
 en la transacción y que \<DeliverTx> no pueda añadir elementos a la \setchain.
 %
-En este punto, nuestro algoritmo distribuído para la inversión de hashes entra en juego.
+En este punto, nuestro algoritmo distribuido para la inversión de hashes entra en juego.
 %
 
 La propuesta que se hace en este trabajo es comunicarse con un nodo de Tendermint que \textit{conoce el hash}, es decir,
@@ -1096,8 +1096,8 @@ Aunque reduzca el tráfico de la red (haciendo consenso sobre transacciones pequ
 y de tamaño fijo), el uso de funciones hash requiere una forma de
 invertirlos para así obtener los elementos originales.
 Para resovler esto, se diseñó
-un algoritmo distribuído, tolerante a fallas bizantinas, que trabaja como un objeto
-distribuído de resolución de hashes.
+un algoritmo distribuido, tolerante a fallas bizantinas, que trabaja como un objeto
+distribuido de resolución de hashes.
 
 
 % While reducing network traffic, the use of hash functions requires a way to

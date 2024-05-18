@@ -25,14 +25,14 @@ los que permiten el acceso a esos registros mediante internet; la potencia de la
 metáfora garantizando que continúe siendo un concepto de la navegación.
 %
 
-En Ciencias de la Computación, las \textit{bitácoras distribuídas} son un tipo de
+En Ciencias de la Computación, las \textit{bitácoras distribuidas} son un tipo de
 base de datos que se comparte
 alrededor de mútiples lugares, países o instituciones, y que típicamente es de
 acceso público. Los registros pueden ser guardados usando distintas estructuras,
 y solo pueden agregarse cuando los participantes logran un \textit{quorum}. En
-contraste con un sistema centralizado, las bitácoras distribuídas no requieren
+contraste con un sistema centralizado, las bitácoras distribuidas no requieren
 un administrador central y, en consecuencia, no tienen un punto de falla central.
-Un caso particular de bitácora distribuída, en donde los registros se empaquetan
+Un caso particular de bitácora distribuida, en donde los registros se empaquetan
 en forma de bloques, es la \textit{blockchain}. [A completar]
 %Las blockchains tomaron popularidad
 %con la implementación de Bitcoin, un sistema de pago electrónico decentralizado, 
@@ -66,7 +66,7 @@ el valor monetario alojado en DeFi estaba estimado en alrededor de \$100B, de ac
 gobierno decentralizado, Web3, etc.
 %
 
-La blockchain es un \textit{objeto distribuído} que contiene las transacciones realizadas
+La blockchain es un \textit{objeto distribuido} que contiene las transacciones realizadas
 en nombre de los usuarios, empaquetadas en bloques, y totalmente
 ordenadas~\cite{anta2018formalizing,anta2021principles}.
 %
@@ -89,7 +89,7 @@ Esta imposición de un orden total puede ser innecesario para algunas aplicacion
 %
 Un enfoque prometedor para escalar la cantidad de transacciones agregadas por segundo
 es \textit{Setchain}~\cite{Capretto.2022.Setchain},
-un tipo de datos concurrente que implementa conjuntos de solo crecimiento distribuídos,
+un tipo de datos concurrente que implementa conjuntos de solo crecimiento distribuidos,
 proveyendo barreras o puntos de sincronización (llamados épocas).
 % A su vez, \textit{Setchain} es tolerante a comportamientos bizantinos.
 %
@@ -102,13 +102,13 @@ de barreras ocasionales.
 
 %
 
-Distintos algoritmos bizantinos distribuídos que implementan \setchain fueron
+Distintos algoritmos bizantinos distribuidos que implementan \setchain fueron
 propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
 los requerimientos de una aplicación del mundo real.
 Es decir, una aplicación capaz de soportar un \textit{deployment} con miles de nodos\footnote{Si bien
 es difícil saber con exactitud cuántos nodos existen en la red de Blockcahin o Ethereum, se estima
 que este número varía entre aproximadamente 10000 y 50000 nodos.}
-distribuídos geográficamente en todos los continentes, con clientes enviando peticiones para
+distribuidos geográficamente en todos los continentes, con clientes enviando peticiones para
 añadir nuevas transacciones a los servidores constantemente.
 
 \section{Contribuciones}
@@ -148,8 +148,8 @@ La familia de implementaciones que se presenta en este trabajo
 sigue un enfoque incremental, proveyendo diversas aproximaciones
 a la solución final y más compleja; consta de tres variantes:
 \begin{itemize}
-  \item \textit{\vanilla}, una primera solución básica de \setchain, en donde cada operación
-  \<add> se traduce como una transacción en la blockchain.
+  \item \textit{\vanilla}, una primera solución básica de \setchain, en donde cada elemento añadido
+  a la \setchain se traduce como una transacción en la blockchain.
   \item \textit{\compresschain}, una variante intermedia que usa un algoritmo de compresión,
   en la cual los elementos enviados por los clientes son agrupados en un lote, que se comprime antes
   de transmitirse como una transacción. Por lo tanto, las transacciones en la blockchain son
@@ -164,7 +164,7 @@ Hashchain explota el poder de compresión de las funciones hash para reducir la
 comunicación necesaria durante difusión y consenso, comunicando un hash de tamaño
 fijo en lugar de cientos o miles de elementos.
 %
-El precio a pagar es un algoritmo distribuído adicional para obtener el conjunto de
+El precio a pagar es un algoritmo distribuido adicional para obtener el conjunto de
 elementos desde un hash, garantizando tolerancia a servidores bizantinos.
 %
 

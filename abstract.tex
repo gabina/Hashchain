@@ -17,7 +17,7 @@
   %
 
   Bajo esta idea subyacente nace \textit{Setchain}, una estructura de
-  datos concurrente que implementa conjuntos distribuídos que solo crecen
+  datos concurrente que implementa conjuntos distribuidos que solo crecen
   (\textit{distributed grown-only sets}).
   %
   \setchain provee barreras o puntos de sincronización
@@ -37,10 +37,10 @@
   %A su vez, \setchain es tolerante a comportamientos bizantinos. Esto significa que
   %tiene la capacidad de llegar a un consenso sobre los elementos y las épocas,
   %aún si un cierto número de entidades participantes del sistema
-  %distribuído se comporten de manera arbitraria (distinta a la establecida por el protocolo
+  %distribuido se comporten de manera arbitraria (distinta a la establecida por el protocolo
   %de \setchain).
   
-  Distintos algoritmos distribuídos tolerantes a comportamientos bizantinos que
+  Distintos algoritmos distribuidos tolerantes a comportamientos bizantinos que
   implementan \setchain fueron propuestos, pero no existía al momento ninguna
   implementacion eficiente compatible con
   los requerimientos de una \textit{aplicación del mundo real}.
@@ -63,7 +63,7 @@
   funciones hash para reducir la comunicación necesaria durante difusión y consenso,
   comunicando un hash de tamaño fijo en lugar de cientos o miles de elementos.
   %
-  El precio a pagar es un algoritmo distribuído adicional para obtener el conjunto de
+  El precio a pagar es un algoritmo distribuido adicional para obtener el conjunto de
   elementos desde un hash.
   %
 

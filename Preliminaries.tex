@@ -1,20 +1,20 @@
-\section{Preliminares}\label{sec:prelim}
+\section{Objetivo del capítulo}\label{sec:prelim}
 
 %% Agregar algo de firmas criptográficas.
 
-En esta sección se presenta una breve descripción de los conceptos principales
+En este capítulo se presenta una breve descripción de los conceptos principales
 necesarios para la comprensión y discusión sobre las
 contribuciones de este trabajo.
 
-\subsection{Sistemas distribuídos: donde todo comenzó}
+\section{Sistemas distribuidos: donde todo comenzó}
 
-La computación distribuída nació a fines de la década de 1970 cuando investigadores y profesionales
-comenzaron a tener en cuenta las características intrínsecas de los sistemas distribuídos físicamente.
+La computación distribuida nació a fines de la década de 1970 cuando investigadores y profesionales
+comenzaron a tener en cuenta las características intrínsecas de los sistemas distribuidos físicamente.
 El campo luego emergió como un área de investigación especializada distinta al de redes, al de sistemas
 operativos, y al de computación paralela.~\cite{raynal.dist.systems}
 
-La computación distribuída surge cuando se tiene que resolver un problema en términos de entidades
-distribuídas (usualmente llamadas procesos, nodos, actores, agentes, pares, etc) en donde cada
+La computación distribuida surge cuando se tiene que resolver un problema en términos de entidades
+distribuidas (usualmente llamadas procesos, nodos, actores, agentes, pares, etc) en donde cada
 entidad tiene conocimiento parcial sobre los diversos parámetros involucrados en el problema que
 se tiene que resolver.
 Es usual, en este contexto, hacer hincapié en dos tipos distintos fundamentales de procesos:
@@ -23,7 +23,7 @@ Así, los servidores son aquellos que proveen determinado recurso o servicio, mi
 clientes son quienes los demandan.
 
 Es clave notar que el hecho de que las entidades (y la información que consume cada una de ellas)
-estén distribuídas no es una propiedad que se encuentre bajo el control de los programadores, sino 
+estén distribuidas no es una propiedad que se encuentre bajo el control de los programadores, sino 
 que es una imposición dada por las características propias del problema. En la 
 Figura ~\ref{fig:distributed-systems} se expresa esto mediante un punto de vista
 de la arquitectura del sistema, en donde cada par $(p_i, e_i)$ denota una entidad informática $p_i$ y su
@@ -32,13 +32,13 @@ entrada asociada $e_i$.
 \begin{figure}
   \centering
   \includegraphics[scale=0.25]{figures/distributed-systems.png}
-  \caption{Estructura básica de la computación distribuída}
+  \caption{Estructura básica de la computación distribuida}
   \label{fig:distributed-systems}
 \end{figure}
 
 
-Como se ilustra en la Figura ~\ref{fig:distributed-systems}, un sistema distribuído está hecho de una
-colección de unidades de computación (llamadas también unidades informáticas) distribuídas, cada una
+Como se ilustra en la Figura ~\ref{fig:distributed-systems}, un sistema distribuido está hecho de una
+colección de unidades de computación (llamadas también unidades informáticas) distribuidas, cada una
 abstraída a través de la noción de un proceso, interconectada a través de un medio de comunicación.
 Se asume que los procesos cooperan por un objetivo común, lo cual significa que intercambian
 información de una manera u otra. Es interesante notar que el hecho de que las entidades
@@ -67,8 +67,8 @@ Se profundizará en este punto en la siguiente sección. % ~\ref{subsubsec:conse
 
 % Fuente: Fault-Tolerant Message-Passing Distributed Systems An Algorithmic Approach
 
-\subsection{Algoritmos de consenso}\label{subsubsec:consensus}
-El problema de consenso es uno de los más celebrados en los sistemas de computación distribuída tolerante a fallas.
+\section{Algoritmos de consenso}\label{subsubsec:consensus}
+El problema de consenso es uno de los más celebrados en los sistemas de computación distribuida tolerante a fallas.
 %
 Abstrae diversos problemas en donde, de una manera u otra, los procesos deben ponerse de acuerdo.
 %
@@ -94,7 +94,7 @@ escenarios (cantidad de nodos, cantidad de nodos que pueden fallar, formas en la
 Si bien a lo largo de este trabajo no se entrará en detalles sobre ningún algoritmo de consenso en particular,
 es pertienente discutir conceptos y nomenclatura básica.
 
-\subsubsection{El problema de los generales bizantinos}
+\subsection{El problema de los generales bizantinos}
 
 Los sistemas de computación confiables deben lidiar con componentes que, por mal funcionamiento,
 dan información conflictiva a diferentes partes del sistema.
@@ -119,7 +119,7 @@ Si bien la teoría de
 BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
 debido al amplio éxito de tecnologías blockchains como Bitcoin~\cite{nakamoto06bitcoin} y Ethereum~\cite{ethereum}.
 
-\subsection{Firmas digitales}\label{subsec:signatures}
+\section{Firmas digitales}\label{subsec:signatures}
 Usualmente, los protocolos BFT hacen un uso muy fuerte de la criptografía, fundamentalmente para autenticar
 mensajes y decisiones que, a su vez, pueden ser utilizadas por otros para validar criptográficamente los resultados
 obtenidos gracias al protocolo de consenso.
@@ -175,7 +175,7 @@ Existen distintos estándares para los esquemas de firmas digitales, basados en 
 RSA-PSS~\cite{pss.rsa}) o en curvas elípticas (como ECDSA~\cite{ecdsa}).
 Sin embargo, no se entrará en detalles sobre ellos.
 
-\subsection{Los orígenes de la blockchain: Bitcoin}
+\section{Los orígenes de la blockchain: Bitcoin}
 % Fuente: Mastering Bitcoin. Programming the open blockchain.
 Las blockchains tomaron popularidad con la invención de Bitcoin en 2008, luego de la publicación
 de un artículo llamado \textit{Bitcoin: A Peer-to-Peer
@@ -185,10 +185,10 @@ Nakamoto combinó diversas invenciones previas como
 \textit{b-money}~\cite{b.money} y \textit{HashCash}~\cite{hashcash} para crear un sistema de dinero electrónico completamente
 descentralizado que, justamente, no necesita confiar en ninguna autoridad central para la emisión de monedas,
 o la ejecución de transacciones. 
-La innovación clave en Bitcoin fue el uso de un sistema de cómputo distribuído que lleva
+La innovación clave en Bitcoin fue el uso de un sistema de cómputo distribuido que lleva
 a cabo una elección global de las nuevas transacciones, permitiendo
 a la red descentralizada llegar a un consenso sobre el estado de las mismas. Estas transacciones
-se guardan empaquetadas como bloques en una bitácora distribuída pública conocida como blockchain.~\cite{mastering.bitcoin}
+se guardan empaquetadas como bloques en una bitácora distribuida pública conocida como blockchain.~\cite{mastering.bitcoin}
 %
 Se dice que estas transacciones se encuentran totalmente ordenadas porque es posible determinar para
 dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
@@ -205,7 +205,7 @@ contribuciones de este trabajo, es el primer caso de uso que da particular impor
 como tal, y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
 su funcionamiento, poniendo foco en el aspecto técnico del mismo (no monetario).
 
-\subsubsection{Cuentas y transacciones}
+\subsection{Cuentas y transacciones}
 
 Un usuario de Bitcoin está necesariamente lidiando con primitivas criptográficas.
 %
@@ -266,7 +266,7 @@ Ahora surgen algunas preguntas. ¿Quién está a cargo de elegir y ordenar las t
 %posesión de una clave que puede firmar una transacción es el único prerequisito para utilizar bitcoin,
 %poniendo el control enteramente en manos de cada usuario.
 
-% Bitcoin es un sistema distribuído de par a par. Como tal no tiene un servidor central o un punto de control.
+% Bitcoin es un sistema distribuido de par a par. Como tal no tiene un servidor central o un punto de control.
 % Los bitcoins son creados a través de un proceso llamado \textit{minería}, el cual involucra una competencia
 % para encontrar solución a un problema matemático mientras se procesan las transacciones de bitcoin.
 % Cualquier participante de la red (es decir, cualquiera quien use un dispositivo que corre la pila
@@ -289,17 +289,17 @@ Ahora surgen algunas preguntas. ¿Quién está a cargo de elegir y ordenar las t
 %inflación por "imprimir" más dinero más allá de ratio esperado. 
 
 %Detrás de escena, bitcoin es el nombre de un protocolo, una red de pares, y una innovación de
-%computación distribuída.
+%computación distribuida.
 % Bitcoin representa la culminación de décadas de investigación en criptografía
-% y sistemas distribuídos, e incluye 4 innovaciones claves funcionando juntas:
+% y sistemas distribuidos, e incluye 4 innovaciones claves funcionando juntas:
 % \begin{itemize}
 %   \item Una red de par a par descentralizada (el protocolo de bitcoin).
-%   \item Una bitácora distribuída pública de transacciones organizadas en bloques (la blockchain).
+%   \item Una bitácora distribuida pública de transacciones organizadas en bloques (la blockchain).
 %   \item Un conjunto de reglas para la validación independiente de transacciones y la emisión de monedas (reglas de consenso).
 %   \item Un mecanismo para lograr un consenso global descentralizado en la blockchain (algoritmo de prueba de trabajo).
 % \end{itemize}
 
- \subsubsection{Prueba de trabajo}
+ \subsection{Prueba de trabajo}
 
  Para acordar el ordenamiento de las transacciones, Bitcoin permite a cualquiera proponer una lista
  de transacciones a incluírse en la siguiente página de la bitácora.
@@ -323,7 +323,7 @@ tenga una representación binaria que comience con un número dado de ceros.
 Las personas que se dedican a resolver el rompecabezas y proponer los nuevos bloques de transacciones
 son denominadas \textit{mineros}.
 
-\subsubsection{La forma de la blockchain}
+\subsection{La forma de la blockchain}
 
 La blockchain es la bitácora pública de Bitcoin, un registro ordenado, y con fecha y hora de las transacciones.
 %
@@ -373,10 +373,10 @@ que la contiene y todos los bloques siguientes~\cite{bitcoin}.
 
 %\subsection{Blockchain actuales}
 
-\subsection{Setchain}~\label{sec:setchain}
+\section{Setchain}~\label{sec:setchain}
 
-\setchain~\cite{Capretto.2022.Setchain} es una estructura de datos concurrente y distribuída que implementa
-conjuntos distribuídos que solo crecen, con barreras de sincronización (llamadas épocas).
+\setchain~\cite{Capretto.2022.Setchain} es una estructura de datos concurrente y distribuida que implementa
+conjuntos distribuidos que solo crecen, con barreras de sincronización (llamadas épocas).
 %
 
 Las barreras imponen un orden entre elementos pertenecientes a diferentes épocas pero no entre elementos
@@ -390,14 +390,14 @@ Los clientes se comunican con algún nodo servidor (quien mantiene la \setchain)
 elemento.
 A su vez, los procesos clientes pueden pedirle a los servidores que les retornen el estado actual de la \setchain.
 
-\subsubsection{La interfaz de Setchain}
+\subsection{La interfaz de Setchain}
 Sea \(U\) el universo de elementos que los procesos clientes pueden inyectar en la \setchain.
 %
 Sea \<isValidElement> una función que los nodos pueden usar para validar elementos en \(U\)
 localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
 $\<isValidElement>(e)$ retorne verdadero.
 %
-Luego, una \setchain se define como una estructura de datos distribuída en donde cada nodo servidor
+Luego, una \setchain se define como una estructura de datos distribuida en donde cada nodo servidor
 (correcto) mantiene:
 \begin{itemize}
   \item un conjunto $\THESET \subseteq U$ de elementos agregados;
@@ -457,7 +457,7 @@ intentarán incluirlo en la nueva época.
 Después de esperar cierto tiempo, el cliente invoca \<get> en uno (o más) servidores para chequear que el
 elemento fue efectivamente agregado y estampado con una época.
 
-\subsubsection{Propiedades}\label{subsubsec:setchain-properties}
+\subsection{Propiedades}\label{subsubsec:setchain-properties}
 Para asegurar correctitud, las implementaciones de \setchain deben satisfacer ciertas propiedades que
 proveen garantías eventuales para elementos añadidos y garantía de consistencia entre los servidores
 correctos.
@@ -590,7 +590,7 @@ son propiedades de \textit{liveness}.
 % \end{itemize}
 % \gabina{Epoch proofs are part of the epoch but are not coming directly from the result of a client adding element.}
 
-\subsection{Tendermint}\label{sec:tendermint}
+\section{Tendermint}\label{sec:tendermint}
 Tendermint es un motor de replicación de máquinas de estado que tolera fallas bizantinas.
 %
 Fue uno de los primeros sistemas en adaptar protocolos de consenso clásicos tolerantes a fallas bizantinas
@@ -632,7 +632,7 @@ transacciones.
   \label{fig:replication}
 \end{figure}
 
-\subsubsection{Arquitectura de capas de Tendermint}\label{subsec:layers}
+\subsection{Arquitectura de capas de Tendermint}\label{subsec:layers}
 
 La Figura~\ref{fig:tendermint-architecture} presenta la estructura básica de Tendermint como un sistema de capas.
 La subcapa inferior se encarga de la comunicación entre pares, y provee comunicación para los principales
@@ -665,7 +665,7 @@ La interfaz de aplicación, llamada \textit{interfaz de aplicación de blockchai
 BlockChain Interface} (ABCI) en inglés.}, habilita que las transacciones
 sean procesadas en cualquier lenguaje de programación.
 
-\subsubsection{Application BlockChain Interface}\label{subsec:abci}
+\subsection{Application BlockChain Interface}\label{subsec:abci}
 La interfaz de aplicación de blockchain es la interfaz entre el Tendermint Core y la aplicación replicada.
 %
 Un nodo de Tendermint mantiene tres conexiones ABCI con la aplicación replicada.
@@ -716,6 +716,33 @@ La Figura~\ref{fig:abci_flow} muestra el flujo de mensajes mediante las conexion
   \caption{Flujo de mensajes mediante la ABCI.}
   \label{fig:abci_flow}
 \end{figure}
+
+\section{Modelo de computación}
+Habiendo presentado los conceptos preliminares básicos para este trabajo, se describe
+el modelo de computación que utilizaremos de aquí en adelante.
+
+El modelo involucra un sistema distribuido consistente de procesos, clientes y servidores, con una
+red de comunicación subyacente en donde cada proceso puede comunicarse con cualquiera de los otros.
+Los clientes representan a aquellos procesos cuyo objetivo es inyectar u obtener elementos en la \setchain,
+mientras que los servidores representan a los procesos que se encargan de implementar la \setchain
+como un tipo de datos distribuido con ciertas propiedades.
+
+La comunicación entre procesos se realiza mediante el paso de mensajes.
+Cada proceso computa independientemente y a su propia velocidad, y los aspectos internos de cada proceso
+permanecen ocultos para el resto. Los retrasos en la transferencia de mensajes son aribitrarios pero finitos
+y también permanecen desconocidos para los procesos.
+
+Los procesos pueden fallar arbritariamente, pero el número de servidores que fallan (bizantinos) está
+limitada por \textit{f}, y el número de servidores total, \textit{n}, es al menos $3f + 1$.
+Se asumen \textit{canales confiables} entre procesos no bizantinos (correctos), por lo tanto ningún
+mensaje se pierde, se duplica o se modifica.
+Cada proceso (cliente o servidor) tiene un par de claves públicas y privadas.
+La claves públicas fueron disribuidas confiablemente entre todos los procesos que pueden interactuar
+con otros.
+Por lo tanto, se descarta la posibilidad de procesos espurios.
+Se asume que los mensajes son autenticados, de modo que mensajes corruptos o fabricados por
+procesos bizantinos son detectados y descartados por los procesos correctos.
+Como resultado, la comunicación entre procesos corrrectos es confiable pero asíncrona.
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"
