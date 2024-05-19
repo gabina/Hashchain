@@ -591,15 +591,13 @@ son propiedades de \textit{liveness}.
 % \gabina{Epoch proofs are part of the epoch but are not coming directly from the result of a client adding element.}
 
 \section{Tendermint}\label{sec:tendermint}
-Tendermint es un motor de replicación de máquinas de estado que tolera fallas bizantinas.
+Tendermint es un motor de replicación de máquinas de estado que tolera fallas bizantinas. 
 %
 Fue uno de los primeros sistemas en adaptar protocolos de consenso clásicos tolerantes a fallas bizantinas
 al paradigma de blockchain.
 %
 Es decir, donde el consenso se ejecuta sobre lotes de transacciones vinculados mediante
 hashes criptográficos (usualmente llamados bloques) en una red pública y abierta.
-
-%
 
 Tendermint funciona como una capa intermedia de blockchain que soporta la replicación de aplicaciones arbitrarias,
 escritas en cualquier lenguaje de programación~\cite{tendermint.design}.
@@ -625,6 +623,19 @@ Las figuras azules representan máquinas.
 Las líneas punteadas representan la comunicación entre máquinas para llevar a cabo el protocolo de consenso para ordernar
 transacciones.
 
+Como motor de replicación de máquinas de estado, Tendermint es un sistema distribuido compuesto por un conjunto
+dinámico de procesos o nodos.
+%
+Estos nodos varian con el tiempo, a medida que se unen o abandonan la red subyacente del sistema.
+%
+Un subconjunto de estos nodos son quienes ejecutan el algoritmo de consenso de Tendermint.
+%
+A estos nodos los denominamos \textit{validadores}.
+%
+Los nodos que no ejecutan el algoritmo de consenso de Tendermint pueden, sin embargo, participar
+activamente en otros módulos del sistema.
+
+
 \begin{figure}
   \centering
   \includegraphics[scale=0.3]{figures/state-machine-replication.png}
@@ -633,39 +644,91 @@ transacciones.
 \end{figure}
 
 \subsection{Arquitectura de capas de Tendermint}\label{subsec:layers}
-
-La Figura~\ref{fig:tendermint-architecture} presenta la estructura básica de Tendermint como un sistema de capas.
-La subcapa inferior se encarga de la comunicación entre pares, y provee comunicación para los principales
-módulos de la blockchain. Éstos son los módulos que se presentan en la capa inmediata superior: mempool, consenso,
-evidencia, sincronización rápida, y sincronización de estado. Para el presente trabajo, solo serán pertinentes los
-módulos de mempool y de consenso.
-
-Un cliente interactúa con el sistema mediante RPC\footnote{\textit{Remote Procedure Call} o llamada a procedimiento
-remoto en español.} al enviar transacciones
-que (en caso de ser válidas) son añadidas al módulo de mempool. El cliente en general
-recibe respuestas generadas por el módulo de consenso.
-El módulo de consenso se encarga de ordenar e intermediar la ejecución de las transacciones, por medio de la
-interfaz de aplicación.
-
-\begin{figure}
-  \centering
-  \includegraphics[scale=0.2]{figures/tendermint-layers.png}
-  \caption{Arquitectura de capas de Tendermint.}
-  \label{fig:tendermint-architecture}
-\end{figure}
-
 % %
 Tendermint consiste de dos componentes técnicos principales: un motor de consenso de blockchain, y una interfaz
 de aplicación genérica.
 %
 El motor de consenso, llamado \textit{Tendermint Core}, asegura que las mismas transacciones sean registradas en cada
-máquinas en el mismo orden.
+máquina en el mismo orden.
 %
 La interfaz de aplicación, llamada \textit{interfaz de aplicación de blockchain} (ABCI)\footnote{Proveniente de \textit{Application
 BlockChain Interface} (ABCI) en inglés.}, habilita que las transacciones
 sean procesadas en cualquier lenguaje de programación.
 
-\subsection{Application BlockChain Interface}\label{subsec:abci}
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.3]{figures/tendermint-layers.png}
+  \caption{Arquitectura de capas de Tendermint.}
+  \label{fig:tendermint-architecture}
+\end{figure}
+
+La Figura~\ref{fig:tendermint-architecture} presenta la estructura básica de Tendermint como un sistema de capas.
+%
+En este sistema de capas se incluyen los componentes fundamentales mencionados en el párrafo anterior.
+%
+La capa inferior se encarga de la comunicación entre pares, y provee comunicación para los principales
+módulos de la blockchain.
+%
+Éstos son los módulos que se presentan en la capa inmediata superior, el
+Tendermint Core: mempool, consenso, evidencia, sincronización rápida, y sincronización de estado.
+%
+Para el presente trabajo, de la capa Tendermint Core, solo serán pertinentes los módulos de mempool y de consenso
+%
+En la capa inmediata superior se encuentra la ya mencionada interfaz de aplicación, que es quien se encarga de comunicarse
+con la aplicación en sí.
+%
+La aplicación reprsenta la capa superior de este sistema.
+%
+Como se puede observar en la figura, el cliente se comunica con la capa de Tendermint Core, por medio de los
+módulos de mempool o consenso. 
+
+Los lápices presentes tanto en el cliente como en la capa de aplicación indican que esos son los módulos creados
+por la programadora.
+%
+Tendermint funciona como una caja negra que resuelve consenso para la creación de aplicaciones arbritarias.
+%
+
+\subsubsection{Tendermint Core}
+
+La capa Tendermint Core tiene diversos módulos, de los cuales se presentarán brevemente dos: mempool y consenso.
+%
+El módulo de mempool es un punto de entrada de Tendermint.
+%
+Recibe, valida, almacena y difunde transacciones enviadas por los clientes. 
+%
+%Estas transacciones, en caso de ser consideradas válidas por la aplicación, son eventualmente incluídas en bloques
+%por el protocolo de consenso.
+%
+Los nodos exponen una interfaz para recibir dichas transacciones de los clientes, mediante llamadas
+RPC (\textit{Remote Procedure Call})\footnote{Las llamadas a procedimiento remoto son una forma de
+interacción entre clientes y servidores.}.
+%
+%Remote procedure call is the synchronous language-level transfer of control between programs in
+%disjoint address spaces whose primary communication medium is a narrow channel. The thesis of
+%this dissertation is that remote procedure call (RPC) is a satisfactory and efficient programming
+%language primitive for constructing distributed systems
+%
+%A client interacts with the system via RPC by
+%submitting transactions that are added to the mempool module,
+%and receiving a response generated by the consensus module.
+%The consensus module is in charge of ordering and intermediating the execution of transactions, by means of the application
+%interface. 
+%
+Por su parte, el módulo de consenso se encarga de ordenar e intermediar la ejecución de las transacciones, por medio de la
+interfaz de aplicación. Es responsable de decidir el siguiente bloque de transacciones a añadir a la blockchain.
+
+En la Figura~\ref{fig:tendermint-architecture} se ilustra mediante flechas la comunicación
+entre el cliente y el Tendermint Core.
+Simplificadamente, el cliente interactúa con el sistema mediante RPC al enviar transacciones
+que (en caso de ser válidas) son añadidas al módulo de mempool,
+y en general recibe respuestas generadas por el módulo de consenso.
+Las transacciones enviadas por clientes que llegan al módulo de mempool se difunden a todos los nodos, y eventualmente son recibidas
+por el nodo validador responsable de proponer el siguiente bloque como parte del consenso.
+El módulo de consenso de este nodo es el responsable de recuperar la lista de transacciones pendientes
+para construir el bloque propuesto. 
+
+
+\subsubsection{Application BlockChain Interface}\label{subsec:abci}
 La interfaz de aplicación de blockchain es la interfaz entre el Tendermint Core y la aplicación replicada.
 %
 Un nodo de Tendermint mantiene tres conexiones ABCI con la aplicación replicada.
@@ -685,9 +748,10 @@ La \textit{conexión de mempool} es usada por el protocolo de reserva de transac
 en inglés.} para validar las transacciones enviadas por los clientes en relación al estado de la aplicación.
 %
 Esta conexión solo admite peticiones \CheckTx. Las transacciones se chequean (mediante \CheckTx) en el mismo orden
-en que fueron recibidas por el nodo validador\footnote{Los nodos validadores son responsables de hacer commit sobre nuevos
-bloques en la blockchain. Estos validadores participan en el protocolo de consenso mediante la difusión de votos, los
-cuales contienen firmas criptográficas generadas por las claves privadas de cada validador.}.
+en que fueron recibidas por el nodo validador.
+%\footnote{Los nodos validadores son responsables de hacer commit sobre nuevos
+%bloques en la blockchain. Estos validadores participan en el protocolo de consenso mediante la difusión de votos, los
+%cuales contienen firmas criptográficas generadas por las claves privadas de cada validador.}.
 %
 Si \CheckTx retorna \textit{OK}, la transacción se mantiene en memoria y se retransmite a otros pares en el mismo orden
 en que fue recibida.

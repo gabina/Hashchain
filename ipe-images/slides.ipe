@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.24">
-<info created="D:20100311191937" modified="D:20240314172203" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
+<info created="D:20100311191937" modified="D:20240518230008" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
 <preamble>
 \input{preamble}</preamble>
 <bitmap id="1" width="512" height="512" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="4518" alphaLength="7522" encoding="base64">
@@ -23494,7 +23494,7 @@ N3isLmyPflrj8Vkv91Ld2Yv/9273oUmu97q3jf/7I567jvREXd1//ycf+n93rYP9ru+Anbu/
 2/3ZFHccEe3maz+3PnC8d4npxn/9Xf+JBUd4k6gm/eOH//vWTj/Ee8Q1dNaGbf07Nq48w1PE
 9TfqTHtB
 </bitmap>
-<bitmap id="19" width="1316" height="1126" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="46883" alphaLength="25434" encoding="base64">
+<bitmap id="21" width="1316" height="1126" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="46883" alphaLength="25434" encoding="base64">
 eNrs3fmfVfWB5/+6a213qX29td6gghgUEdxQUERFBVQQFdxQESMKoiAoIK6AAoJVJJ2JSTrp
 ZCZpk0k0q2ZRO5qkjenpaEdjEoPaJqIw/8PcfO2H7dcFqm7dunWX5/Px+mlm2pk599x7Pm9q
 q6gAAEpHbPK8tuVf6932h0999v/q/Xq3vtJ27T/WTprjDgEAAGDowg2p1NqfmNUHr3P190OJ
@@ -28126,7 +28126,7 @@ h
 \iperesetcolor
 </text>
 <text matrix="1 0 0 1 -10.1688 78.936" transformations="translations" pos="16 400" stroke="black" type="minipage" width="679.816" height="18.0076" depth="5.018" valign="baseline" style="item">Experiments with 7 nodes.</text>
-<image matrix="0.0518274 0 0 0.0518274 363.795 459.642" rect="0 0 1316 1126" bitmap="19"/>
+<image matrix="0.0518274 0 0 0.0518274 363.795 459.642" rect="0 0 1316 1126" bitmap="21"/>
 <text matrix="1 0 0 1 -10.1688 21.6027" transformations="translations" pos="16 400" stroke="black" type="minipage" width="679.816" height="18.0076" depth="5.018" valign="baseline" style="item">Vanilla: 1100 txs per second</text>
 <text matrix="1 0 0 1 -10.1688 -35.7307" transformations="translations" pos="16 400" stroke="black" type="minipage" width="679.816" height="18.0076" depth="5.018" valign="baseline" style="item">Compresschain: 7300 txs per second</text>
 <text matrix="1 0 0 1 -10.1688 -93.064" transformations="translations" pos="16 400" stroke="black" type="minipage" width="679.816" height="18.0076" depth="5.018" valign="baseline" style="item">Compresschain: 10000 txs per second</text>
@@ -28637,7 +28637,7 @@ h
 280 368 c
 </path>
 <group matrix="1 0 0 1 8 8">
-<text matrix="1 0 0 1 40.1731 -50.1346" transformations="translations" pos="144 464" stroke="black" type="label" width="15.6539" height="7.76664" depth="3.4974" valign="baseline" size="small">$p_i$</text>
+<text matrix="1 0 0 1 40.1731 -50.1346" transformations="translations" pos="144 464" stroke="black" type="label" width="15.6539" height="7.76664" depth="3.4974" valign="baseline" size="small" style="math">p_i</text>
 <path matrix="1.00974 0 0 1.00974 -1.65001 -4.27307" stroke="black">
 22.6274 0 0 22.6274 192 416 e
 </path>
@@ -28695,5 +28695,145 @@ h
 <text matrix="1 0 0 1 311.785 -65.5793" transformations="translations" pos="144 464" stroke="black" type="label" width="16.4559" height="7.75659" depth="4.3416" valign="baseline" size="small" style="math">e_j</text>
 <text matrix="1 0 0 1 217.574 -266.143" transformations="translations" pos="144 464" stroke="black" type="label" width="22.7532" height="7.77267" depth="1.9899" valign="baseline" size="small" style="math">e_m</text>
 <text matrix="1 0 0 1 46.8905 -247.968" transformations="translations" pos="144 464" stroke="black" type="label" width="14.4378" height="7.76463" depth="2.1306" valign="baseline" size="small" style="math">e_l</text>
+</page>
+<page>
+<layer name="alpha"/>
+<view layers="alpha" active="alpha"/>
+<path layer="alpha" matrix="1 0 0 1 -40 -4" stroke="black" fill="lightyellow">
+96 352 m
+96 288 l
+176 288 l
+176 352 l
+h
+</path>
+<path matrix="1 0 0 1 -40 -4" stroke="black" arrow="latexarc/normal" rarrow="latexarc/normal">
+176 304 m
+224 304 l
+</path>
+<text matrix="1 0 0 1 -42.6998 -10.2581" transformations="translations" pos="112 320" stroke="black" type="label" width="53.3997" height="12.5163" depth="0" valign="baseline" size="small">Cliente</text>
+<path matrix="1 0 0 1 -40 -4" stroke="black">
+224 384 m
+224 352 l
+624 352 l
+624 384 l
+h
+</path>
+<path matrix="1 0 0 1 -40 -4" stroke="midgreen">
+224 384 m
+224 352 l
+624 352 l
+624 384 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" stroke="black" fill="lightblue">
+128 352 m
+128 288 l
+208 288 l
+208 352 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" stroke="black" fill="lightblue">
+208 352 m
+208 288 l
+288 288 l
+288 352 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" fill="lightblue">
+288 352 m
+288 288 l
+368 288 l
+368 352 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" stroke="black" fill="lightblue">
+368 352 m
+368 288 l
+448 288 l
+448 352 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" fill="lightblue">
+448 352 m
+448 288 l
+528 288 l
+528 352 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" stroke="black">
+528 352 m
+528 288 l
+528 288 l
+528 352 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" stroke="black" fill="lightblue">
+128 384 m
+128 352 l
+528 352 l
+528 384 l
+h
+</path>
+<path matrix="1 0 0 1 56 -4" stroke="black" fill="lightblue">
+128 448 m
+128 384 l
+528 384 l
+528 448 l
+h
+</path>
+<text matrix="1 0 0 1 27.1402 -6.52054" transformations="translations" pos="176 320" stroke="black" type="label" width="41.7196" height="6.97068" depth="1.9296" valign="baseline" size="tiny">Mempool</text>
+<text matrix="1 0 0 1 11.3473 -7.47629" transformations="translations" pos="272 320" stroke="black" type="label" width="41.3055" height="6.95259" depth="0" valign="baseline" size="tiny">Consenso</text>
+<text matrix="1 0 0 1 11.0447 -7.47629" transformations="translations" pos="352 320" stroke="black" type="label" width="41.9105" height="6.95259" depth="0" valign="baseline" size="tiny">Evidencia</text>
+<path matrix="1 0 0 1 24 -4" stroke="black" fill="lightblue">
+160 288 m
+160 240 l
+560 240 l
+560 288 l
+h
+</path>
+<text matrix="1 0 0 1 -3.495 -0.51245" transformations="translations" pos="288 256" stroke="black" type="label" width="198.99" height="12.5223" depth="3.4974" valign="baseline" size="small">Comunicaci\&apos;on entre pares</text>
+<path matrix="1 0 0 1 -40 -4" stroke="black">
+224 384 m
+224 352 l
+624 352 l
+624 384 l
+h
+</path>
+<text matrix="1 0 0 1 24.2985 7.48755" transformations="translations" pos="320 400" stroke="black" type="label" width="79.403" height="12.5223" depth="3.4974" valign="baseline" size="small">Aplicaci\&apos;on</text>
+<text matrix="1 0 0 1 -105.188 -8.50843" transformations="translations" pos="320 368" stroke="black" type="label" width="338.375" height="13.5193" depth="4.5024" valign="baseline" size="small">Interfaz de aplicaci\&apos;on de blockchain (ABCI)</text>
+<image matrix="0.0413645 0.00025687 -0.00025687 0.0413645 106.547 334.415" rect="0 0 512 512" bitmap="17"/>
+<path matrix="1 0 0 1 -40 -4" stroke="black" arrow="latexarc/normal" rarrow="latexarc/normal">
+176 336 m
+304 336 l
+</path>
+<group matrix="1 0 0 1 2.3109 3.4885">
+<text matrix="1 0 0 1 13.9562 -4" transformations="translations" pos="416 320" stroke="black" type="label" width="63.4657" height="6.95259" depth="0" valign="baseline" size="tiny">Sincronizaci\&apos;on</text>
+<text transformations="translations" pos="448 304" stroke="black" type="label" width="27.3782" height="6.97068" depth="1.9296" valign="baseline" size="tiny">r\&apos;apida</text>
+</group>
+<image matrix="0.0413645 0.00025687 -0.00025687 0.0413645 542.547 430.415" rect="0 0 512 512" bitmap="17"/>
+<group matrix="1 0 0 1 40 -8">
+<text matrix="1 0 0 1 56.2671 6.52371" transformations="translations" pos="416 320" stroke="black" type="label" width="63.4657" height="6.95259" depth="0" valign="baseline" size="tiny">Sincronizaci\&apos;on</text>
+<group>
+<text matrix="1 0 0 1 -45.1693 10.5237" transformations="translations" pos="528 304" stroke="black" type="label" width="42.3386" height="6.95259" depth="0" valign="baseline" size="tiny">de estado</text>
+</group>
+</group>
+<path matrix="0.000913 -0.112281 0.438695 0.00023368 378.591 353.927" stroke="black">
+48 480 m
+48 496
+272 496
+332 496
+336 500
+336 504
+336 504
+336 500
+340 496
+400 496
+624 496
+624 480 c
+</path>
+<group matrix="1 0 0 1 12 1.53263">
+<text matrix="1 0 0 1 180.187 -1.47629" transformations="translations" pos="416 320" stroke="black" type="label" width="88.4279" height="12.5163" depth="0" valign="baseline" size="small">Tendermint</text>
+<text matrix="1 0 0 1 94.8307 -5.4763" transformations="translations" pos="528 304" stroke="black" type="label" width="35.1408" height="12.5163" depth="0" valign="baseline" size="small">Core</text>
+</group>
 </page>
 </ipe>
