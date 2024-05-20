@@ -91,10 +91,10 @@ cuando un cliente invoca $v.$\<add>(e) sobre un servidor correcto $v$.
 %
 
 El sistema comienza en su estado inicial (Figura \ref{subfig:vanilla-flow-a}), a la espera de que algún cliente
-se conecte con esa instancia particular (una máquina conectada a la red) para agregar un elemento.
+se conecte con ese nodo (parte de la red) para agregar un elemento.
 El Tendermint Core expone sus puntos de entrada RPC, que serán utilizados por parte de la API de
 \setchain. Por su parte, la aplicación es quien se encargará de acceder a la base de datos persistente que
-mantiene una instancia de la \setchain.
+mantiene la estructura distribuida que conforma la \setchain.
 %
 
 En la Figura \ref{subfig:vanilla-flow-b} se observa el resultado de un cliente invocando \<add>(e): el cliente, mediante
@@ -146,6 +146,16 @@ en donde uno de sus elementos es $e$.
   \caption{Flujo usual de mensajes para \vanilla}
   \label{fig:vanilla-flow}
 \end{figure}
+
+\subsubsection{Detalles de implementación}
+El cliente se comunica con un nodo mediante el protocolo HTTP.
+%
+Se utilizó la implementación nativa de Tendermint del cliente HTTP,
+quien se comunica con el nodo de Tendermint usando JSON RPC.
+%
+De los distintos clientes nativos que proveía Tendermint, el cliente HTTP
+es la implementación que probablemente sea más razonable de utilizar en un entorno
+real, y es por eso que fue elegida para este trabajo.
 
 \subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %

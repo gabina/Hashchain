@@ -723,9 +723,9 @@ Simplificadamente, el cliente interactúa con el sistema mediante RPC al enviar 
 que (en caso de ser válidas) son añadidas al módulo de mempool,
 y en general recibe respuestas generadas por el módulo de consenso.
 Las transacciones enviadas por clientes que llegan al módulo de mempool se difunden a todos los nodos, y eventualmente son recibidas
-por el nodo validador responsable de proponer el siguiente bloque como parte del consenso.
+por el nodo validador responsable de proponer el siguiente bloque como parte del algoritmo de consenso.
 El módulo de consenso de este nodo es el responsable de recuperar la lista de transacciones pendientes
-para construir el bloque propuesto. 
+para construir el bloque que será propuesto como siguiente. 
 
 
 \subsubsection{Application BlockChain Interface}\label{subsec:abci}
@@ -773,6 +773,31 @@ Se expone mediante el servidor RPC del Tendermint Core, de modo que los clientes
 consultar el estado de la aplicación sin exponer un servidor de la aplicación en sí mismo. 
 
 La Figura~\ref{fig:abci_flow} muestra el flujo de mensajes mediante las conexiones de consenso y de mempool.
+%
+Las flechas indican los sentidos de la comunicación.
+%
+La interacción entre la mempool y la aplicación se da mediante la conexión de mempool de la ABCI.
+%
+Cuando una transacción llega a la mempool, debe chequearse su validez contra el estado de la aplicación.
+%
+Esto se realiza mediante la petición \CheckTx de la ABCI.
+%
+La respuesta a dicha petición es generada por la lógica de la aplicación, quien se encarga de determinar la
+validez de una transacción.
+%
+Por otro lado, la comunicación entre el módulo de consenso y la aplicación se da mediante la conexión de consenso.
+%
+Cuando a un nodo validador le toca el turno de ser proponente del próximo bloque a añadir en la blockchain,
+consulta a la mempool para recuperar la lista de transacciones que se utilizarán para la construcción dicho bloque.
+%
+Una vez que la lógica de consenso resuelve cuál es el nuevo bloque, se comunica con la aplicación para
+dar a conocerlo.
+%
+Esto se hace mediante una secuencia de peticiones: \BeginBlock, [\DeliverTx, ...], \EndBlock y \Commit.
+%
+La lógica de la aplicación es la encargada de actualizar su estado adecuadamente en función de las transacciones del
+nuevo bloque y de generar las respuestas a dichas peticiones.
+
 
 \begin{figure}
   \centering
@@ -785,7 +810,7 @@ La Figura~\ref{fig:abci_flow} muestra el flujo de mensajes mediante las conexion
 Habiendo presentado los conceptos preliminares básicos para este trabajo, se describe
 el modelo de computación que utilizaremos de aquí en adelante.
 
-El modelo involucra un sistema distribuido consistente de procesos, clientes y servidores, con una
+El modelo involucra un sistema distribuido consistente de procesos (clientes y servidores) con una
 red de comunicación subyacente en donde cada proceso puede comunicarse con cualquiera de los otros.
 Los clientes representan a aquellos procesos cuyo objetivo es inyectar u obtener elementos en la \setchain,
 mientras que los servidores representan a los procesos que se encargan de implementar la \setchain
@@ -797,11 +822,11 @@ permanecen ocultos para el resto. Los retrasos en la transferencia de mensajes s
 y también permanecen desconocidos para los procesos.
 
 Los procesos pueden fallar arbritariamente, pero el número de servidores que fallan (bizantinos) está
-limitada por \textit{f}, y el número de servidores total, \textit{n}, es al menos $3f + 1$.
+limitado por \textit{f}, y el número de servidores total, \textit{n}, es al menos $3f + 1$.
 Se asumen \textit{canales confiables} entre procesos no bizantinos (correctos), por lo tanto ningún
 mensaje se pierde, se duplica o se modifica.
 Cada proceso (cliente o servidor) tiene un par de claves públicas y privadas.
-La claves públicas fueron disribuidas confiablemente entre todos los procesos que pueden interactuar
+Las claves públicas fueron disribuidas confiablemente entre todos los procesos que pueden interactuar
 con otros.
 Por lo tanto, se descarta la posibilidad de procesos espurios.
 Se asume que los mensajes son autenticados, de modo que mensajes corruptos o fabricados por
