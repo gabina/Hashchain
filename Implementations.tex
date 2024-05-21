@@ -150,13 +150,13 @@ en donde uno de sus elementos es $e$.
 \end{figure}
 
 \subsubsection{Detalles de implementación}
-El cliente se comunica con un nodo mediante el protocolo HTTP.
+La implementación de la API de \setchain establece comunicación con un nodo mediante el protocolo HTTP.
 %
 Se utiliza la implementación nativa de Tendermint del cliente HTTP,
 quien se comunica con el nodo de Tendermint usando JSON RPC.
 %
-De los distintos clientes nativos que proveía Tendermint, el cliente HTTP
-es la implementación más razonable de utilizar en un entorno
+De los distintos clientes nativos que provee Tendermint, el cliente HTTP
+es la implementación más adecuada de utilizar en un entorno
 real, y es por eso que se elige para este trabajo.
 
 \subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
@@ -236,10 +236,10 @@ Sin embargo, un elemento de prueba de época necesita ser validado verificando l
 %como sistema de firmas.
 
 El aspecto criptográfico de la implementación de los elementos de prueba de época se
-hace a través del módulo \textit{crypto} de la librería Golang
-del protocolo Ethereum~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
+hace a través del paquete \textit{crypto} de \textit{go-ethereum}, la implementación
+del protocolo Ethereum en Golang~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
 %
-Esta librería trabaja con el algoritmo de firma digital ECDSA, uno de los esquemas de firmas más
+Este paquete trabaja con el algoritmo de firma digital ECDSA, uno de los esquemas de firmas más
 utilizado~\cite{real.world.crypto}.
 %
 Provee una función \texttt{Sign} que cacula una firma ECDSA.
@@ -267,7 +267,7 @@ de ancho de banda, en donde la transmisión de la clave pública sería muy cost
 % is viable, and such that the verifier has a very small additional cost of determining which is the
 % correct public key.
 
-La función \texttt{Ecrecover} es la función de recuperación de clave pública que facilita la librería utilizada.
+La función \texttt{Ecrecover} es la función de recuperación de clave pública que facilita el paquete \textit{go-ethereum}.
 %, la cual dado un hash y una firma, retorna la clave pública
 %(en formato descomprimido) que creó dicha firma.
 %
@@ -300,13 +300,13 @@ Para dar una implementación completa de \setchain utilizando Tendermint, ademá
 deben dar las definiciones de los métodos pertenecientes a la interfaz ABCI
 (ver sección~\ref{subsec:abci}). 
 %
-
-\input{algorithms/alg-abci-vanilla}
 El Algoritmo~\ref{alg:abci-vanilla} muestra la definición de la ABCI para la versión
 \vanilla.
 %
 Solo se muestran las definiciones de \CheckTx, \DeliverTx, \EndBlock y \Query;
 el resto tiene implementaciones triviales.
+
+\input{algorithms/alg-abci-vanilla}
 
 Chequear si una transacción es válida consiste simplemente en chequear
 la validez del elemento, dado que las transacciones contienen un único elemento.
@@ -342,15 +342,16 @@ Tendermint envía peticiones \EndBlock una única vez por bloque, luego de haber
 enviado todas las transacciones dentro del mismo.
 %
 En este algoritmo, la finalización de un bloque desencadena un incremento de época
-y, por lo tanto, cada bloque de Tendermint define una época distitna de \setchain.
+y, por lo tanto, cada bloque de Tendermint define una época distitna en la \setchain,
+la cual contiene como elementos a las transacciones de dicho bloque.
 %
+La finalización de un bloque también origina la creación de un elemento de prueba de época
+y la posterior invocación a \<add> para añadirlo a la \setchain.
 
 Finalmente, cuando los clientes invocan \<get>, indirectamente inician una llamada
 a \<abciquery>, que retorna los valores de $\THESET $, $\HISTORY $ y $\EPOCH $, de acuerdo
-a la definición de \setchain. 
-
+a la definición de \setchain.
 %
-
 En este caso, $\THESET $ contendrá
 todos los elementos para los cuales se hizo \DeliverTx.
 Esto incluye elementos desde la época 0 hasta la época que se está construyendo actualmente
@@ -362,7 +363,7 @@ podría ser una visión parcial.
 Es por esto que se retorna $\HISTORY $ up to $\EPOCH$ y no directamente el valor de la variable
 $\HISTORY $.
 De otro modo, podría no cumplirse la propiedad \textit{Consistent Gets}
-presentada en~\ref{subsubsec:setchain-properties}.
+presentada en la sección ~\ref{subsubsec:setchain-properties}.
 La variable $\EPOCH$ retornada indica el máximo número de época que fue agregado de
 manera completa en $\HISTORY $.
 %Es por esto que no sería correcto que $\HISTORY $ incluya elementos
@@ -464,11 +465,11 @@ Esto se observa en las Figuras ~\ref{subfig:compress-flow-d}. ~\ref{subfig:compr
 
 %
 En el último paso de este flujo se agregan las nuevas épocas a la \setchain.
-En contraposición con los visto en \vanilla, acá se agrega una nueva época por cada transacción (cada petición \DeliverTx).
+En contraposición con lo visto en \vanilla, acá se agrega una nueva época por cada transacción (cada petición \DeliverTx).
 Las épocas contienen potencialmente más de un elemento porque, de hecho, las transacciones en este contexto representan a más de un elemento
 envíado por los clientes.
 Estas transacciones sí tienen orden entre ellas, por lo que el número de época asociada a cada una está determinado por el mismo.
-En la Figura (f) se muestra que la época $n$ se agregó a la \setchain y uno de sus elementos es $e$. Esta es, justamente, la época asociada
+En la Figura ~\ref{subfig:compress-flow-g} se muestra que la época $n$ se agregó a la \setchain y uno de sus elementos es $e$. Esta es, justamente, la época asociada
 a la transacción que contiene al elemento $e$.
 
 
@@ -479,14 +480,30 @@ a la transacción que contiene al elemento $e$.
   \subfloat[El lote se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/compresschain-flow-3.png}\label{subfig:compress-flow-d}}\\
   \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/compresschain-flow-4.png}\label{subfig:compress-flow-e}}
   \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/compresschain-flow-5.png}\label{subfig:compress-flow-f}}\\
-  \subfloat[Se agrega la nuevas épocas a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}\label{subfig:compress-flow-g}} 
-  \caption{Flujo usual de mensajes para compresschain}
+  \subfloat[Se agregan las nuevas épocas a la \setchain]{\includegraphics[width = 3.5in]{figures/compresschain-flow-6.png}\label{subfig:compress-flow-g}} 
+  \caption{Flujo usual de mensajes para \compresschain}
   \label{fig:compresschain-flow}
 \end{figure}
 
+\subsubsection{Detalles de implementación}
+La implementación del \collector se hace a través de un servidor HTTP RPC que es accesible para los clientes
+mediante la API de \setchain.
+%
+Para esto se utilizan los paquetes \textit{http} y \textit{rpc}, ambos de la librería estándar de Golang.
+%
+El paquete \textit{http} proporciona implementaciones para el cliente y el servidor HTTP.
+%
+El paquete \textit{rpc} provee acceso a los métodos exportados de un objeto (en este caso, el \collector)
+a través de una red u otra conexión de entrada/salida.
+%
+Un servidor registra un objeto, haciéndolo visible como un servicio con el nombre del tipo del objeto.
+%
+Después del registro, los métodos exportados del objeto (en este caso, únicamente \texttt{AddElement}) son accesibles de forma remota.
+
+%DialHTTP connects to an HTTP RPC server at the specified network address
+%// listening on the default HTTP RPC path.
+
 \subsection{Algoritmos}
-
-
 %
 % This means that a new
 % \setchain API version is defined, which uses the new collector component.
