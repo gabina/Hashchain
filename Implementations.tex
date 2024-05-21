@@ -65,7 +65,9 @@ A continuación se presentan diferentes definiciones de métodos
 necesarios para que la aplicación corriendo sobre Tendermint implemente \setchain.
 Esto involucra, por un lado, los métodos presentados como parte de la API de
 \setchain y, por el otro, los perteniences a la interfaz de aplicación de
-blockchain ~(ver sección ~\ref{sec:tendermint}).
+blockchain ~(ver sección ~\ref{sec:tendermint}). Si bien el objetivo del capítulo es
+presentar las soluciones a nivel conceptual, detalles de implementación son dados a lo largo
+de las secciones cuando se considera oportuno.
 
 \section{Primera implementación: \vanilla}\label{sec:vanilla}
 
@@ -150,12 +152,12 @@ en donde uno de sus elementos es $e$.
 \subsubsection{Detalles de implementación}
 El cliente se comunica con un nodo mediante el protocolo HTTP.
 %
-Se utilizó la implementación nativa de Tendermint del cliente HTTP,
+Se utiliza la implementación nativa de Tendermint del cliente HTTP,
 quien se comunica con el nodo de Tendermint usando JSON RPC.
 %
 De los distintos clientes nativos que proveía Tendermint, el cliente HTTP
-es la implementación que probablemente sea más razonable de utilizar en un entorno
-real, y es por eso que fue elegida para este trabajo.
+es la implementación más razonable de utilizar en un entorno
+real, y es por eso que se elige para este trabajo.
 
 \subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %
@@ -174,7 +176,8 @@ sea correcto.
 % An extension to Setchain presented an optimistic client with the following
 % approach.
 %
-Se asume que una cota superior $f$ de servidores
+Como ya se mencionó en el modelo de computación (ver Sección ~\ref{sec:model_system}),
+se asume que una cota superior $f$ de servidores
 bizantinos es conocida y, por lo tanto, se requiere contactar a $f+1$ servidores.
 
 En este trabajo se utilizará la extensión a Setchain presentada como
@@ -232,19 +235,45 @@ Sin embargo, un elemento de prueba de época necesita ser validado verificando l
 %Estas pruebas de época pueden implementarse utilizando \textit{Ed25519}~\cite{ed25519}
 %como sistema de firmas.
 
-La implementación de los elementos de prueba de época se hace a través de la librería
-Golang criptográfica \textit{crypto} de Ethereum~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
+El aspecto criptográfico de la implementación de los elementos de prueba de época se
+hace a través del módulo \textit{crypto} de la librería Golang
+del protocolo Ethereum~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
 %
-Esta librería provee una función \texttt{Sign} que cacula una firma ECDSA.
+Esta librería trabaja con el algoritmo de firma digital ECDSA, uno de los esquemas de firmas más
+utilizado~\cite{real.world.crypto}.
 %
-La firma producida se encuentra en el formato $[R || S || V]$, donde $V$ es 0 o 1.
+Provee una función \texttt{Sign} que cacula una firma ECDSA.
 %
-El valor de $V$ es usualmente llamado \textit{bit de recuperación} y permite utilizar
-la función \texttt{Ecrecover}, la cual dado un hash y una firma, retorna la clave pública
-(en formato descomprimido) que creó dicha firma.
+La firma producida se encuentra en el formato $[R || S || V]$, donde $(R, S)$ son los componentes usuales
+de una firma ECDSA, y $V$ es 0 o 1.
 %
-De esta forma, los elementos de prueba de época pueden contener el número de época y la firma
-en el formato mencionado anteriormente, y los clientes pueden usar la función \texttt{Ecrecover} para
+El valor de $V$ es usualmente llamado \textit{bit de recuperación} y permite recuperar inequívocamente,
+a partir de la firma y de un hash del mensaje firmado, la clave pública de quien realizó la firma.
+%
+Sin ese bit de recuperación, el proceso de recuperación de clave pública puede retornar potencialmente
+más de un candidato, motivo por el cual se añade dicho bit.
+% 
+Esta propiedad de recuperación de la clave pública que provee ECDSA es muy útil en contextos con limitaciones
+de ancho de banda, en donde la transmisión de la clave pública sería muy costosa.
+
+% This is also useful in bandwidth constrained environments, when transmission of public keys cannot
+% be afforded. Entity U could send a signature to entity V , who recovers QU . Entity V can look
+% up the public key in some certificate or directory, and if it matches then the signature can be
+% accepted. Alternatively, entity U may transmit the signature together with the certificate except
+% that the public key is omitted from the certificate. For example, in long certificate chains signed
+% with ECDSA, bandwidth can be saved by omission of the public keys.
+% Potentially, several candidate public keys can be recovered from a signature. At a small cost, the
+% signer can generate the ECDSA signature in such a way that only one of the candidate public keys
+% is viable, and such that the verifier has a very small additional cost of determining which is the
+% correct public key.
+
+La función \texttt{Ecrecover} es la función de recuperación de clave pública que facilita la librería utilizada.
+%, la cual dado un hash y una firma, retorna la clave pública
+%(en formato descomprimido) que creó dicha firma.
+%
+Los elementos de prueba de época contienen el número de
+época y la firma en el formato mencionado anteriormente, y los clientes pueden, mediante la propiedad de recuperación,
+usar la función \texttt{Ecrecover} para
 verificar que la firma dada fue, de hecho, generada por un validador conocido.
 %
 
