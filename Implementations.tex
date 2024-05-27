@@ -518,8 +518,8 @@ En \compresschain, en lugar de agregar directamente elementos enviados por los u
 primero se recolectan y se comprimen para ser enviados como una única transacción.
 Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo
 \textit{Recursive Length Prefix} (RLP)~\cite{ethereum} para codificar los elementos individualmente
-y el algoritmo de compresión Brotli~\cite{brotli.compressor} para comprimir el lote.
-\footnote{Otros algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}
+y el algoritmo de compresión Brotli~\cite{brotli.compressor} para comprimir el lote\footnote{Otros
+algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}.
 
 %
 Un lote se considera \textit{listo} para ser enviado una vez que, o bien alcanza un tamaño máximo,
@@ -647,8 +647,9 @@ En lugar de usar el \collector de Compresschain (ver Algoritmo ~\ref{alg:collect
 ahora utilizamos un \hcollector, que construye un lote de elementos para luego hashearlo
 antes de introducirlo a la red de Tendermint.
 %
-Los lotes hasheados son difundidos como transacciones y compartidos a través de toda la red, de forma
-análoga al enfoque empleado para los lotes comprimidos en Compresschain.
+Los lotes hasheados son difundidos como transacciones y compartidos a través de toda la red, definiendo cada
+uno de ellos una nueva época en la \setchain, de forma
+análoga al enfoque empleado para los lotes comprimidos en \compresschain.
 
 \subsection{Flujo de mensajes}
 
@@ -691,7 +692,7 @@ A este proceso lo llamaremos \textit{inversión de hashes}.
 %
 % En este escenario, tanto \<CheckTx> como \<DeliverTx> reciben hashes como transacciones.
 %
-Debido a la naturaleza irreversible de un hash, una máquina corriendo la \setchain no puede traducir
+Debido a la naturaleza irreversible de un hash, un nodo participando de la \setchain no puede traducir
 inmediatamente hashes para obtener su lote de elementos original.
 %
 La ausencia del lote original de elementos hace que \<CheckTx> sea incapaz de verificar los elementos
@@ -705,7 +706,7 @@ conoce los elementos del cual proviene.
 %
 Inicialmente, el único nodo que conoce un hash es el creador del mismo.
 %
-Para distribuír la información sobre quiénes conocen los datos de un hash, las transacciones contienen
+Para distribuir la información sobre quiénes conocen los datos de un hash, las transacciones contienen
 no solo el hash del lote, sino además una firma criptográfica.
 %
 Las firmas que acompañan los hashes indican que un validador específico de Tendermint
@@ -730,11 +731,11 @@ en el proceso de inversión.
 \begin{figure}
   \centering
   %\subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/hash-reversal-0.png}}\\
-  \subfloat[La aplicación requiere la inversión de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-1.png}\label{subfig:hash-flow-a}}\\
-  \subfloat[El \hcollector conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-2.png}\label{subfig:hash-flow-b}}\\
-  \subfloat[El \hcollector no conoce el hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-3.png}\label{subfig:hash-flow-c}}\\
-  \subfloat[Se anuncia a la red el conocimiento de un hash]{\includegraphics[width = 3.5in]{figures/hash-reversal-4.png}\label{subfig:hash-flow-d}}
-  \caption{Flujo usual de mensajes para \vanilla}
+  \subfloat[La aplicación requiere la inversión de un hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-1.png}\label{subfig:hash-flow-a}}\\
+  \subfloat[El \hcollector conoce el hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-2.png}\label{subfig:hash-flow-b}}\\
+  \subfloat[El \hcollector no conoce el hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-3.png}\label{subfig:hash-flow-c}}\\
+  \subfloat[Se anuncia a la red el conocimiento de un hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-4.png}\label{subfig:hash-flow-d}}
+  \caption{Flujo usual de mensajes para \hashchain}
   \label{fig:hash-inversion-flow}
 \end{figure}
 
@@ -765,6 +766,19 @@ menos un elemento en el hash es válido, como se explicará con más detalle en 
 
 Es importante aclarar que, en principio, las claves públicas/privadas que sirven para autenticarse
 funcionan a nivel nodo: aplicaicón y \hcollector comparten una misma clave.
+
+\subsubsection{Detalles de implementación}
+El \hcollector se implementa, similar a su contraparte en \compresschain, como un servidor HTTP RPC.
+%
+La comunicación con él por parte del cliente no cambia respecto a lo presentado para el \collector
+de \compresschain.
+%
+La comunicación entre la aplicación y el \hashcollector se hace también de la misma manera.
+%
+
+
+La implementación del \hcollector involucra una base de datos persistente capaz de almacenar ¿Cómo se comunica un collector con otro? ¿Cómo se maneja el tema de las claves?
+¿Cómo se guardan los mapeos de hashes a elementos en base de datos consistente?
 
 \subsection{Validación de hashes}
 
