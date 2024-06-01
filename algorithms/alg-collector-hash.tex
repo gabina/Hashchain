@@ -9,22 +9,29 @@
       \begin{algorithmic}[1]
             \State \textbf{Init:} \texttt{batch} $\leftarrow$ \{\}
       
-            \Function{AddTx}{$transaction$}\label{alg3:add_tx}
-            		\State \texttt{encodedTransaction} $\leftarrow$ \textbf{RLP.Encode}($transaction$)
-				\State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \{\texttt{encodedTransaction}\}
-            
-             	\If {\textit{isBigEnough(batch)}}
-             		\State \texttt{compressedBatch} $\leftarrow$  \textbf{Brotli.Compress}(\texttt{batch})
-             		\State \texttt{hash} $\leftarrow$ \textbf{Hash}(\texttt{compressedBatch})
-             		\State \textbf{Save}(\texttt{hash}, \texttt{compressedBatch})
-                		\State \textbf{Tendermint.Broadcast}(\texttt{hash})
-                		\State \textit{reset()}
+            \Function{\<AddElement>}{$element$}\label{alg:hash_add_tx}
+            		\If {\<isValidElement>($element$)}
+            			\State \texttt{encoded\_element} $\leftarrow$ \texttt{RLP.Encode}($element$)
+					        \State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \{\texttt{encoded\_element}\}
                 \EndIf
-                	
+             		
+                \If {\<isReady>(\<batch>)}
+             		  \State \texttt{hash} $\leftarrow$  \texttt{Hash}(\texttt{batch})
+                	\State \texttt{Tendermint.Broadcast}(\texttt{hash})
+              		\State \Call{\<reset>}{\null}
+             	  \EndIf
                 \State \textbf{return}
             \EndFunction
+
+            \Function{\<Reverse>}{$h$, $s$}\label{alg:hash_request_tx}
+              \State \texttt{public\_key} = \<RecoverPK>($s$)
+              \If {\texttt{public\_key} = \texttt{MY\_PUBLIC\_KEY}}
+                \State \texttt{batch} = \texttt{DATA\_BASE[$h$]} 
+              \EndIf
+              \State \textbf{return}
+            \EndFunction
             
-            \Function{reset}{\ }\label{alg3:reset}
+            \Function{\<reset>}{\null}\label{alg:hash_reset}
             		\State \texttt{batch} $\leftarrow$ \{\}
                 \State \textbf{return}
             \EndFunction
@@ -32,4 +39,3 @@
       \end{algorithm}
 	\end{adjustbox}
   \end{figure}
-

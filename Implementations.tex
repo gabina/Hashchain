@@ -608,7 +608,6 @@ el método \<EndBlock>.
 En este caso, las épocas se definen como transacciones: cada lote de elementos define una época.
 
 %
-
 Por último, el método \<Query> se comporta de la misma forma que en \vanilla.
 % %
 % definition was given in this case, as the block does not
@@ -633,12 +632,11 @@ este orden no se decide como parte del consenso y por eso se ignora cuando los e
 a una nueva época de la \setchain.
 
 %
-
 El uso de un algoritmo de compresión previo a la inyección de una nueva transacción es una apuesta para mejorar
 el rendimiento, medido en cantidad de elementos por segundos, que pueden ser añadidos a la \setchain.
-Este enfoque trabaja bajo la hipótesis
-de que hacer consenso sobre elementos agrupados de forma eficiente interpretados como unidad representa una
-mejora en comparación con el consenso usual, hecho sobre elementos individuales.
+Este enfoque trabaja bajo la hipótesis de que hacer consenso sobre elementos agrupados de forma
+eficiente interpretados como unidad representa una mejora en comparación con el consenso usual,
+hecho sobre elementos individuales.
 
 \section{Tercera implementación: Hashchain}\label{sec:hashchain}
 %
@@ -779,10 +777,8 @@ anuncia a la red sobre el conocimiento de un nuevo hash. Esto ocurre solo cuando
 efectivamente toma conocimiento de un nuevo hash, ya que anunciar más de una vez que se conoce un
 determinado hash generaría tráfico innecesario en la red. Por otro lado, solo se firma el hash si al
 menos un elemento en el hash es válido, como se explicará con más detalle en la siguiente sección.
-
 %
-
-Es importante aclarar que, en principio, las claves públicas/privadas que sirven para autenticarse
+En principio, los pares de claves públicas/privadas que sirven para autenticarse
 funcionan a nivel nodo: aplicación y \hcollector comparten una misma clave.
 
 \subsubsection{Detalles de implementación}
@@ -916,7 +912,7 @@ es actualizado con el nuevo descubrimiento.
 
 En esta implementación las épocas están definidas por todos los elementos en una misma transacción
 (es decir, un hash), similar
-a la implementación de \compresschain.
+a lo presentado para \compresschain.
 %
 En otras palabras, los elementos que provienen del mismo hash consolidado pertenecen a la
 misma época.
@@ -966,7 +962,6 @@ apenas éste consolida, porque el hash $j$ fue visto por primera vez antes que $
 Dado que el hash $j$ consolida justo después que el hash $k$, los elementos del hash $j$ son
 estampados
 con la época $a$ y los elementos del hash $k$, con la época $a+1$. 
-
 
 \begin{figure}
   \centering
@@ -1028,16 +1023,20 @@ consigan las \SPH firmas dentro del período de gracia.
 \subsection{Algoritmos}\label{subsubsec:details}
 
 Al igual que se hizo para \vanilla y \compresschain, en esta subsección se presentan los pseudocódigos
-para los distintos algoritmos. No definimos un nuevo \texttt{collector} para \hashchain dado que
+para los distintos algoritmos. 
+
+No definimos un nuevo \texttt{collector} para \hashchain dado que
 es similar al definido
 para \compresschain, con la única diferencia del uso de funciones hash en lugar de funciones de compresión.
+
+En el Algoritmo ~\ref{alg:collector-hash} se muestra una implementación posible para un
+\hcollector.
+
 
 % No collector piece for Hashchain appears as it is similar to the already
 % presented collector for Brotli, employing hash functions instead of Brotli
 % compression.
 En el Algoritmo ~\ref{alg:api-hashchain} se define la API de \setchain.
-
-\input{algorithms/alg-api-hash}
 
 % shows how a new collector is
 % used now in order to add elements to the \setchain.
@@ -1061,8 +1060,16 @@ no radica en las épocas a medio construir, puesto que el proceso de construcci�
 En este contexto, en $\THESET $ se encuentran todos los elementos que el nodo firma y difunde, aún antes de ser estampados con un
 número de época. Notemos que esto es correcto puesto que eventualmente todos los nodos correctos van a recibir el lote correspondiente
 y firmarlo, por lo que con seguridad sus elementos tendrán un número de época asignado en el futuro.
+
+
+\input{algorithms/alg-collector-hash}
+
+\input{algorithms/alg-api-hash}
+
 \input{algorithms/alg-abci-hash}
-%As mentioned above, Hashchain First Seen Consolidation version uses an idea of grace period in which the hashes are either consolidated or discarded. In this case, we will define the grace period in terms of number of blocks, meaning that if a hash has been seen for the first time in block $B$, and the grace period is $P$ blocks, then on block $B$ + $P$ we will determine if the hash is consolidated (hence, their elements are added to the \setchain), or is discarded. To implement this, we will keep a fixed capacity queue (with capacity $P + 1$), in which the \textit{i}-th element has a list of hashes seen for first time in block $current block - (P - i)$. Notice that the first element of the queue has the list of hashes that were seen for first time in block $current block - P$, meaning that those hashes will be decided in the current block. The last element of the queue has the list of hashes first seen at the current block. Algorithm ~\ref{alg:abci-hash-first-seen} illustrates this behavior.
+
+
+% Make this appears after all the algorithms.
 
 \subsection{Front-running en \hashchain: el ataque del clarividente}
 En el contexto de las blockchains, un ataque de \textit{front-running}~\cite{frontrunning} refiere a una situación en donde

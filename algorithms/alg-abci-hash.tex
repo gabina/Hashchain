@@ -17,7 +17,7 @@
 
 						\Comment{Si el nodo no tiene el lote original, lanzar una rutina asíncrona que solicita el lote.}
             		
-                		\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
+                		\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}
                 		\State \textbf{return True}
 						\Comment{En caso de ausencia de información, retornar True.}
                 	\Else
@@ -32,7 +32,7 @@
             				\State \texttt{epoch\_to\_hash[next\_epoch]} $\leftarrow$ $hash$
             				\State \texttt{next\_epoch} $\leftarrow$ \texttt{next\_epoch} + 1
             				\If {not \texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
-                				\State \textbf{spawns} \Call{\<revertHash>}{$hash, signature$}
+                				\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}
                 			\EndIf
                	 	\EndIf
                	 \EndIf
@@ -78,8 +78,8 @@
       \label{alg:abci-hash2}%
       \small
       \begin{algorithmic}[1]
-            	\Function{\<revertHash>}{$hash, signature$}\label{alg:hash_revert}
-                \State \texttt{original\_batch} $\leftarrow$ requestHash($hash, signature$)
+            	\Function{\<reverse>}{$hash, signature$}\label{alg:hash_revert}
+                \State \texttt{original\_batch} $\leftarrow$ \texttt{my\_collector}.\<Reverse>($hash, signature$)
                 \If {Hash(\texttt{original\_batch}) = $hash$}
 					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch}     
                 		\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}

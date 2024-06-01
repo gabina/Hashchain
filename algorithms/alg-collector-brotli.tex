@@ -12,15 +12,14 @@
             \Function{\<AddElement>}{$element$}\label{alg:brotli_add_tx}
             		\If {\<isValidElement>($element$)}
             			\State \texttt{encoded\_element} $\leftarrow$ \texttt{RLP.Encode}($element$)
-					\State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \{\texttt{encoded\_element}\}
-            
+					        \State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \{\texttt{encoded\_element}\}
+                \EndIf
+
              		\If {\<isReady>(\<batch>)}
              			\State \texttt{compressed\_batch} $\leftarrow$  \texttt{Brotli.Compress}(\texttt{batch})
-                			\State \texttt{Tendermint.Broadcast}(\texttt{compressed\_batch})
-                			\State \Call{\<reset>}{\null}
-             	   \EndIf
-             	\EndIf
-                	
+                	\State \texttt{Tendermint.Broadcast}(\texttt{compressed\_batch})
+              		\State \Call{\<reset>}{\null}
+             	  \EndIf	
                 \State \textbf{return}
             \EndFunction
             
