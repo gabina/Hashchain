@@ -159,6 +159,24 @@ De los distintos clientes nativos que provee Tendermint, el cliente HTTP
 es la implementación más adecuada de utilizar en un entorno
 real, y es por eso que se elige para este trabajo.
 
+La aplicación necesita acceso a una base de datos persistente, de modo de ir añadiendo
+los elementos correspondientes a cada época de la \setchain.
+%
+Esta base de datos persistente se implementa utilizando el paquete \textit{BadgerDB}\cite{db.badger},
+que provee una base de datos simple y rápida de tipo clave-valor, escrita completamente en Go.
+%
+Dependiendo del caso de uso de \setchain se pueden pensar distintas formas de almacenar los elementos y sus
+respectivas épocas, de modo de hacer más eficiente las búsquedas necesarias.
+%
+Por ejemplo, si fuera importante determinar rápidamente si un elemento ya es parte de la \setchain y con que número de época
+fue estampado, entonces, al agregar un nueva entrada a la base de datos, las claves podrían ser elementos, y los
+valores, el número de época al que dicho elemento pertenece.
+%
+Por otro lado, si se quisiera dar mayor eficiencia a determinar todos los elementos pertenecientes a una época dada,
+los valores podrían ser números de épocas, y las claves los elementos en ella.
+%
+Incluso podría utilizarse un sistema híbrido, de modo de hacer eficiente diversas búsquedas.
+
 \subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %
 Como se mencionó antes, cuando un proceso cliente utiliza la API de \setchain
@@ -765,7 +783,7 @@ menos un elemento en el hash es válido, como se explicará con más detalle en 
 %
 
 Es importante aclarar que, en principio, las claves públicas/privadas que sirven para autenticarse
-funcionan a nivel nodo: aplicaicón y \hcollector comparten una misma clave.
+funcionan a nivel nodo: aplicación y \hcollector comparten una misma clave.
 
 \subsubsection{Detalles de implementación}
 El \hcollector se implementa, similar a su contraparte en \compresschain, como un servidor HTTP RPC.
@@ -773,12 +791,26 @@ El \hcollector se implementa, similar a su contraparte en \compresschain, como u
 La comunicación con él por parte del cliente no cambia respecto a lo presentado para el \collector
 de \compresschain.
 %
-La comunicación entre la aplicación y el \hashcollector se hace también de la misma manera.
+La comunicación entre la aplicación y el \hcollector, necesaria para la inversión de hashes,
+se hace también de la misma manera.
+Es decir, la aplicación actúa como cliente para la comunicación cliente-servidor que establece con
+su propio \hcollector.
 %
+A su vez, es también mediante HTTP RPC que un \hcollector a quien su respectiva aplicación
+le solicitó revertir un hash, se comunica con el \hcollector correspondiente, en función de clave
+pública asociada a este (recordar que los hashes a revertir están acompañados de una firma, de la cual
+es posible recuperar la clave pública de quien afirma conocer el hash).
 
-
-La implementación del \hcollector involucra una base de datos persistente capaz de almacenar ¿Cómo se comunica un collector con otro? ¿Cómo se maneja el tema de las claves?
-¿Cómo se guardan los mapeos de hashes a elementos en base de datos consistente?
+La implementación del \hcollector involucra una base de datos persistente capaz de almacenar
+las correspondencias entre hashes y lotes.
+%
+Cada una de ellas se añade a la base de datos a medida que se crean nuevos hashes
+o se descubren por medio de otro \hcollector.
+%
+Dicha base de datos persistente se implementa como una base de datos de tipo clave-valor, utilizando el paquete
+\textit{BadgerDB}.
+%
+Las claves son los hashes y los valores son el lote de elementos asociados.
 
 \subsection{Validación de hashes}
 
