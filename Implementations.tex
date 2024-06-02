@@ -751,7 +751,7 @@ en el proceso de inversión.
   \subfloat[El \hcollector conoce el hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-2.png}\label{subfig:hash-flow-b}}\\
   \subfloat[El \hcollector no conoce el hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-3.png}\label{subfig:hash-flow-c}}\\
   \subfloat[Se anuncia a la red el conocimiento de un hash]{\includegraphics[width = 3.5in]{figures/inversion-hash-4.png}\label{subfig:hash-flow-d}}
-  \caption{Flujo usual de mensajes para \hashchain}
+  \caption{Flujo usual de mensajes para la inversión de hashes}
   \label{fig:hash-inversion-flow}
 \end{figure}
 
@@ -793,17 +793,19 @@ Es decir, la aplicación actúa como cliente para la comunicación cliente-servi
 su propio \hcollector.
 %
 A su vez, es también mediante HTTP RPC que un \hcollector a quien su respectiva aplicación
-le solicitó revertir un hash, se comunica con el \hcollector correspondiente, en función de clave
+le solicitó revertir un hash, se comunica con el \hcollector correspondiente, en función de la clave
 pública asociada a este (recordar que los hashes a revertir están acompañados de una firma, de la cual
 es posible recuperar la clave pública de quien afirma conocer el hash).
 
 La implementación del \hcollector involucra una base de datos persistente capaz de almacenar
 las correspondencias entre hashes y lotes.
 %
-Cada una de ellas se añade a la base de datos a medida que se crean nuevos hashes
-o se descubren por medio de otro \hcollector.
+%Cada nueva entrada en esta base de datos es agregada por el \hcollector.
 %
-Dicha base de datos persistente se implementa como una base de datos de tipo clave-valor, utilizando el paquete
+A medida que los clientes envían elementos que terminan en la creación de un nuevo hash, o que nuevos hashes se descubren
+por medio de otro \hcollector, se agregan nuevas entradas en esta base de datos.
+%
+Se implementa como una base de datos de tipo clave-valor, utilizando el paquete
 \textit{BadgerDB}.
 %
 Las claves son los hashes y los valores son el lote de elementos asociados.
@@ -1025,13 +1027,22 @@ consigan las \SPH firmas dentro del período de gracia.
 Al igual que se hizo para \vanilla y \compresschain, en esta subsección se presentan los pseudocódigos
 para los distintos algoritmos. 
 
-No definimos un nuevo \texttt{collector} para \hashchain dado que
-es similar al definido
-para \compresschain, con la única diferencia del uso de funciones hash en lugar de funciones de compresión.
+%No definimos un nuevo \texttt{collector} para \hashchain dado que
+%es similar al definido
+%para \compresschain, con la única diferencia del uso de funciones hash en lugar de funciones de compresión.
 
 En el Algoritmo ~\ref{alg:collector-hash} se muestra una implementación posible para un
 \hcollector.
-
+%
+La definición de \<AddElement> es similar a la presentada para \compresschain,
+con la única diferencia del uso de funciones hash en lugar de funciones de compresión.
+%
+La definición de \<Reverse> se corresponde con lo explicado mediante la Figura ~\ref{fig:hash-inversion-flow}.
+%
+Al recibir una petición para la inversión de un hash, si el \hcollector ya conoce el lote asociado al hash
+(es decir, lo tiene en su base de datos local), lo retorna.
+%
+Por el contrario, si no lo conoce, se comunica con el \hcollector correspondiente para obtenerlo.  
 
 % No collector piece for Hashchain appears as it is similar to the already
 % presented collector for Brotli, employing hash functions instead of Brotli
@@ -1071,8 +1082,9 @@ y firmarlo, por lo que con seguridad sus elementos tendrán un número de época
 
 % Make this appears after all the algorithms.
 
-\subsection{Front-running en \hashchain: el ataque del clarividente}
-En el contexto de las blockchains, un ataque de \textit{front-running}~\cite{frontrunning} refiere a una situación en donde
+\subsection{FSEC vs CEC}
+En esta sección se comparan las estrategias FSEC y CEC a partir de la idea de ataques de \textit{front-running}.
+En el contexto de las blockchains, un ataque de front-running~\cite{frontrunning} refiere a una situación en donde
 un actor malicioso explota conocimiento sobre transacciones pendientes para obtener una ventaja
 desleal. Debido a que las transacciones pendientes son públicas, un usuario malicioso puede
 observar las transacciones que le llegan a una víctima, construir una nueva transacción y luego
@@ -1082,7 +1094,7 @@ llevada a cabo mediante pagos: o bien pagando impuestos de transacción (\textit
 que la víctima, o haciendo pagos directos a ciertos validadores.
 %
 
-\subsubsection{El ataque del clarividente}
+\subsubsection{Front-running en \hashchain}
 ¿Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
 Supongamos que un validador $v$ recibe una transacción $(h_0, s_0)$, donde $h_0$ es un hash,
 y $s_0$ una firma de aquel hash (la primera). Un validador especulador puede firmar él mismo la
@@ -1165,7 +1177,7 @@ que una vez que el hash $h_1$ consolidó, sus elementos son estampados con un n�
 a cualquier hash que aún no consolidó.
 %
 
-\subsubsection{Ejemplo}
+\subsubsection{El ataque del clarividente}
 
 Volvamos a este ataque con un ejemplo. Supongamos que hay un juego de apuestas simple en donde
 las apuestas y el resultado final se publican en la \hashchain. El juego es sencillo: los usuarios

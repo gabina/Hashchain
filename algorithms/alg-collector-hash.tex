@@ -18,23 +18,33 @@
                 \If {\<isReady>(\<batch>)}
              		  \State \texttt{hash} $\leftarrow$  \texttt{Hash}(\texttt{batch})
                 	\State \texttt{Tendermint.Broadcast}(\texttt{hash})
-              		\State \Call{\<reset>}{\null}
+              		%\State \Call{\<reset>}{\null}
+                  \State \texttt{batch} $\leftarrow$ \{\}
              	  \EndIf
                 \State \textbf{return}
             \EndFunction
 
+            \smallskip
+
             \Function{\<Reverse>}{$h$, $s$}\label{alg:hash_request_tx}
-              \State \texttt{public\_key} = \<RecoverPK>($s$)
-              \If {\texttt{public\_key} = \texttt{MY\_PUBLIC\_KEY}}
-                \State \texttt{batch} = \texttt{DATA\_BASE[$h$]} 
+              \If {\texttt{DATA\_BASE}.Get($h$) \texttt{is not null}}
+                \State \texttt{batch} = \texttt{DATA\_BASE}.Get($h$)
+                \Comment{Obtener el lote de la base de datos local.}
+              \Else
+                \State \texttt{public\_key} = \<RecoverPK>($s$)
+                \State \texttt{collector} = \texttt{BuildCollector(public\_key)}
+                \State \texttt{batch} = \texttt{collector}.\Call{\<Reverse>}{$h$, $s$}
+                \Comment{Obtener el lote mediante otro collector.}
+                \State \texttt{DATA\_BASE}.Set($h$, \texttt{batch})
+                \Comment{Añadir la nueva entrada a la base de datos local.}
               \EndIf
-              \State \textbf{return}
+              \State \textbf{return} \texttt{batch}
             \EndFunction
             
-            \Function{\<reset>}{\null}\label{alg:hash_reset}
-            		\State \texttt{batch} $\leftarrow$ \{\}
-                \State \textbf{return}
-            \EndFunction
+            % \Function{\<reset>}{\null}\label{alg:hash_reset}
+            % 		\State \texttt{batch} $\leftarrow$ \{\}
+            %     \State \textbf{return}
+            % \EndFunction
         \end{algorithmic}
       \end{algorithm}
 	\end{adjustbox}

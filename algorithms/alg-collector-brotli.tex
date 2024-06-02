@@ -18,15 +18,16 @@
              		\If {\<isReady>(\<batch>)}
              			\State \texttt{compressed\_batch} $\leftarrow$  \texttt{Brotli.Compress}(\texttt{batch})
                 	\State \texttt{Tendermint.Broadcast}(\texttt{compressed\_batch})
-              		\State \Call{\<reset>}{\null}
+              		%\State \Call{\<reset>}{\null}
+                  \State \texttt{batch} $\leftarrow$ \{\}
              	  \EndIf	
                 \State \textbf{return}
             \EndFunction
             
-            \Function{\<reset>}{\null}\label{alg:brotli_reset}
-            		\State \texttt{batch} $\leftarrow$ \{\}
-                \State \textbf{return}
-            \EndFunction
+            % \Function{\<reset>}{\null}\label{alg:brotli_reset}
+            % 		\State \texttt{batch} $\leftarrow$ \{\}
+            %     \State \textbf{return}
+            % \EndFunction
         \end{algorithmic}
       \end{algorithm}
 	\end{adjustbox}

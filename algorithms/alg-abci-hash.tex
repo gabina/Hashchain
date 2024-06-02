@@ -79,7 +79,7 @@
       \small
       \begin{algorithmic}[1]
             	\Function{\<reverse>}{$hash, signature$}\label{alg:hash_revert}
-                \State \texttt{original\_batch} $\leftarrow$ \texttt{my\_collector}.\<Reverse>($hash, signature$)
+                \State \texttt{original\_batch} $\leftarrow$ \texttt{my\_collector}.\Call{\<Reverse>}{$hash, signature$}
                 \If {Hash(\texttt{original\_batch}) = $hash$}
 					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch}     
                 		\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}
