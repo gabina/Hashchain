@@ -701,7 +701,7 @@ el flujo de mensajes implicará resolver el problema de la obtención de element
 A este proceso lo llamaremos \textit{inversión de hashes}.
 
 
-\subsection{Algoritmo distribuido para la inversión de hashes}
+\subsection{Algoritmo distribuido para la inversión de hashes}\label{subsec:hash-inversion}
 
 %Como ya se mencionón, el \textit{hash collector} adopta un concepto similar al \textit{compression collector}
 %de Compresschain. Sin embargo, la definición de la ABCI para Hashchain es considerablemente más compleja.
@@ -939,9 +939,9 @@ una vez que un hash consolida, todos sus elementos subyacentes son añadidos a l
 La segunda estrategia, \textit{Consolidación de época de primera vista} (FSEC), asigna la época
 de acuerdo a cuándo el hash fue visto por privera vez. La asignación de época se lleva
 a cabo una vez que el hash consolidó. 
-
 %
-Las transacciones (hashes en este caso) en los bloques de Tendermint están totalmente ordenadas,
+Las transacciones
+en los bloques de Tendermint están totalmente ordenadas,
 por lo tanto ambas estrategias pueden determinar cuál hash ocurrió o consolidó primero, y
 todos los nodos correctos estarán de acuerdo en eso.
 
@@ -951,8 +951,12 @@ Para ver claramente la diferencia entre estas dos alternativas se presenta un ej
 En la Figura~\ref{fig:consolidation_epoch} se ilustran estas dos estrategias para asignar
 un número de época a un hash que consolidó cuando \SPH es 3.
 %
-El hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que primero consolida
-(es decir, el primero en obtener su tercera firma).
+Como se mencionó en la Sección ~\ref{subsec:hash-inversion}, las transacciones se representan
+con una tupla $(h, s)$, donde $h$ es un hash y $s$ es una firma de dicho hash generada con la
+clave privada de un validador que afirma conocer los elementos de ese hash.
+%
+En la figura, el hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que primero consolida
+(es decir, el primero en obtener su tercera firma -denotada como $Firma_{k}2$).
 %
 Por un lado, la estrategia de consolidación de época actual asigna la época tan pronto como
 el hash consolida, estampando los elementos en el hash $k$ con época $a$ primero y luego
@@ -967,7 +971,7 @@ con la época $a$ y los elementos del hash $k$, con la época $a+1$.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.7]{figures/consolidation_epoch.pdf}
+  \includegraphics[scale=0.28]{figures/consolidation-example.png}
   \caption{Estrategias de consolidación de épocas}
   \label{fig:consolidation_epoch}
 \end{figure}
@@ -1097,12 +1101,13 @@ que la víctima, o haciendo pagos directos a ciertos validadores.
 \subsubsection{Front-running en \hashchain}
 ¿Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
 Supongamos que un validador $v$ recibe una transacción $(h_0, s_0)$, donde $h_0$ es un hash,
-y $s_0$ una firma de aquel hash (la primera). Un validador especulador puede firmar él mismo la
+y $s_0$ una firma de aquel hash (la primera que el validador recibe).
+Un validador especulador puede firmar él mismo la
 transacción y difundirla (el comportamiento esperado), o puede ignorarla (un posible comportamiento
 malicioso). Si el validador la firma y la difunde, entonces está colaborando para que el hash
 consolide (y, por lo tanto, los elementos provenientes de él se agreguen a la  \setchain).
 En caso contrario, no contribuirá a que el hash consolide, potencialmente causando retrasos
-o incluso evitando la consolidación.
+en la consolidación.
 %
 
 ¿Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
@@ -1129,7 +1134,7 @@ Bajo el comportamiento FSEC, $h_0$ fue vista por primera vez antes, por lo que s
 en el hash serán estampados con una época menor a la de $t_1$.
 %
 Notemos que esto es completamente independiente del número de firmas que $h_1$ logre y la velocidad
-a la cual lo haga. $h_1$ podría incluso consolidar (llegar a su firma \SPH)
+a la cual lo haga. El hash $h_1$ podría incluso consolidar (llegar a su firma \SPH)
 antes que $h_0$.
 %
 
@@ -1147,9 +1152,11 @@ de front-running, dado que las transacciones observadas primero son probablmente
 originales.
 %At girst glance, we could think that this property is an interesting point to go against
 %front-running attacks, as first-seen transactions are probably the legit original transactions.
-Sin embargo, la estrategia FSEC viene con algunos apesctos negativos no triviales.
-%
-Como la época es determinada por el momento en el cual el hash fue visto por primera vez, 
+Sin embargo, la estrategia FSEC viene con algunos apesctos negativos no triviales que se presentan
+a continuación.
+
+
+Dado que la época en FSEC es determinada por el momento en el cual el hash fue visto por primera vez, 
 la estrategia de alguna manera \textit{reserva} el número de época para la transacción específica.
 Si $v$ quiere que un hash $h_0$ consolide únicamente si puede hacerlo antes que otro hash
 $h_1$ (y no necesita conocer los elementos de $h_1$ desde antes), $v$ podría hacer lo siguiente.

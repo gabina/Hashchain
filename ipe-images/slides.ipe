@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.24">
-<info created="D:20100311191937" modified="D:20240518230008" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
+<info created="D:20100311191937" modified="D:20240602235349" title="Setchain" author="Margarita Capretto" numberpages="yes" tex="pdftex"/>
 <preamble>
 \input{preamble}</preamble>
 <bitmap id="1" width="512" height="512" BitsPerComponent="8" ColorSpace="DeviceRGBAlpha" Filter="FlateDecode" length="4518" alphaLength="7522" encoding="base64">
@@ -27690,7 +27690,7 @@ h
 <group matrix="1 0 0 1 -215.056 -158.397" decoration="decoration/rounded-box-small-yellow">
 <text matrix="1 0 0 1 269.47 170.874" transformations="translations" pos="38.5282 305.594" stroke="black" type="label" width="25.9009" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">\textit{Firma}</text>
 </group>
-<path layer="alpha" matrix="1 0 0 1 234 68" stroke="black">
+<path layer="alpha" matrix="1 0 0 0.771049 234 102.136" stroke="black">
 32 432 m
 32 80 l
 224 80 l
@@ -27725,7 +27725,7 @@ h
 <group matrix="1 0 0 1 215 8" decoration="decoration/rounded-box-small-white">
 <text transformations="translations" pos="64 184" stroke="black" type="label" width="20.4779" height="6.95259" depth="0" valign="baseline" size="tiny">RPC</text>
 </group>
-<path matrix="1 0 0 1 472 68" stroke="black">
+<path matrix="1 0 0 0.771049 472 102.136" stroke="black">
 32 432 m
 32 80 l
 224 80 l
@@ -27765,7 +27765,7 @@ h
 52 176
 44 124 c
 </path>
-<path layer="alpha" matrix="1 0 0 1 -10 68" stroke="black">
+<path layer="alpha" matrix="1 0 0 0.771049 -10 102.136" stroke="black">
 32 432 m
 32 80 l
 224 80 l
@@ -27866,9 +27866,9 @@ h
 <group matrix="1 0 0 1 -259.056 -246.397" decoration="decoration/rounded-box-small-green">
 <text matrix="1 0 0 1 269.47 170.874" transformations="translations" pos="38.5282 305.594" stroke="black" type="label" width="25.9009" height="6.95259" depth="0" valign="baseline" size="tiny" opacity="70%">\textit{Firma}</text>
 </group>
-<text layer="alpha" matrix="1 0 0 1 -23.7421 0" transformations="translations" pos="84 460" stroke="black" type="label" width="115.484" height="18.0076" depth="5.018" valign="baseline">M\&apos;aquina 1</text>
-<text matrix="1 0 0 1 220.258 0" transformations="translations" pos="84 460" stroke="black" type="label" width="115.484" height="18.0076" depth="5.018" valign="baseline">M\&apos;aquina 2</text>
-<text matrix="1 0 0 1 458.258 0" transformations="translations" pos="84 460" stroke="black" type="label" width="115.484" height="18.0076" depth="5.018" valign="baseline">M\&apos;aquina 3</text>
+<text layer="alpha" matrix="1 0 0 1 -5.9698 0" transformations="translations" pos="84 460" stroke="black" type="label" width="79.9396" height="17.9868" depth="0" valign="baseline">Nodo 1</text>
+<text matrix="1 0 0 1 238.03 0" transformations="translations" pos="84 460" stroke="black" type="label" width="79.9396" height="17.9868" depth="0" valign="baseline">Nodo 2</text>
+<text matrix="1 0 0 1 476.03 0" transformations="translations" pos="84 460" stroke="black" type="label" width="79.9396" height="17.9868" depth="0" valign="baseline">Nodo 3</text>
 </page>
 <page>
 <layer name="alpha"/>
@@ -28835,5 +28835,183 @@ h
 <text matrix="1 0 0 1 180.187 -1.47629" transformations="translations" pos="416 320" stroke="black" type="label" width="88.4279" height="12.5163" depth="0" valign="baseline" size="small">Tendermint</text>
 <text matrix="1 0 0 1 94.8307 -5.4763" transformations="translations" pos="528 304" stroke="black" type="label" width="35.1408" height="12.5163" depth="0" valign="baseline" size="small">Core</text>
 </group>
+</page>
+<page>
+<layer name="alpha"/>
+<view layers="alpha" active="alpha"/>
+<group layer="alpha" matrix="1 0 0 1 0 12">
+<path matrix="0.724002 0 0 0.761905 -34.1124 48.381" stroke="black" fill="lightgray">
+188 204 m
+188 52 l
+492 52 l
+492 204 l
+h
+</path>
+<text matrix="1 0 0 1 -136.903 4.64663" transformations="translations" pos="316 176" stroke="black" type="label" width="65.9019" height="12.5163" depth="0" valign="baseline" size="small">Setchain</text>
+<text matrix="1 0 0 1 -187.159 8.64663" transformations="translations" pos="332 156" stroke="black" type="label" width="134.415" height="6.97068" depth="1.9296" valign="baseline" size="tiny">Consolidaci\&apos;on de \&apos;epoca actual</text>
+<text matrix="1 0 0 1 -48.3547 -214.829" transformations="translations" pos="180 348" stroke="black" type="label" width="36.2785" height="9.47313" depth="1.9296" valign="baseline" size="tiny">\&apos;Epoca a</text>
+<path matrix="1 0 0 1 6.05205 -251.353" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.62491 0 0 1 137.055 -297.353" stroke="black" fill="lightblue">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 123.151 -249.085" transformations="translations" pos="84 384" stroke="black" type="label" width="93.7946" height="6.96063" depth="3.4974" valign="baseline" size="tiny">Elementos del Hash\textsubscript{k}</text>
+<text matrix="1 0 0 1 -61.9483 -242.829" transformations="translations" pos="180 348" stroke="black" type="label" width="49.8721" height="9.47313" depth="1.9296" valign="baseline" size="tiny">\&apos;Epoca a+1</text>
+<path matrix="1 0 0 1 6.05205 -279.353" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.61844 0 0 1 137.313 -325.353" stroke="black" fill="lightyellow">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 124.126 -276.163" transformations="translations" pos="84 384" stroke="black" type="label" width="91.4309" height="6.96666" depth="5.3466" valign="baseline" size="tiny">Elementos del Hash\textsubscript{j}</text>
+</group>
+<path matrix="0.724002 0 0 0.761905 213.888 60.381" stroke="black" fill="lightgray">
+188 204 m
+188 52 l
+492 52 l
+492 204 l
+h
+</path>
+<text matrix="1 0 0 1 111.098 16.6466" transformations="translations" pos="316 176" stroke="black" type="label" width="65.9019" height="12.5163" depth="0" valign="baseline" size="small">Setchain</text>
+<text matrix="1 0 0 1 38.716 20.6466" transformations="translations" pos="332 156" stroke="black" type="label" width="178.665" height="6.97068" depth="1.9296" valign="baseline" size="tiny">Consolidaci\&apos;on de \&apos;epoca de primera vista</text>
+<text matrix="1 0 0 1 199.645 -202.829" transformations="translations" pos="180 348" stroke="black" type="label" width="36.2785" height="9.47313" depth="1.9296" valign="baseline" size="tiny">\&apos;Epoca a</text>
+<path matrix="1 0 0 1 254.052 -239.353" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.62491 0 0 1 385.055 -285.353" stroke="black" fill="lightcyan">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 371.151 -237.085" transformations="translations" pos="84 384" stroke="black" type="label" width="91.4309" height="6.96666" depth="5.3466" valign="baseline" size="tiny">Elementos del Hash\textsubscript{j}</text>
+<text matrix="1 0 0 1 186.052 -230.829" transformations="translations" pos="180 348" stroke="black" type="label" width="49.8721" height="9.47313" depth="1.9296" valign="baseline" size="tiny">\&apos;Epoca a+1</text>
+<path matrix="1 0 0 1 254.052 -267.353" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.61844 0 0 1 385.314 -313.353" stroke="black" fill="darkgray">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 372.126 -264.163" transformations="translations" pos="84 384" stroke="black" type="label" width="93.7946" height="6.96063" depth="3.4974" valign="baseline" size="tiny">Elementos del Hash\textsubscript{k}</text>
+<text matrix="1 0 0 1 204.37 -44" transformations="translations" pos="92 452" stroke="black" type="label" width="79.3568" height="12.5163" depth="0" valign="baseline" size="small">Hashchain</text>
+<path matrix="0.837398 0 0 0.9 46.3085 24" stroke="black">
+100 460 m
+100 240 l
+592 240 l
+592 460 l
+h
+</path>
+<text matrix="1 0 0 1 -72.8805 0.50351" transformations="translations" pos="292 256" stroke="black" type="label" width="42.9537" height="6.97068" depth="1.9296" valign="baseline" size="tiny">Bloque m</text>
+<text matrix="1 0 0 1 111.173 0.50351" transformations="translations" pos="292 256" stroke="black" type="label" width="56.5473" height="6.97068" depth="1.9296" valign="baseline" size="tiny">Bloque m+1</text>
+<path matrix="0.911407 0 0 1 225.469 -16" stroke="black" fill="lightgray">
+136 404 m
+136 292 l
+316 292 l
+316 404 l
+h
+</path>
+<text matrix="1 0 0 1 183.244 12.524" transformations="translations" pos="180 348" stroke="black" type="label" width="17.487" height="6.95259" depth="0" valign="baseline" size="tiny">Tx0</text>
+<path matrix="1 0 0 1 219.244 -24" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.31884 0 0 1 362.49 -70" stroke="black">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 337.335 -21.7316" transformations="translations" pos="84 384" stroke="black" type="label" width="72.2233" height="6.96063" depth="3.4974" valign="baseline" size="tiny">Hash\textsubscript{k}, Firma\textsubscript{k}1</text>
+<text matrix="1 0 0 1 183.244 -19.476" transformations="translations" pos="180 348" stroke="black" type="label" width="17.487" height="6.95259" depth="0" valign="baseline" size="tiny">Tx1</text>
+<path matrix="1 0 0 1 219.244 -56" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<text matrix="1 0 0 1 183.244 -51.476" transformations="translations" pos="180 348" stroke="black" type="label" width="17.487" height="6.95259" depth="0" valign="baseline" size="tiny">Tx2</text>
+<path matrix="1 0 0 1 219.244 -88" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.31884 0 0 1 362.49 -102" stroke="black" fill="lightblue">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<path matrix="1.31884 0 0 1 362.49 -134" stroke="black" fill="lightyellow">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<path matrix="0.910813 0 0 1 34.7526 -16" stroke="black" fill="lightgray">
+136 404 m
+136 292 l
+316 292 l
+316 404 l
+h
+</path>
+<text matrix="1 0 0 1 337.335 -53.7316" transformations="translations" pos="84 384" stroke="black" type="label" width="72.2233" height="6.96063" depth="3.4974" valign="baseline" size="tiny">Hash\textsubscript{k}, Firma\textsubscript{k}2</text>
+<text matrix="1 0 0 1 339.7 -84.81" transformations="translations" pos="84 384" stroke="black" type="label" width="67.4938" height="6.96666" depth="5.3466" valign="baseline" size="tiny">Hash\textsubscript{j}, Firma\textsubscript{j}2</text>
+<text matrix="1 0 0 1 -7.81342 12.5237" transformations="translations" pos="180 348" stroke="black" type="label" width="17.487" height="6.95259" depth="0" valign="baseline" size="tiny">Tx0</text>
+<path matrix="1 0 0 1 28.1866 -24" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.3253 0 0 1 171.174 -70" stroke="black" fill="lightcyan">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 148.849 -20.81" transformations="translations" pos="84 384" stroke="black" type="label" width="67.4938" height="6.96666" depth="5.3466" valign="baseline" size="tiny">Hash\textsubscript{j}, Firma\textsubscript{j}0</text>
+<text matrix="1 0 0 1 -7.81342 -51.4763" transformations="translations" pos="180 348" stroke="black" type="label" width="17.487" height="6.95259" depth="0" valign="baseline" size="tiny">Tx2</text>
+<path matrix="1 0 0 1 28.1866 -88" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<text matrix="1 0 0 1 148.849 -84.81" transformations="translations" pos="84 384" stroke="black" type="label" width="67.4938" height="6.96666" depth="5.3466" valign="baseline" size="tiny">Hash\textsubscript{j}, Firma\textsubscript{j}1</text>
+<text matrix="1 0 0 1 -7.81342 -19.4763" transformations="translations" pos="180 348" stroke="black" type="label" width="17.487" height="6.95259" depth="0" valign="baseline" size="tiny">Tx1</text>
+<path matrix="1 0 0 1 28.1866 -56" stroke="black" arrow="latexarc/normal">
+196 388 m
+168 388 l
+</path>
+<path matrix="1.3253 0 0 1 171.174 -102" stroke="black" fill="darkgray">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<path matrix="1.3253 0 0 1 171.174 -134" stroke="black">
+40 444 m
+40 424 l
+104 424 l
+104 444 l
+h
+</path>
+<text matrix="1 0 0 1 146.484 -53.7316" transformations="translations" pos="84 384" stroke="black" type="label" width="72.2233" height="6.96063" depth="3.4974" valign="baseline" size="tiny">Hash\textsubscript{k}, Firma\textsubscript{k}0</text>
 </page>
 </ipe>
