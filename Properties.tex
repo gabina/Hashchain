@@ -5,15 +5,60 @@ Es decir, se prueba que dichos algoritmos satisfacen las propiedades deseadas pa
 implementación de \setchain introducidas en~\ref{subsubsec:setchain-properties}.
 
 \section{Propiedades de Tendermint}\label{sec:properties}
-TODO: lo primero que hay que hacer es definir bien lo que devuelve get.
-
 Dado que todas las soluciones presentadas en este trabajo son construidas sobre Tendermint,
 para probar la correctitud de ellas, será necesario recapitular las propiedades que la
 plataforma Tendermint garantiza.
 
+El modelo de Tendermint considera un sistema de procesos que se comunican mediante el intercambio de
+mensajes.
+Los procesos pueden ser correctos o defectuosos, donde un proceso defectuoso se comporta de maneras
+arbitrarias. Es decir, se consideran procesos bizantinos.
+
+Se asume que cada proceso tiene una cantidad determinada de \textit{poder de voto} (el poder de
+voto de un proceso puede ser 0).
+%
+En el contexto de Tendermint, denotamos con \textit{n} el poder de voto total de los procesos
+en el sistema, y asumimos una cota superior \textit{f} en el poder de voto total proveniente de
+los procesos bizantinos.
+%
+El algoritmo de consenso de Tendermint asume que $n > 3f$, es decir, requiere que el poder de voto
+en manos de procesos bizantinos sea menor a 1/3 del poder de voto total.
+Por simplicidad, en ocasiones se considera $n = 3f + 1$.
+% We consider a system of processes that communicate by exchanging messages. Processes can be correct or
+% faulty, where a faulty process can behave in an arbitrary way, i.e., we consider Byzantine faults. We assume
+% that each process has some amount of voting power (voting power of a process can be 0). Processes in our
+% model are not part of a single administrative domain; therefore we cannot enforce a direct network connectivity
+% between all processes. Instead, we assume that each process is connected to a subset of processes called peers,
+% such that there is an indirect communication channel between all correct processes. Communication between
+% processes is established using a gossip protocol
+
 \newcounter{prop:tendermint}
 \setcounter{prop:tendermint}{\value{property}}
 
+\begin{property}[Tendermint-Agreement]\label{tendermint:agreement}
+  Dos procesos correctos nunca deciden valores distintos.
+\end{property}
+
+\begin{property}[Tendermint-Termination]\label{tendermint:termination}
+    Todos los procesos correctos deciden eventualmente un valor.
+\end{property}
+
+Las propiedades ~\ref{tendermint:agreement} y ~\ref{tendermint:termination}
+son demostradas en ~\cite{Buchman.2018.Tendermint}.
+\section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
+\begin{itemize}
+  \item La \textit{Propiedad 1 (Consistent Sets)} de \setchain establece que las épocas solo contienen
+  elementos que provienen del conjunto de solo crecimiento. Esto es trivialmente correcto debido a que la
+  construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
+  \<DeliverTx> en el Algoritmo~\ref{alg:abci-vanilla}).
+  \item La \textit{Propiedad 2 (Add-Get-Local)} declara que todo elemento añadido a un
+  servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
+\end{itemize}
+
+\section{Prueba de correctitud para \compresschain}\label{sec:proof-compresschain}
+\section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
+
+\subsection{Otras cosas}
 \begin{property}[Safety]\label{tendermint:safety}
   Si hay menos de 1/3 del poder de voto en manos bizantinas y al menos un validador correcto
   decide el bloque $B$, entonces ningún validador correcto decidirá un bloque distinto a $B$.
@@ -43,11 +88,11 @@ Esta variante del problema de consenso bizantino tiene un predicado específico 
 denotado \textit{valid()} que indica si un valor es válido. En el contexto de sistemas de blockchain, por ejemplo,
 un valor no es válido si no contiene un hash apropiado del último bloque añadido a la blockchain.
 
-\begin{property}[Agreement]\label{tendermint:agreement}
+\begin{property}[Agreement]\label{tendermint:agreement1}
   Dos procesos correctos nunca deciden valores distintos.
 \end{property}
 
-\begin{property}[Termination]\label{tendermint:termination}
+\begin{property}[Termination]\label{tendermint:termination1}
     Todos los procesos correctos deciden eventualmente un valor.
 \end{property}
 
@@ -58,12 +103,8 @@ un valor no es válido si no contiene un hash apropiado del último bloque añad
 %
 
 Las propiedades ~\ref{tendermint:safety} y ~\ref{tendermint:liveness} son demostradas en ~\cite{Kwon2014TendermintC}.
-Las propiedades ~\ref{tendermint:agreement}, ~\ref{tendermint:termination} y ~\ref{tendermint:validity}
+Las propiedades ~\ref{tendermint:agreement1}, ~\ref{tendermint:termination1} y ~\ref{tendermint:validity}
 son demostradas en ~\cite{Buchman.2018.Tendermint}.
-
-\section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
-\section{Prueba de correctitud para \compresschain}\label{sec:proof-compresschain}
-\section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
 
 % En esta sección se introducen las propiedades que deben cumplir las implementaciones
 % correctas de \setchain.
