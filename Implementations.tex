@@ -1003,7 +1003,7 @@ $k$ y $l$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.7]{figures/grace_period.pdf}
+  \includegraphics[scale=0.28]{figures/grace-period-example.png}
   \caption{Escenario que requiere período de gracia bajo FSEC.}
   \label{fig:grace_period}
 \end{figure}
@@ -1099,9 +1099,10 @@ que la víctima, o haciendo pagos directos a ciertos validadores.
 %
 
 \subsubsection{Front-running en \hashchain}
-¿Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
-Supongamos que un validador $v$ recibe una transacción $(h_0, s_0)$, donde $h_0$ es un hash,
-y $s_0$ una firma de aquel hash (la primera que el validador recibe).
+En esta sección analizaremos qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain.
+%¿Qué clase de ataque de front-running puede suceder al nivel de abstracción de \hashchain?
+Supongamos que un validador $v$ recibe una transacción $(h_k, s_{k}0)$, donde $h_k$ es un hash,
+y $s_{k}0$ una firma de aquel hash (la primera que el validador recibe).
 Un validador especulador puede firmar él mismo la
 transacción y difundirla (el comportamiento esperado), o puede ignorarla (un posible comportamiento
 malicioso). Si el validador la firma y la difunde, entonces está colaborando para que el hash
@@ -1110,8 +1111,9 @@ En caso contrario, no contribuirá a que el hash consolide, potencialmente causa
 en la consolidación.
 %
 
-¿Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
+%¿Cuál es la diferencia entre ambas estrategias de consolidación presentadas?
 %
+Las estrategias de consolidación presentadas en la sección anterior tienen distintos comportamientos.
 En la estrategia FSEC, si una transacción no obtiene las \SPH firmas
 dentro del período de gracia, el hash no consolidará en aquella ronda (pero podría hacerlo
 en el futuro).
@@ -1124,22 +1126,22 @@ interesante se da en el escenario alternativo: cuando las transacciones finalmen
 \setchain.
 %
 
-Supongamos que $v$ ve una transacción $t_0 = (h_0, s_0)$ y quiere ejecutar un ataque de front-running.
-Para lograrlo, ignora la transacción, pero difunde su propia transacción firmada $t_1 = (h_1, s_0)$,
+Supongamos que $v$ ve una transacción $t_0 = (h_k, s_{k}0)$ y quiere ejecutar un ataque de front-running.
+Para lograrlo, ignora la transacción, pero difunde su propia transacción firmada $t_1 = (h_l, s_{l}0)$,
 esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
 %
 
-Bajo el comportamiento FSEC, $h_0$ fue vista por primera vez antes, por lo que si logra las
+Bajo el comportamiento FSEC, $h_k$ fue visto por primera vez antes, por lo que si logra las
 \SPH firmas dentro del período de gracia, consolidará y los elementos
 en el hash serán estampados con una época menor a la de $t_1$.
 %
-Notemos que esto es completamente independiente del número de firmas que $h_1$ logre y la velocidad
-a la cual lo haga. El hash $h_1$ podría incluso consolidar (llegar a su firma \SPH)
-antes que $h_0$.
+Notemos que esto es completamente independiente del número de firmas que $h_l$ logre y la velocidad
+a la cual lo haga. El hash $h_l$ podría incluso consolidar (llegar a su firma \SPH)
+antes que $h_k$.
 %
 
-Por el otro lado, bajo el comportamiento CEC la situación es básicamente una carrera entre $h_0$ y
-$h_1$: el primero en obtener las \SPH firmas será el primero en consolidar y,
+Por el otro lado, bajo el comportamiento CEC la situación es básicamente una carrera entre $h_k$ y
+$h_l$: el primero en obtener las \SPH firmas será el primero en consolidar y,
 por lo tanto, sus elementos serán estamapdos con una época más temprana.
 %
 
@@ -1158,29 +1160,28 @@ a continuación.
 
 Dado que la época en FSEC es determinada por el momento en el cual el hash fue visto por primera vez, 
 la estrategia de alguna manera \textit{reserva} el número de época para la transacción específica.
-Si $v$ quiere que un hash $h_0$ consolide únicamente si puede hacerlo antes que otro hash
-$h_1$ (y no necesita conocer los elementos de $h_1$ desde antes), $v$ podría hacer lo siguiente.
+Si $v$ quiere que un hash $h_k$ consolide únicamente si puede hacerlo antes que otro hash
+$h_l$ (y no necesita conocer los elementos de $h_l$ desde antes), $v$ podría hacer lo siguiente.
 %
 Primero, difunde la transacción de modo que todos los validadores reservan el número de época para ella.
 %
-Luego, $v$ no revierte el hash $h_0$ a nadie, porque quiere esperar hasta que el hash $h_1$ aparezca
+Luego, $v$ no revierte el hash $h_k$ a nadie, porque quiere esperar hasta que el hash $h_l$ aparezca
 y obtenga suficientes firmas.
 %
-Una vez que esto sucede, y es seguro que el hash $h_1$ consolidará, $v$ comienza a revertir su hash
-$h_0$ a todos sus pares, esperando que el hash logre las \SPH firmas
-dentro del período de gracia.
-Si es exitoso, luego $v$ habría cumplido su objetivo: los elementos del hash $h_0$ serían estampados
-con una época menor que los elementos provenientes del hash $h_1$.
+Una vez que esto sucede, y es seguro que el hash $h_l$ consolidará, $v$ comienza a revertir su hash
+$h_k$ a todos sus pares, esperando que el hash logre las \SPH firmas dentro del período de gracia.
+Si es exitoso, luego $v$ habría cumplido su objetivo: los elementos del hash $h_k$ serían estampados
+con una época menor que los elementos provenientes del hash $h_l$.
 %
 
 Esta situación es particularmente interesante porque el validador $v$ puede hacer algo
-suceder en el pasado (elemento del hash $h_0$ se estampan con época $e$) teniendo información
-del futuro (elementos del hash $h_1$ se estampan con época $e+n$). A este ataque en el contexto
+suceder en el pasado (elemento del hash $h_k$ se estampan con época $e$) teniendo información
+del futuro (elementos del hash $h_l$ se estampan con época $e+n$). A este ataque en el contexto
 de \hashchain lo llamamos \textit{el ataque del clarividente}.
 %
 
-Es interesante notar que intentar hacer algo similar bajo el esquema CEC sería imopsible, dado
-que una vez que el hash $h_1$ consolidó, sus elementos son estampados con un número de época menor
+En principio, intentar hacer algo similar bajo el esquema CEC no sería posible, dado
+que una vez que el hash $h_l$ consolidó, sus elementos son estampados con un número de época menor
 a cualquier hash que aún no consolidó.
 %
 
