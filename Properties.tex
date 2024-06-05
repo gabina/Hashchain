@@ -53,10 +53,30 @@ son demostradas en ~\cite{Buchman.2018.Tendermint}.
   \<DeliverTx> en el Algoritmo~\ref{alg:abci-vanilla}).
   \item La \textit{Propiedad 2 (Add-Get-Local)} declara que todo elemento añadido a un
   servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
+  \item La \textit{Propiedad 3 (Get-Global)} establece que los elementos presentes en un servidor correcto
+  son propagados a todos los servidores correctos. Esto se puede probar mediante la propiedad de Tendermint \ref{tendermint:agreement},
+  ya que si un servidor correcto devuelve un elemento $e$ como parte the $\THESET$, entonces necesariamente en algún
+  momento recibió una petición \<DeliverTx> para la transacción asociada a dicho elemento $e$.
+  Luego por la propiedad de \textit{Tendermint-Agreement},
+  todos los nodos correctos decidirán el mismo elemento $e$ (como una transacción), y recibirán la petición \<DeliverTx> para el mismo,
+  añadiéndolo a su conjunto $\THESET$.
+
 \end{itemize}
 
 \section{Prueba de correctitud para \compresschain}\label{sec:proof-compresschain}
+\begin{itemize}
+  \item La \textit{Propiedad 1 (Consistent Sets)} de \setchain establece que las épocas solo contienen
+  elementos que provienen del conjunto de solo crecimiento. Esto es trivialmente correcto debido a que la
+  construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
+  \<newEpoch> y \<DeliverTx> en el Algoritmo~\ref{alg:abci-brotli}).
+\end{itemize}
 \section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
+\begin{itemize}
+  \item La \textit{Propiedad 1 (Consistent Sets)} de \setchain establece que las épocas solo contienen
+  elementos que provienen del conjunto de solo crecimiento. Esto es trivialmente correcto debido a que la
+  construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
+  \<reverse> y \<Query> en el Algoritmo~\ref{alg:abci-hash1} y ~\ref{alg:abci-hash2}).
+\end{itemize}
 
 \subsection{Otras cosas}
 \begin{property}[Safety]\label{tendermint:safety}
