@@ -48,18 +48,25 @@ son demostradas en ~\cite{Buchman.2018.Tendermint}.
 \section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
 \begin{itemize}
   \item La \textit{Propiedad 1 (Consistent Sets)} de \setchain establece que las épocas solo contienen
-  elementos que provienen del conjunto de solo crecimiento. Esto es trivialmente correcto debido a que la
+  elementos que provienen del conjunto de solo crecimiento. \textbf{Demostración}. Esto es trivialmente correcto debido a que la
   construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
   \<DeliverTx> en el Algoritmo~\ref{alg:abci-vanilla}).
   \item La \textit{Propiedad 2 (Add-Get-Local)} declara que todo elemento añadido a un
-  servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
+  servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>. \textbf{Demostración}.
   \item La \textit{Propiedad 3 (Get-Global)} establece que los elementos presentes en un servidor correcto
-  son propagados a todos los servidores correctos. Esto se puede probar mediante la propiedad de Tendermint \ref{tendermint:agreement},
-  ya que si un servidor correcto devuelve un elemento $e$ como parte the $\THESET$, entonces necesariamente en algún
-  momento recibió una petición \<DeliverTx> para la transacción asociada a dicho elemento $e$.
-  Luego por la propiedad de \textit{Tendermint-Agreement},
-  todos los nodos correctos decidirán el mismo elemento $e$ (como una transacción), y recibirán la petición \<DeliverTx> para el mismo,
-  añadiéndolo a su conjunto $\THESET$.
+  son propagados a todos los servidores correctos. \textbf{Demostración}. Si un servidor correcto devuelve un elemento $e$ como parte de $\THESET$,
+  entonces necesariamente en algún momento recibió una petición \<DeliverTx> para la transacción asociada al elemento $e$.
+  Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se envía una vez que las transacciones
+  fueron decididas y ordenadas. Luego, por la propiedad de \textit{Tendermint-Agreement},
+  todos los nodos correctos decidirán la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx> para ella,
+  añadiéndo a $e$ a su conjunto $\THESET$.
+  \item La \textit{Propiedad 4 (Eventual-Get)} establece que todos los elementos añadidos son eventualmente estampados
+  con un número de época. \textbf{Demostración}.
+  \item La \textit{Propiedad 5 (Unique Epoch)} establece que un elemento puede estar en a lo sumo una época. \textbf{Demostración}.
+  \item La \textit{Propiedad 6 (Consistent Gets)} establece que los servidores están de acuerdo en el contenido
+  de las épocas. \textbf{Demostración}.
+  \item La \textit{Propiedad 7 (Add-before-Get)} determina que todo elemento en $\HISTORY$ provenga del resultado de un cliente
+  añadiendo un elemento. \textbf{Demostración}. Esta propiedad no se va a cumplir.
 
 \end{itemize}
 
