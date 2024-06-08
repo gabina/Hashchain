@@ -196,7 +196,16 @@ sea correcto.
 %
 Como ya se mencionó en el modelo de computación (ver Sección ~\ref{sec:model_system}),
 se asume que una cota superior $f$ de servidores
-bizantinos es conocida y, por lo tanto, se requiere contactar a $f+1$ servidores.
+bizantinos es conocida y, por lo tanto, se requiere invocar \<add> en $f+1$ servidores
+distintos para asegurar que al menos uno es correcto.
+%
+Análogamente, para conocer el estado actual de la \setchain, no alcanza con invocar \<get> en un único
+servidor, puesto que podría ser bizantino y, por tanto, dar información incorrecta.
+%
+El cliente debería contactar $2f+1$ servidores (suponiendo que existen $f$ servidores bizantinos
+que pueden negarse a responder) y esperar a que $f+1$ de ellos coincidan en la respuesta
+(si $f+1$ servidores están de acuerdo en que un elemento pertenece a la \setchain,
+efectivamente debe pertenecer).
 
 En este trabajo se utilizará la extensión a Setchain presentada como
 \textit{cliente optimista}~\cite{Capretto.2022.Setchain}, que usa un sistema de firmas
@@ -208,7 +217,9 @@ pertenecientes a una época, e insertan este hash como un elemento en la \setcha
 A esos hashes los llamamos \textit{elementos de prueba de época}.
 %
 Las pruebas de época en principio contienen: el número de época al cual pertenece
-la prueba, la clave pública del validador que firma y la firma de los elementos 
+la prueba, la clave pública del validador que firma\footnote{Podría optarse por utilizar simplemente
+un identificador del validador, dado que las claves públicas son conocidas y podrían
+inferirse a partir del indentificador.} y la firma de los elementos 
 de la época dada (ordenados de una forma específica y conocida).
 %
 De esta manera, los clientes solo ejecutan una única petición $v.\<add>(e)$ a un

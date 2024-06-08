@@ -523,9 +523,6 @@ con un número de época.
 % %
 
 La siguiente propiedad establece que un elemento puede estar en a lo sumo una época.
-Es más, ningún elemento puede estar en dos épocas diferentes, incluso si los conjuntos que
-definen las épocas se
-obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
 
 %
 \begin{property}[Unique Epoch]\label{api:local_unique_stamp}
@@ -545,8 +542,12 @@ de las épocas.
   $(S',H',h')=w.\<get>()$, y sea $i\leq \min(h,h')$. Luego
   $H(i)=H'(i)$.
 \end{property}
-%
-%
+
+De las dos propiedades anteriores se deriva que ningún elemento puede estar en dos
+épocas diferentes, incluso si los conjuntos que definen las épocas se
+obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
+
+
 % Property~\ref{api:consistent-gets} states that the histories returned
 % by two $\<get>$ invocations to correct servers are one the prefix of
 % the other.
