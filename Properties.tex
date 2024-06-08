@@ -46,11 +46,22 @@ Por simplicidad, en ocasiones se considera $n = 3f + 1$.
 Las propiedades ~\ref{tendermint:agreement} y ~\ref{tendermint:termination}
 son demostradas en ~\cite{Buchman.2018.Tendermint}.
 \section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
-\begin{itemize}
-  \item La \textit{Propiedad 1 (Consistent Sets)} de \setchain establece que las épocas solo contienen
-  elementos que provienen del conjunto de solo crecimiento. \textbf{Demostración}. Esto es trivialmente correcto debido a que la
+
+\newcounter{lemma:vanilla}
+\setcounter{lemma:vanilla}{\value{lemma}}
+
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Consistent Sets}~\ref{api:consistent-set} de \setchain,
+  que establece que las épocas solo contienen elementos que provienen del conjunto de solo crecimiento.
+\end{lemma}
+
+\begin{proof}
+  Esto es trivialmente correcto debido a que la
   construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
   \<DeliverTx> en el Algoritmo~\ref{alg:abci-vanilla}).
+\end{proof}
+  
+\begin{itemize}
   \item La \textit{Propiedad 2 (Add-Get-Local)} declara que todo elemento añadido a un
   servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>. \textbf{Demostración}.
   \item La \textit{Propiedad 3 (Get-Global)} establece que los elementos presentes en un servidor correcto

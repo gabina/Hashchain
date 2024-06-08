@@ -33,6 +33,7 @@
 \renewcommand{\ALG@name}{Algoritmo} %Change the name Algorithm to Algoritmo
 \makeatother
 
+
 %% Ref
 \usepackage{hyperref}
 \usepackage{nameref}
@@ -51,18 +52,29 @@
 \newcommand\gabina[1]{\todo[backgroundcolor=violet!23]{Gabina: {#1}}}
 \newcommand\igabina[1]{\todo[inline,backgroundcolor=violet!23]{Gabina: {#1}}}
 
-%\newtheorem{property}{Propiedad}
 \newtheoremstyle{property}% name
   {\topsep}% space above
   {\topsep}% space below
   {}% body font
   {}% indent amount
-  {\itshape}% theorem head font
-  {}% punctuation after theorem head
+  {\bfseries}% theorem head font
+  {.}% punctuation after theorem head
   {.5em}% space after theorem head
   {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}% theorem head spec
 \theoremstyle{property}
 \newtheorem{property}{Propiedad}
+
+\newtheoremstyle{lemma}% name
+  {\topsep}% space above
+  {\topsep}% space below
+  {}% body font
+  {}% indent amount
+  {\bfseries}% theorem head font
+  {.}% punctuation after theorem head
+  {.5em}% space after theorem head
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}% theorem head spec
+\theoremstyle{lemma}
+\newtheorem{lemma}{Lema}
 
 
 \usepackage{wrapfig}
