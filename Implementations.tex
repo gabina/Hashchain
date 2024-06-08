@@ -356,14 +356,14 @@ Para este algoritmo, la única acción a realizar por parte de la ABCI cuando se
 transacción es añadir el elemento subyacente a la \setchain siempre y cuando el mismo
 sea válido.
 %
-Siempre es necesario chequear del lado de la ABCI si una transacción es válida.
+Siempre es necesario chequear del lado de la ABCI si una transacción es válida,
 %
-Es importante reparar en que un nodo correcto podría chequear la transacción antes de agregarla a la
-mempool,
-y que el resultado de esa validación cambie para el momento en que ésta arriba a la
-ABCI.
+%Es importante reparar en que un nodo correcto podría chequear la transacción antes de agregarla a la
+%mempool,
+%y que el resultado de esa validación cambie para el momento en que ésta arriba a la
+%ABCI.
 %
-Por otro lado, un nodo bizantino podría añadir transacciones sin chequear
+ya que un nodo bizantino podría añadir transacciones sin chequear
 su validez previamente.
 %
 
