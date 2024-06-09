@@ -14,17 +14,17 @@
             			\State \texttt{encoded\_element} $\leftarrow$ \texttt{RLP.Encode}($element$)
 					        \State \texttt{batch} $\leftarrow$ \texttt{batch} $\cup$ \{\texttt{encoded\_element}\}
                 \EndIf
-             		
-                \If {\<isReady>(\<batch>)}
-             		  \State \texttt{hash} $\leftarrow$  \texttt{Hash}(\texttt{batch})
-                	\State \texttt{Tendermint.Broadcast}(\texttt{hash})
-              		%\State \Call{\<reset>}{\null}
-                  \State \texttt{batch} $\leftarrow$ \{\}
-             	  \EndIf
                 \State \textbf{return}
             \EndFunction
 
             \smallskip
+
+            \When {\<isReady>(\<batch>)}
+              \State \texttt{hash} $\leftarrow$  \texttt{Hash}(\texttt{batch})
+              \State \texttt{Tendermint.Broadcast}(\texttt{hash})
+              %\State \Call{\<reset>}{\null}
+              \State \texttt{batch} $\leftarrow$ \{\}
+            \EndWhen
 
             \Function{\<Reverse>}{$h$, $s$}\label{alg:hash_request_tx}
               \If {\texttt{DATA\_BASE}.Get($h$) \texttt{is not null}}
