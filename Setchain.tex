@@ -1,0 +1,217 @@
+\section{Presentación}~\label{sec:setchain}
+
+\setchain~\cite{Capretto.2022.Setchain} es una estructura de datos concurrente y distribuida que implementa
+conjuntos distribuidos que solo crecen, con barreras de sincronización (llamadas épocas).
+%
+
+Las barreras imponen un orden entre elementos pertenecientes a diferentes épocas pero no entre elementos
+de la misma época.
+%
+Por lo tanto, \setchain relaja el requerimiento de orden total impuesto por las blockchains y, en consecuencia,
+logra mayor rendimiento y escalabilidad.
+
+La idea básica de funcionamiento de la \setchain involucra tanto nodos clientes como servidores.
+Los clientes se comunican con algún nodo servidor (quien mantiene la \setchain) para solicitar añadir un nuevo
+elemento.
+A su vez, los procesos clientes pueden pedirle a los servidores que les retornen el estado actual de la \setchain.
+
+\subsection{La interfaz de Setchain}
+Sea \(U\) el universo de elementos que los procesos clientes pueden inyectar en la \setchain.
+%
+Sea \<isValidElement> una función que los nodos pueden usar para validar elementos en \(U\)
+localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
+$\<isValidElement>(e)$ retorne verdadero.
+%
+Luego, una \setchain se define como una estructura de datos distribuida en donde cada nodo servidor
+(correcto) mantiene:
+\begin{itemize}
+  \item un conjunto $\THESET \subseteq U$ de elementos agregados;
+  \item un número natural $\EPOCH \in \mathds{N}$;
+  \item una función $\HISTORY : [1..\EPOCH] \rightarrow \mathcal{P}(U)$\footnote{$\mathcal{P}(U)$ denota el conjunto potencia
+  de $U$.} que describe los conjuntos de elementos que fueron estampados con un número de época.
+\end{itemize}
+
+Si bien $\HISTORY $ está definido formalmente como una función, también se utilizará notación de conjuntos sobre dicho símbolo.
+Es decir, utilizaremos $e \in \HISTORY$ para referirnos a que existe algún $i$ en el dominio de $\HISTORY$ para el cual
+$e \in \HISTORY(i)$.
+%Si bien $\HISTORY $ está definido formalmente como una función que, para cada número de época, devuelve el conjunto de elementos
+%asociados a dicha época, se hará cierto abuso de notación. 
+Inicialmente, tanto $\THESET $ como $\HISTORY $ son vacíos y $\EPOCH = 0$ en todo servidor correcto. 
+%
+%Los nodos servidores soportan dos operaciones: \<add> y \<get>.
+%
+%La operación \<add> agrega un elemento, mientras que la operación \<get> retorna la terna (\THESET,\HISTORY,\EPOCH) mantenida
+% por el nodo.
+
+%se notará $v.\<add>(e)$ para solicitarle añadir el elemento $e$ al nodo $v$, y $v.\<get>$ para pedirle al nodo $v$
+%que retorne la terna en cuestión.
+
+Cada nodo servidor $v$ soporta dos operaciones, \<add> y \<get>, disponibles para todos los procesos clientes.
+Se usa notación de punto para invocar estas operaciones, así como también para hacer referencia a las versiones
+de $\THESET$, $\EPOCH$ y $\HISTORY$ que dicho servidor mantiene. De este modo:
+\begin{itemize}
+  \item $v.\<add>(e)$: solicita agregar el elemento $e$ a $v.\THESET$ (a la versión de $\THESET$ que $v$ mantiene).
+  \item $v.\<get>()$: retorna los valores de $v.\THESET $, $v.\HISTORY $,
+    y $v.\EPOCH $.
+\end{itemize}
+  
+Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
+deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
+%
+Estos eventos se llaman \textit{incrementos de época}.
+%
+En este trabajo se asume que las barreras de sincronización se lanzan periódicamente y, por lo tanto, que
+siempre existe un instante futuro en el cual un nuevo incremento de época ocurre.
+%
+Sin embargo, en la interfaz original de \setchain, un nodo servidor $v$ también provee una operación para
+que los clientes puedan forzar un incremento de época, $v.\<epocinc>(h)$.
+%
+Debe cumplirse $h = \EPOCH + 1$.
+
+Informalmente, un proceso cliente $p$ invoca $v.\<get>()$ sobre un servidor $v$ para obtener $(S, H, h)$,
+el punto de vista de $v$ sobre $v.\THESET$, y $v.\HISTORY$ con dominio $[1...h]$.
+%
+El proceso $p$ invoca $v.\<add>(e)$ para insertar un nuevo elemento $e$ en $v.\THESET$.
+
+Un flujo de trabajo típico desde el punto de vista del cliente es como sigue: un cliente invoca $\<add>(e)$ en
+uno (o más) servidores para insertar un nuevo elemento válido $e$ en la \setchain.
+% 
+El elemento $e$ será propagado hacia los servidores, y cuando un incremento de época ocurra, los servidores
+intentarán incluirlo en la nueva época.
+%
+Después de esperar cierto tiempo, el cliente invoca \<get> en uno (o más) servidores para chequear que el
+elemento fue efectivamente agregado y estampado con una época.
+
+\subsection{Propiedades}\label{subsubsec:setchain-properties}
+Para asegurar correctitud, las implementaciones de \setchain deben satisfacer ciertas propiedades que
+proveen garantías eventuales para elementos añadidos y garantía de consistencia entre los servidores
+correctos.
+%
+Estas propiedades razonan sobre los servidores correctos, dado que los servidores bizantinos no proveen
+ninguna garantía.
+
+La primera propiedad establece que las épocas solo contienen elementos que provienen del conjunto
+de solo crecimiento.
+%
+\newcounter{prop:consistent-set}
+\setcounter{prop:consistent-set}{\value{property}}
+
+\begin{property}[Consistent Sets]\label{api:consistent-set}
+  Sea $(S,H,h)=v.\<get>()$ el resultado de una invocación a un servidor correcto $v$.
+  %
+  Luego, para cada $i\leq h, H(i) \subseteq S$.
+\end{property}
+%
+La segunda propiedad declara que todo elemento añadido a un servidor correcto $v$ es eventualmente
+retornado en todas las llamadas futuras a $v$.\<get>.
+%
+\begin{property}[Add-Get-Local]\label{api:history->theset-local}
+  Sea $e$ un elemento válido y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
+  %
+  Luego, eventualmente todas las invocaciones $(S,H,h)=v.\<get>()$ 
+  satisfacen $e\in S$.
+\end{property}
+La siguiente propiedad establece que los elementos presentes en un servidor correcto son propagados
+a todos los servidores correctos.
+
+\begin{property}[Get-Global]\label{api:history->theset}
+  Sean $v$ y $w$ dos servidores correctos,
+  ${(S,H,h)=v.\<get>()}$ y $e \in U$.
+  %
+  Si $e \in S$, luego eventualmente todas las invocaciones
+  $(S',H',h')=w.\<get>()$ satisfacen que $e \in S'$.
+\end{property}
+%
+
+Como ya se mencionó anteriormente, a lo largo de este trabajo se asume que en cualquier momento
+existe un instante futuro en el cual ocurre el próximo incremento de época.
+Esta suposición es razonable ya que puede ser garantizada usando \textit{timeouts} en cualquier escenario práctico.
+Luego, la siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
+con un número de época.
+%
+\begin{property}[Eventual-Get]\label{api:theset->history}
+  Sea $v$ un servidor correcto, $e \in U$ y  $(S,H,h)=v.\<get>()$.
+  % 
+  Si $e \in S$, luego eventualmente todas las invocaciones
+  $(S',H',h')=v.\<get>()$ satisfacen que $e \in H'$.
+\end{property}
+
+% % No sé si vale la pena poner una propiedad que se infiere de las anteriores
+% Las tres propiedaes previas implican la siguiente propiedad.
+% %
+% \begin{property}[Get-After-Add]\label{api:get-after-add}
+%   Sea $v.\<add>(e)$ una operación invocada en un servidor correcto $v$ con $e \in U$.
+%   %
+%   Luego, eventualmente todas las invocaciones $(S,H,h)=w.\<get>()$ en servidores correctos
+%   $w$ satisfaccen que $e\in H$.
+% \end{property}
+% %
+
+La siguiente propiedad establece que un elemento puede estar en a lo sumo una época.
+
+%
+\begin{property}[Unique Epoch]\label{api:local_unique_stamp}
+  Sea $v$ un servidor correcto,
+  $(S,H,h)=v.\<get>()$, e
+  ${i,i'\leq{}h}$ con ${i\neq i'}$.
+  %
+  Luego, $H(i)\cap{}H(i')=\emptyset$.
+\end{property}
+%
+
+La siguiente propiedad establece que los servidores están de acuerdo en el contenido
+de las épocas.
+%
+\begin{property}[Consistent Gets]\label{api:consistent-gets}
+  Sean $v$ y $w$ servidores correctos, $(S,H,h)=v.\<get>()$ y
+  $(S',H',h')=w.\<get>()$, y sea $i\leq \min(h,h')$. Luego
+  $H(i)=H'(i)$.
+\end{property}
+
+De las dos propiedades anteriores se deriva que ningún elemento puede estar en dos
+épocas diferentes, incluso si los conjuntos que definen las épocas se
+obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
+
+
+% Property~\ref{api:consistent-gets} states that the histories returned
+% by two $\<get>$ invocations to correct servers are one the prefix of
+% the other.
+% %
+% However, since two elements $e$ and $e'$ can be inserted at two
+% different correct servers---which can take time to propagate---, the
+% $\<theset>$ part of $\<get>$ obtained from two correct servers may not
+% be contained in one another.
+
+Finalmente, se requiere que todo elemento en $\HISTORY$ provenga del resultado de un cliente
+añadiendo un elemento.
+
+%
+\begin{property}[Add-before-Get]\label{api:get->add}
+  Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$,
+  y $e \in S$.
+  %
+  Luego, hubo una operación $w.\<add>(e)$ en el pasado en algún servidor $w$.
+\end{property}
+
+Propiedades~\ref{api:consistent-set}, \ref{api:local_unique_stamp},
+\ref{api:consistent-gets} y \ref{api:get->add} son propiedades de \textit{safety}.
+%
+Propiedades~\ref{api:history->theset-local}, \ref{api:history->theset},
+\ref{api:theset->history} y
+%\ref{api:get-after-add}
+son propiedades de \textit{liveness}.
+
+% \begin{itemize}
+%   \item Cada elemento válido agregado en un servidor correcto eventualmente es retornado en
+%   todas las futuras invocaciones a \<get> hechas sobre servidores correctos.
+%   \item Todos los elementos válidos agregados en un servidor correcto deben eventualmente ser
+%   estampados con un número de época en todos los servidores correctos.
+%   \item Una vez que un elemento es estampado con una época, no puede ser des-estampado, ni puede
+%   ser estampado con otro número de época.
+%   \item Dos servidores correctos cualesquieras están de acuerdo en el contenido de todas las épocas
+%   que hayan sido computadas~\footnote{No todos los servidores correctos procesan los incrementos de
+%   época simultáneamente, dado que algunos pueden estar más atrasados que otros.}.
+%   \item Cada elemento que se estampa con una época proviene del resultado de un cliente añadiendo
+%   el elemento.
+% \end{itemize}
+% \gabina{Epoch proofs are part of the epoch but are not coming directly from the result of a client adding element.}
