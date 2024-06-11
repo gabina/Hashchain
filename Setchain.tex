@@ -82,6 +82,53 @@ intentarán incluirlo en la nueva época.
 Después de esperar cierto tiempo, el cliente invoca \<get> en uno (o más) servidores para chequear que el
 elemento fue efectivamente agregado y estampado con una época.
 
+\subsection{Ejemplo}
+En la Figura ~\ref{fig:setchain-api-flow} se muestra un breve ejemplo del funcionamiento de la \setchain.
+%
+Sea $v$ un servidor correcto que mantiene la \setchain.
+%
+En la Figura ~\ref{subfig:setchain-api-0} se muestra un estado posible para la \setchain desde el punto de vista
+de $v$.
+%
+En dicho estado, la invocación $v$.\<get> por parte de un cliente resulta en la terna 
+
+\[ (v.\THESET, v.\HISTORY, v.\EPOCH) \]
+donde
+\[ v.\THESET = \{x, y, z, w, m, n\}, \ v.\HISTORY = \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, \ v.\EPOCH = 3 \]
+
+
+En la Figura ~\ref{subfig:setchain-api-1} y la Figura ~\ref{subfig:setchain-api-1} se presentan los resultados de un cliente
+invocando $v$.\<add>(a) y $v$.\<add>(b), respectivamente.
+%
+Luego de añadir ambos elementos, se tiene
+\[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, 3) \]
+%
+Es decir, el único cambio se percibe en el valor de $v.\THESET$ (que ahora incluye a los elementos $a$ y $b$).
+
+Finalmente, en la Figura ~\ref{subfig:setchain-api-3} se muestra el estado de la \setchain luego de ejecutarse un nuevo
+incremento de época.
+%
+Este evento tiene como consecuencia la creación de una nueva época que incluye a los elementos hasta entonces pendientes 
+de ser estampados (en este caso $a$ y $b$).
+%
+De este modo, se tiene
+\[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}, 4: \{a, b\}\}, 4) \]
+
+
+\begin{figure}
+  \centering
+  \subfloat[Estado de la \setchain según $v$]{\includegraphics[width = 5in]{figures/setchain_api_0.png}\label{subfig:setchain-api-0}}\\
+  \bigskip
+  \subfloat[Un cliente invoca $v$.\<add>(a)]{\includegraphics[width = 5in]{figures/setchain_api_1.png}\label{subfig:setchain-api-1}}\\
+  \bigskip
+  \subfloat[Un cliente invoca $v$.\<add>(b)]{\includegraphics[width = 5in]{figures/setchain_api_2.png}\label{subfig:setchain-api-2}}\\
+  \bigskip
+  \subfloat[Ocurre un nuevo incremento de época]{\includegraphics[width = 5in]{figures/setchain_api_3.png}\label{subfig:setchain-api-3}}
+  \caption{Ejemplo de evolución de la \setchain}
+  \label{fig:setchain-api-flow}
+\end{figure}
+
+
 \subsection{Propiedades}\label{subsubsec:setchain-properties}
 Para asegurar correctitud, las implementaciones de \setchain deben satisfacer ciertas propiedades que
 proveen garantías eventuales para elementos añadidos y garantía de consistencia entre los servidores

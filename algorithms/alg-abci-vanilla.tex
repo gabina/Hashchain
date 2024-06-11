@@ -14,8 +14,8 @@
             \EndFunction
       
             \Function{\<DeliverTx>}{$transaction$}\label{alg:van_deliver_tx}
-                \If {\Call{\<isValidTransaction>}{$transaction$}}
-                		\State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$}
+                \State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$}
+                \If {\Call{\<isValidTransaction>}{$transaction$} and not \texttt{element} in \texttt{history}}
                     \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\<element>\}\)
                 		\State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \{\<element>\}\)
                 	\EndIf
