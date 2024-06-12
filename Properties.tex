@@ -57,29 +57,68 @@ son demostradas en ~\cite{Buchman.2018.Tendermint}.
 
 \begin{proof}
   Esto es trivialmente correcto debido a que la
-  construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
-  \<DeliverTx> en el Algoritmo~\ref{alg:abci-vanilla}).
+  construcción de $\THESET$ y de $\HISTORY$ se hace a partir de los mismos elementos, como se puede ver en las líneas
+  \ref{line:abci-vanilla-set} y \ref{line:abci-vanilla-history} en el Algoritmo~\ref{alg:abci-vanilla}.
 \end{proof}
-  
-\begin{itemize}
-  \item La \textit{Propiedad 2 (Add-Get-Local)} declara que todo elemento añadido a un
-  servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>. \textbf{Demostración}.
-  \item La \textit{Propiedad 3 (Get-Global)} establece que los elementos presentes en un servidor correcto
-  son propagados a todos los servidores correctos. \textbf{Demostración}. Si un servidor correcto devuelve un elemento $e$ como parte de $\THESET$,
+
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Add-Get-Local}~\ref{api:history->theset-local} de \setchain,
+  que declara que todo elemento añadido a un
+  servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
+\end{lemma}
+
+\begin{proof}
+\end{proof}
+
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Get-Global}~\ref{api:history->theset} de \setchain,
+  que establece que los elementos presentes en un servidor correcto
+  son propagados a todos los servidores correctos.
+\end{lemma}
+
+\begin{proof}
+  Si un servidor correcto devuelve un elemento $e$ como parte de $\THESET$,
   entonces necesariamente en algún momento recibió una petición \<DeliverTx> para la transacción asociada al elemento $e$.
   Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se envía una vez que las transacciones
   fueron decididas y ordenadas. Luego, por la propiedad de \textit{Tendermint-Agreement},
   todos los nodos correctos decidirán la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx> para ella,
-  añadiéndo a $e$ a su conjunto $\THESET$.
-  \item La \textit{Propiedad 4 (Eventual-Get)} establece que todos los elementos añadidos son eventualmente estampados
-  con un número de época. \textbf{Demostración}.
-  \item La \textit{Propiedad 5 (Unique Epoch)} establece que un elemento puede estar en a lo sumo una época. \textbf{Demostración}.
-  \item La \textit{Propiedad 6 (Consistent Gets)} establece que los servidores están de acuerdo en el contenido
-  de las épocas. \textbf{Demostración}.
-  \item La \textit{Propiedad 7 (Add-before-Get)} determina que todo elemento en $\HISTORY$ provenga del resultado de un cliente
-  añadiendo un elemento. \textbf{Demostración}. Esta propiedad no se va a cumplir.
+  añadiéndo a $e$ a su conjunto $\THESET$, como se muestra en la línea \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
+\end{proof}
 
-\end{itemize}
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Eventual-Get}~\ref{api:theset->history} de \setchain,
+  que establece que todos los elementos añadidos son eventualmente estampados
+  con un número de época.
+\end{lemma}
+
+\begin{proof}
+\end{proof}
+
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Unique Epoch}~\ref{api:local_unique_stamp} de \setchain,
+  que establece que un elemento puede estar en a lo sumo una época.
+\end{lemma}
+
+\begin{proof}
+\end{proof}
+
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Consistent Gets}~\ref{api:consistent-gets} de \setchain,
+  que establece que los servidores están de acuerdo en el contenido
+  de las épocas.
+\end{lemma}
+
+\begin{proof}
+\end{proof}
+
+\begin{lemma}
+  La implementación \vanilla cumple la propiedad \textit{Add-before-Get}~\ref{api:get->add} de \setchain,
+  que determina que todo elemento en $\HISTORY$ provenga del resultado de un cliente
+  añadiendo un elemento.
+\end{lemma}
+
+\begin{proof}
+\end{proof}
 
 \section{Prueba de correctitud para \compresschain}\label{sec:proof-compresschain}
 \begin{itemize}
