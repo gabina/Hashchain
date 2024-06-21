@@ -45,6 +45,39 @@ Por simplicidad, en ocasiones se considera $n = 3f + 1$.
 
 Las propiedades ~\ref{tendermint:agreement} y ~\ref{tendermint:termination}
 son demostradas en ~\cite{Buchman.2018.Tendermint}.
+
+En el contexto de estas demostraciones
+se asume una mempool de tamaño tal que nunca se satura.
+Es decir, el ratio de invocaciones \<add> por parte de los clientes nunca
+llena la capacidad de la mempool, de modo que los elementos enviados por clientes
+nunca son descartados por mempool llena.
+De aquí se desprende la siguientes propiedades correspondientes a la distintas implementaciones
+propuestas.
+\begin{property}[Tendermint-Vanilla-Delivery]\label{tendermint:vanilla-delivery}
+  Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
+  $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
+  una petición $\<DeliverTx>(t)$ a la ABCI correspondiente de $v$, en donde
+  $t$ es la transacción que representa a $e$.
+\end{property}
+
+\begin{property}[Tendermint-Compresschain-Delivery]\label{tendermint:delivery-compreschain}
+  Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
+  $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
+  una petición $\<DeliverTx>(t)$ a la ABCI correspondiente de $v$, en donde
+  $t$ es un lote comprimido de elementos, y uno de esos elementos
+  es $e$.
+\end{property}
+
+\begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:delivery-hashchain}
+  Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
+  $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
+  una petición $\<DeliverTx>(t)$ a la ABCI correspondiente de $v$, en donde
+  $t$ es un lote hasheado de elementos, y uno de esos elementos
+  es $e$.
+\end{property}
+
+
+
 \section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
 
 \newcounter{lemma:vanilla}
@@ -63,11 +96,22 @@ son demostradas en ~\cite{Buchman.2018.Tendermint}.
 
 \begin{lemma}
   La implementación \vanilla cumple la propiedad \textit{Add-Get-Local}~\ref{api:history->theset-local} de \setchain,
-  que declara que todo elemento añadido a un
+  que declara que todo elemento válido añadido a un
   servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
 \end{lemma}
 
 \begin{proof}
+  Sea $e$ un elemento válido y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
+  Por la propiedad \textit{Tendermint-Vanilla-Delivery}~\ref{tendermint:vanilla-delivery} sabemos que
+  eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$, en donde $t = e$.
+  Como se puede observar
+  en la condición \texttt{if} de la línea ~\ref{line:abci-vanilla-if} en el Algoritmo~\ref{alg:abci-vanilla},
+  existen dos casos.
+  Si el elemento $e$ no es nuevo, entonces necesariamente $e$ ya es parte de $\THESET$, puesto que es
+  parte de $\HISTORY$.
+  Por el contrario, si el elemento $e$ es nuevo, entonces será añadido a $\THESET$ como se indica en la
+  línea ~\ref{line:abci-vanilla-set}, y retornado como parte de él en todas las futuras invocaciones a
+  $v$.\<get>.
 \end{proof}
 
 \begin{lemma}
