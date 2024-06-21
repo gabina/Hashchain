@@ -106,9 +106,11 @@ propuestas.
   eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$, en donde $t = e$.
   Como se puede observar
   en la condición \texttt{if} de la línea ~\ref{line:abci-vanilla-if} en el Algoritmo~\ref{alg:abci-vanilla},
-  existen dos casos.
-  Si el elemento $e$ no es nuevo, entonces necesariamente $e$ ya es parte de $\THESET$, puesto que es
-  parte de $\HISTORY$.
+  se analizan dos aspectos: que $e$ sea válido (lo cual se cumple por hipótesis)
+  y que $e$ no forme parte de $\HISTORY$.
+  Si el elemento a añadir ya es
+  parte de $\HISTORY$ entonces necesariamente $e$ pertenece a $\THESET$ (ver propiedad anterior)
+  y, por lo tanto, es retornado en todas la llamadas a $v$.\<get>.
   Por el contrario, si el elemento $e$ es nuevo, entonces será añadido a $\THESET$ como se indica en la
   línea ~\ref{line:abci-vanilla-set}, y retornado como parte de él en todas las futuras invocaciones a
   $v$.\<get>.
@@ -121,21 +123,31 @@ propuestas.
 \end{lemma}
 
 \begin{proof}
-  Si un servidor correcto devuelve un elemento $e$ como parte de $\THESET$,
-  entonces necesariamente en algún momento recibió una petición \<DeliverTx> para la transacción asociada al elemento $e$.
-  Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se envía una vez que las transacciones
-  fueron decididas y ordenadas. Luego, por la propiedad de \textit{Tendermint-Agreement},
-  todos los nodos correctos decidirán la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx> para ella,
-  añadiéndo a $e$ a su conjunto $\THESET$, como se muestra en la línea \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
+  Sea $v$ un servidor correcto y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  Entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
+  petición \<DeliverTx> para la transacción asociada al elemento $e$.
+  Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
+  envía una vez que las transacciones fueron decididas y ordenadas.
+  Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos decidirán
+  la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx>
+  para ella, añadiéndo a $e$ a su conjunto $\THESET$, como se muestra en la línea
+  \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
 \end{proof}
 
 \begin{lemma}
-  La implementación \vanilla cumple la propiedad \textit{Eventual-Get}~\ref{api:theset->history} de \setchain,
-  que establece que todos los elementos añadidos son eventualmente estampados
+  La implementación \vanilla cumple la propiedad \textit{Eventual-Get}~\ref{api:theset->history}
+  de \setchain, que establece que todos los elementos añadidos son eventualmente estampados
   con un número de época.
 \end{lemma}
 
 \begin{proof}
+  Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$, entonces por construcción de
+  $\THESET$, necesariamente $v$ en algún momento recibió una
+  petición \<DeliverTx> para la transacción asociada al elemento $e$.
+  Como se puede ver en las líneas \ref{line:abci-vanilla-set} y \ref{line:abci-vanilla-history} en
+  el Algoritmo~\ref{alg:abci-vanilla}, inmediatamente después de agregar un elemento a $\THESET$,
+  el elemento se agrega a $\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será eventualmente
+  agregado a $\HISTORY$ y, por lo tanto, estampado con un número de época.
 \end{proof}
 
 \begin{lemma}
