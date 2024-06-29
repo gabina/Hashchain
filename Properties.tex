@@ -156,6 +156,36 @@ propuestas.
 \end{lemma}
 
 \begin{proof}
+  La demostración se hará por el absurdo.
+  Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$, e ${i,i'\leq{}h}$ con ${i\neq i'}$.
+  Sin pérdida de generalidad, suponemos que ${i < i'}$. Sea $e$ un elemento $\in H(i)$ .
+  Por lo tanto, $e$ fue estampado con el número de época $i$.
+  %
+  Suponemos ahora que también se cumple $e \in \HISTORY(i')$. Es decir, 
+  $e$ fue estampado con el número de época $i'$.
+  Para que $e$ también haya sido añadido a la época $i'$, necesariamente debe haber llegado
+  una petición \<DeliverTx> para la transacción asociada al elemento $e$ que, al procesarse,
+  incluyó a $e$ como parte de $\HISTORY[i']$.
+  %
+  Por construcción, esto necesariamente debe haber pasado en la línea
+  \ref{line:abci-vanilla-history} en el Algoritmo~\ref{alg:abci-vanilla},
+  con lo cual se concluye que la condición del \texttt{if} de
+  la línea ~\ref{line:abci-vanilla-if} evaluó a \texttt{true} (*)
+  (ya que de otro modo, el elemento no hubiese sido añadido).
+  %
+
+  Dado que ${i \leq i'}$, y las peticiones se hacen ordenadamente, al momento de esta
+  petición \<DeliverTx>, la época $i$ ya fue construida, y por lo tanto se tiene
+  $e \in \HISTORY(i)$.
+  Por este motivo, al procesar la petición \<DeliverTx>, la condición \texttt{if} de
+  la línea ~\ref{line:abci-vanilla-if} evaluará a \texttt{false}, dado que 
+  \texttt{not} $e$ \texttt{in} $\HISTORY$ es falso, puesto que $e \in \HISTORY(i)$ .
+  Esto lleva a una contradicción por (*).
+  La contradicción proviene de suponer que $e \in \HISTORY(i')$.
+  Por lo tanto, se concluye que $e \not\in \HISTORY(i')$ y
+  $\HISTORY(i)\cap{}\HISTORY(i')=\emptyset$.
+
+  
 \end{proof}
 
 \begin{lemma}
