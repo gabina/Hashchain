@@ -45,9 +45,9 @@
             \Function{\<newEpoch>}{$elements$}\label{alg:brotli_new_epoch}
             		\For{\texttt{e in} $elements$}
                 \Comment{Agregar solo elementos nuevos y válidos.}
-             	    \If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
-                        \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)
-                        \State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \{\texttt{e}\}\)
+             	    \If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}\label{line:abci-compresschain-if}
+                        \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)\label{line:abci-compresschain-the-set}
+                        \State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \{\texttt{e}\}\)\label{line:abci-compresschain-history}
                     \EndIf
                 	\EndFor
                 	
