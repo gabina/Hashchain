@@ -200,15 +200,44 @@ propiedades derivadas para cada implementación realizada de \setchain.
 %   ya fueron decididas y ordenadas al momento de hacerse).
 % \end{proof}
 
-
-
 \begin{property}[Tendermint-Compresschain-Delivery]\label{tendermint:compresschain-delivery}
   Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
   $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
-  una petición $\<DeliverTx>(t)$ a la ABCI correspondiente de $v$, en donde
+  una petición $v.\<DeliverTx>(t)$, en donde
   $t$ es un lote comprimido de elementos, y uno de esos elementos
   es $e$.
 \end{property}
+
+\begin{proof}
+  Sea $e$ un elemento válido y $v$ un servidor correcto.
+  Por definción de \<add> en el algoritmo \ref{alg:api-brotli}, la invocación
+  $v.\<add>(e)$ se traduce en la llamada \texttt{CompressCollector.AddElement($e$)}.
+  Como se puede observar en el algoritmo ~\ref{alg:collector-brotli}, $e$ será codificado
+  adecuadamente y añadido a un lote $t$ que eventualmente estará listo\footnote{Como
+  se mencionó en la sección ~\ref{subsec:compresschain-algorithms},
+  un lote se considera listo para ser enviado una vez que, o bien alcanza un tamaño
+  máximo, o bien una cantidad razonable de tiempo transacurrió desde que el primer
+  elemento llegó. Por este motivo podemos asegurar que todo lote eventualmente será
+  considerado listo.} y se invocará \<broadcastTx>($t$) sobre el servidor $v$.
+  Por la propiedad \textbf{Tendermint-Eventual-CheckTx}, $v$
+  recibirá eventualmente la petición \<CheckTx>($t$).
+  Por hipótesis se tiene que $e$ es un elemento válido, por lo cual, siendo $e$ un elemento de $t$
+  y considerando la definición de \<CheckTx> en la línea \ref{alg:brotli_check_tx} del algoritmo
+  \ref{alg:abci-brotli}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{true}
+  en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
+  Luego, por la propiedad \textbf{Tendermint-Eventual-Injection} sabemos que la
+  transacción $t$ formará parte de un bloque.
+  Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
+  el seridor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
+  % Por las propiedades \textbf{Tendermint-Agreement} y \textbf{Tendermint-Termination},
+  % todos los servidores correctos estarán de acuerdo en que $t$ forma
+  % parte de un bloque y, por lo tanto, todos recibirán la petición \<DeliverTx>($t$)
+  % en el mismo orden respecto a las otras peticiones \<DeliverTx> - ya que estas peticiones se
+  % realizan de forma asíncrona pero en orden, puesto que las transacciones dentro del bloque
+  % ya fueron decididas y ordenadas al momento de hacerse.
+
+  NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo??
+\end{proof}
 
 \begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
   Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
