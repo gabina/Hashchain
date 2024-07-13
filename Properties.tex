@@ -1,5 +1,5 @@
 \section{Objetivo del capítulo}
-En este capítulo se presentan las pruebas de correctitud de los algoritmos presentados para
+En este capítulo se exponen las pruebas de correctitud de los algoritmos presentados para
 \vanilla, \compresschain, y \hashchain en el capítulo~\ref{chapter:sol}.
 Es decir, se prueba que dichos algoritmos satisfacen las propiedades deseadas para una
 implementación de \setchain introducidas en~\ref{subsubsec:setchain-properties}.
@@ -139,7 +139,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   Luego, por la propiedad \textbf{Tendermint-Eventual-Injection} sabemos que la
   transacción $t$ formará parte de un bloque.
   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  el seridor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
+  el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
   % Por las propiedades \textbf{Tendermint-Agreement} y \textbf{Tendermint-Termination},
   % todos los servidores correctos estarán de acuerdo en que $t$ forma
   % parte de un bloque y, por lo tanto, todos recibirán la petición \<DeliverTx>($t$)
@@ -228,7 +228,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   Luego, por la propiedad \textbf{Tendermint-Eventual-Injection} sabemos que la
   transacción $t$ formará parte de un bloque.
   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  el seridor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
+  el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
   % Por las propiedades \textbf{Tendermint-Agreement} y \textbf{Tendermint-Termination},
   % todos los servidores correctos estarán de acuerdo en que $t$ forma
   % parte de un bloque y, por lo tanto, todos recibirán la petición \<DeliverTx>($t$)
@@ -236,7 +236,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   % realizan de forma asíncrona pero en orden, puesto que las transacciones dentro del bloque
   % ya fueron decididas y ordenadas al momento de hacerse.
 
-  NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo??
+  NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo?? Por ahora, únicamente válido.
 \end{proof}
 
 \begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
@@ -294,15 +294,28 @@ propiedades derivadas para cada implementación realizada de \setchain.
 \end{lemma}
 
 \begin{proof}
-  Sea $v$ un servidor correcto y $e$ un elemento válido, tal que  $e \in v.\THESET$.
-  Entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
+  Sean $v$ y $w$ dos servidores correctos y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
   petición \<DeliverTx>($t$), donde $t = e$.
   Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
   \textbf{Tendermint-Global-DeliverTx}
   todos los
-  servidores correctos reciben dicha petición \<DeliverTx>($t$), añadiéndo a $e$ a su conjunto
-  $\THESET$, como se muestra en la línea
+  servidores correctos, y en particular $w$, reciben dicha petición \<DeliverTx>($t$).
+  Dado que $e$ es válido por hipótesis, se tienen dos opciones: o bien $e$ es parte de $w.\HISTORY$,
+  en cuyo caso ya se cumple $e \in w.\THESET$ (ver propiedad anterior), o bien $e$ es un elemento nuevo.
+  En este último caso,
+  $e$ será añadido a
+  $w.\THESET$, como se muestra en la línea
+
+  % Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
+  % \textbf{Tendermint-Global-DeliverTx}
+  % todos los
+  % servidores correctos, y en particular $w$, reciben dicha petición \<DeliverTx>($t$),
+  % añadiéndo a $e$ a su conjunto
+  % $\THESET$, como se muestra en la línea
   \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
+  Por lo tanto, se cumplirá eventualmente $e \in w.\THESET$.
 
   % Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
   % envía una vez que las transacciones fueron decididas y ordenadas.
@@ -458,15 +471,31 @@ que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sea $v$ un servidor correcto y $e$ un elemento válido, tal que  $e \in v.\THESET$.
-  Entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
-  petición \<DeliverTx> para la transacción asociada al elemento $e$.
-  Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
-  envía una vez que las transacciones fueron decididas y ordenadas.
-  Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos decidirán
-  la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx>
-  para ella, añadiéndo a $e$ a su conjunto $\THESET$, como se muestra en la línea
-  \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
+  Sean $v$ y $w$ dos servidores correctos y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
+  petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos elementos
+  es $e$.
+  Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
+  \textbf{Tendermint-Global-DeliverTx}
+  todos los
+  servidores correctos, y en particular $w$, reciben dicha petición \<DeliverTx>($t$).
+  Dado que $e$ es válido por hipótesis, se tienen dos opciones: o bien $e$ es parte de $w.\HISTORY$,
+  en cuyo caso ya se cumple $e \in w.\THESET$ (ver propiedad anterior), o bien $e$ es un elemento nuevo.
+  En este último caso,
+  $e$ será añadido a
+  $w.\THESET$, como se muestra en la línea
+  \ref{line:abci-compresschain-the-set} en el Algoritmo~\ref{alg:abci-brotli}.
+  Por lo tanto, se cumplirá eventualmente $e \in w.\THESET$.
+  % Sea $v$ un servidor correcto y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  % Entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
+  % petición \<DeliverTx> para la transacción asociada al elemento $e$.
+  % Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
+  % envía una vez que las transacciones fueron decididas y ordenadas.
+  % Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos decidirán
+  % la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx>
+  % para ella, añadiéndo a $e$ a su conjunto $\THESET$, como se muestra en la línea
+  % \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
 \end{proof}
 
 
