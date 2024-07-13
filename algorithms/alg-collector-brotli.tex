@@ -21,7 +21,7 @@
 
             \When {\<isReady>(\<batch>)}
               \State \texttt{compressed\_batch} $\leftarrow$  \texttt{Brotli.Compress}(\texttt{batch})
-              \State \texttt{Tendermint.Broadcast}(\texttt{compressed\_batch})
+              \State \texttt{Tendermint.Broadcast}(\texttt{compressed\_batch}) \label{line:compresschain-broadcast}
               %\State \Call{\<reset>}{\null}
               \State \texttt{batch} $\leftarrow$ \{\}
             \EndWhen

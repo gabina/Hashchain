@@ -239,6 +239,31 @@ propiedades derivadas para cada implementación realizada de \setchain.
   NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo?? Por ahora, únicamente válido.
 \end{proof}
 
+\begin{property}[Tendermint-Compresschain-Deliver-Add]\label{tendermint:compresschain-deliver-add}
+  Sea $v$ un servidor correcto.
+  Sea $t$ un lote de elementos comprimidos, donde uno de esos elementos es $e$.
+  Si $v$ recibe una petición $\<DeliverTx>(t)$,
+  entonces necesariamente, en el pasado, un cliente invocó $\<add>(e)$ sobre un servidor.
+  NOTA: acá no se puede asegurar que fue invocado en un servidor correcto.
+\end{property}
+
+\begin{proof}
+  Sea $v$ un servidor correcto que recibe una petición $\<DeliverTx>(t)$.
+  Por la propiedad \textbf{Tendermint-DeliverTx-BroadcastTx} sabemos que
+  necesariamente $t$ es una transacción válida y, en el pasado, 
+  \<broadcastTx>($t$) fue invocado en algún servidor (NOTA: no necesariamente correcto).
+  Si \<broadcastTx>($t$) fue invocado, entonces con certeza el lote de elementos comprimido $t$
+  fue construido por el \collector a partir de elementos añadidos al mismo.
+  En particular, un cliente tiene que haber invocado
+  $\<add>(e)$ en un servidor - puesto que \<broadcastTx> solo
+  se llama como parte de la definición de \<AddElement> cuando un lote está listo,
+  como se puede ver en la línea \ref{line:compresschain-broadcast} del
+  algoritmo ~\ref{alg:collector-brotli}.
+
+  NOTA: si el servidor no es correcto podría invocar \<broadcastTx>($t$) sin necesidad de
+  un cliente invocando add?
+\end{proof}
+
 \begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
   Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
   $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
@@ -378,8 +403,6 @@ propiedades derivadas para cada implementación realizada de \setchain.
   La contradicción proviene de suponer que $e \in \HISTORY(i')$.
   Por lo tanto, se concluye que $e \not\in \HISTORY(i')$. Luego se tiene
   $\HISTORY(i)\cap{}\HISTORY(i')=\emptyset$.
-
-  
 \end{proof}
 
 \begin{lemma}
@@ -487,17 +510,101 @@ que corre la ABCI correspondiente al servidor $w$.
   $w.\THESET$, como se muestra en la línea
   \ref{line:abci-compresschain-the-set} en el Algoritmo~\ref{alg:abci-brotli}.
   Por lo tanto, se cumplirá eventualmente $e \in w.\THESET$.
-  % Sea $v$ un servidor correcto y $e$ un elemento válido, tal que  $e \in v.\THESET$.
-  % Entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
-  % petición \<DeliverTx> para la transacción asociada al elemento $e$.
-  % Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
-  % envía una vez que las transacciones fueron decididas y ordenadas.
-  % Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos decidirán
-  % la misma transacción asociada al elemento $e$, y por tanto recibirán la petición \<DeliverTx>
-  % para ella, añadiéndo a $e$ a su conjunto $\THESET$, como se muestra en la línea
-  % \ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
 \end{proof}
 
+\begin{lemma}
+  La implementación \compresschain cumple la propiedad \textit{Eventual-Get}~\ref{api:theset->history}
+  de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$, entonces por construcción de
+  $\THESET$, necesariamente $v$ en algún momento recibió una
+  petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos elementos
+  es $e$.
+  Como se puede ver en la definición de \<DeliverTx> y en las líneas \ref{line:abci-compresschain-the-set}
+  y \ref{line:abci-compresschain-history} de \texttt{newEpoch} en
+  el Algoritmo~\ref{alg:abci-brotli}, inmediatamente después de agregar un elemento a $\THESET$,
+  el elemento se agrega a $\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será eventualmente
+  agregado a $v.\HISTORY$ y, por lo tanto, estampado con un número de época.
+\end{proof}
+
+\begin{lemma}
+  La implementación \compresschain cumple la propiedad \textit{Unique Epoch}~\ref{api:local_unique_stamp} de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sea $v$ un servidor correcto e ${i,i'\leq v.\EPOCH}$ con ${i\neq i'}$.
+  Queremos probar que $v.\HISTORY(i)\cap{}v.\HISTORY(i')=\emptyset$.
+  %
+
+  La demostración se hará por el absurdo.
+  Sin pérdida de generalidad, suponemos que ${i < i'}$. Sea $e$ un elemento $\in \HISTORY(i)$ .
+  Por lo tanto, $e$ fue estampado con el número de época $i$.
+  %
+  Suponemos ahora que también se cumple $e \in \HISTORY(i')$. Es decir, 
+  $e$ fue estampado con el número de época $i'$.
+  Para que $e$ también haya sido añadido a la época $i'$, necesariamente debe haber llegado
+  una petición \<DeliverTx>$(t)$, donde $t$ es un lote comprimido de elementos, y uno de esos
+  elementos es $e$. Al procesarse dicha transacción, se debe haber
+  incluido a $e$ como parte de $\HISTORY(i')$.
+  %
+  Por construcción, esto necesariamente debe haber pasado en la línea
+  \ref{line:abci-compresschain-history} en el Algoritmo~\ref{alg:abci-brotli},
+  con lo cual se concluye que la condición del \texttt{if} de
+  la línea ~\ref{line:abci-compresschain-if} evaluó a \texttt{true} (*)
+  (ya que de otro modo, el elemento no hubiese sido añadido).
+  %
+
+  Dado que ${i < i'}$, y las peticiones se hacen ordenadamente, al momento de la
+  petición \<DeliverTx>$(t)$, la época $i$ ya fue construida, y por lo tanto se tiene
+  $e \in \HISTORY(i)$.
+  Por este motivo, al procesar la petición \<DeliverTx>$(t)$, la condición \texttt{if} de
+  la línea ~\ref{line:abci-compresschain-if} evaluará a \texttt{false}, dado que 
+  \texttt{not} $e$ \texttt{in} $\HISTORY$ es falso, puesto que $e \in \HISTORY(i)$ .
+  Esto lleva a una contradicción por (*).
+  La contradicción proviene de suponer que $e \in \HISTORY(i')$.
+  Por lo tanto, se concluye que $e \not\in \HISTORY(i')$. Esto vale para cualquier elemento $e$.
+  Luego se tiene $\HISTORY(i)\cap{}\HISTORY(i')=\emptyset$.
+\end{proof}
+
+\begin{lemma}
+  La implementación \compresschain cumple la propiedad \textit{Consistent Gets}~\ref{api:consistent-gets} de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
+  Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
+
+  Se seguirá un razonamiento similar al presentado en la demostración del
+  \textbf{Lema ~\ref{proof:get-global}}.
+  Sea $e$ un elemento $\in v.\HISTORY(i)$. 
+  Por construcción de $\HISTORY$, necesariamente $v$ en un momento determinado recibió una
+  petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos
+  elementos es $e$. Como consecuencia de esta petición,
+  $e$ fue estampado con el número de época $i$.
+  % Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
+  % envía una vez que las transacciones fueron decididas y ordenadas.
+  % Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos y, en particular $w$,
+  % deciden la misma transacción asociada al elemento $e$ (en el mismo orden que $v$).
+  Por la propiedad \textbf{Tendermint-Global-DeliverTx} podemos asegurar que todos los servidores correctos,
+  y en particular $w$, reciben la petición \<DeliverTx>($t$) en el mismo orden en que lo hace $v$, es decir,
+  durante la construcción de la época $i$, añadiendo a $e$ a $w.\HISTORY(i)$, como se muestra en la línea
+  \ref{line:abci-compresschain-history} en el Algoritmo~\ref{alg:abci-brotli}.
+\end{proof}
+
+\begin{lemma}
+  La implementación \compresschain cumple la propiedad \textit{Add-before-Get}~\ref{api:get->add} de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sea $v$ un servidor correcto y $e \in \THESET$. Por construcción de $\THESET$,
+  necesariamente $v$ en algún momento recibió una
+  petición \<DeliverTx>$(t)$, donde $t$ es un lote comprimido de elementos, y uno de esos
+  elementos es $e$.
+  Luego, por la propiedad \textit{Tendermint-Compresschain-Deliver-Add} en el pasado existitó una operación
+  $w.\<add>(e)$ en algún servidor $w$.
+\end{proof}
 
 \section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
 \begin{itemize}
