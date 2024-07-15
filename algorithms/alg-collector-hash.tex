@@ -21,7 +21,10 @@
 
             \When {\<isReady>(\<batch>)}
               \State \texttt{hash} $\leftarrow$  \texttt{Hash}(\texttt{batch})
-              \State \texttt{Tendermint.Broadcast}(\texttt{hash})
+              \State \texttt{DATA\_BASE}.Set(\texttt{hash}, \texttt{batch})
+              \State \texttt{my\_signature} $\leftarrow$ \<Sign>(\texttt{hash}, \texttt{PRIVATE\_KEY})
+              \State \texttt{Tendermint.Broadcast}(\texttt{hash}, \texttt{my\_signature})
+              %\State \texttt{Tendermint.Broadcast}(\texttt{hash})
               %\State \Call{\<reset>}{\null}
               \State \texttt{batch} $\leftarrow$ \{\}
             \EndWhen

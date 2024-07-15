@@ -48,7 +48,7 @@
             				\For{\texttt{e in elements}}
 								\Comment{Agregar solo elementos nuevos y válidos.}
              					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
-									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\)
+									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\) \label{line:abci-hashchain-history}
 									%\State \texttt{history[i]}.AddElement(e)
                     	 		\EndIf
                     	 	\EndFor
@@ -81,16 +81,16 @@
             	\Function{\<reverse>}{$hash, signature$}\label{alg:hash_revert}
                 \State \texttt{original\_batch} $\leftarrow$ \texttt{my\_collector}.\Call{\<Reverse>}{$hash, signature$}
                 \If {Hash(\texttt{original\_batch}) = $hash$}
-					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch}     
-                		\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}
+					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch} \label{line:abci-hashchain-hash-to-batch}
+                		%\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}
 							\For{\texttt{e in \Call{\<getElementsFromBatch>}{original\_batch}}}
 								\If {\<isValidElement>(\texttt{e})}
-									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\)
+									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\) \label{line:abci-hashchain-the-set}
 								\EndIf
 							\EndFor
                 			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})
                 			\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})
-					\EndIf   
+						%\EndIf   
 				\EndIf             	
                 	\State \textbf{return}
             \EndFunction

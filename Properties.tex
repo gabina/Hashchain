@@ -265,14 +265,40 @@ propiedades derivadas para cada implementación realizada de \setchain.
 \end{proof}
 
 \begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
+  VER SI LA NECESITO
   Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
   $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
-  una petición $\<DeliverTx>(t)$ a la ABCI correspondiente de $v$, en donde
-  $t$ es un lote hasheado de elementos, y uno de esos elementos
-  es $e$.
+  una petición $v.\<DeliverTx>(t)$, en donde
+  $t$ es una tupla $(h, s)$, siendo
+  \begin{itemize}
+    \item $h$ un lote hasheado de elementos, donde uno de esos elementos es $e$,
+    \item y $s$ una firma válida de dicho hash realizada con la clave privada de $v$.
+  \end{itemize}
+ 
 \end{property}
 
+\begin{proof}
+  Sea $e$ un elemento válido y $v$ un servidor correcto.
+  Por definción de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
+  $v.\<add>(e)$ se traduce en la llamada \texttt{HashCollector.AddElement($e$)}.
+  Como se puede observar en el algoritmo ~\ref{alg:collector-hash}, $e$ será codificado
+  adecuadamente y añadido a un lote que eventualmente estará listo, se hasheará,
+  se firmará, y se invocará \<broadcastTx>($t$) sobre el servidor $v$, en donde $t$
+  será una tupla conformada por el hash y la firma.
 
+  Por la propiedad \textbf{Tendermint-Eventual-CheckTx}, $v$
+  recibirá eventualmente la petición \<CheckTx>($t$).
+  Considerando que la firma es válida (acá se podría justificar con un poco de más detalle),
+  la llamada a \<CheckTx>($t$) retornará \texttt{true}
+  en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
+
+  Luego, por la propiedad \textbf{Tendermint-Eventual-Injection} sabemos que la
+  transacción $t$ formará parte de un bloque.
+  Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
+  el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
+
+  NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo?? Por ahora, únicamente válido.
+\end{proof}
 
 \section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
 
@@ -607,60 +633,160 @@ que corre la ABCI correspondiente al servidor $w$.
 \end{proof}
 
 \section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
-\begin{itemize}
-  \item La \textit{Propiedad 1 (Consistent Sets)} de \setchain establece que las épocas solo contienen
-  elementos que provienen del conjunto de solo crecimiento. Esto es trivialmente correcto debido a que la
-  construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
-  \<reverse> y \<Query> en el Algoritmo~\ref{alg:abci-hash1} y ~\ref{alg:abci-hash2}).
-\end{itemize}
 
-\subsection{Otras cosas}
-\begin{property}[Safety]\label{tendermint:safety}
-  Si hay menos de 1/3 del poder de voto en manos bizantinas y al menos un validador correcto
-  decide el bloque $B$, entonces ningún validador correcto decidirá un bloque distinto a $B$.
-\end{property}
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Consistent Sets}~\ref{api:consistent-set} de \setchain.
+  %que establece que las épocas solo contienen elementos que provienen del conjunto de solo crecimiento.
+\end{lemma}
 
-\begin{property}[Liveness]\label{tendermint:liveness}
-  Si hay menos de 1/3 de poder de voto en manos bizantinas, luego el procolo de Tendermint
-  no se bloquea (es decir, no hay \textit{deadlock}).
-\end{property}
+\begin{proof}
+  Sea $v$ un servidor correcto sobre el que se invoca $v.\<get>$.
+  Por definición de \<get> en el Algoritmo~\ref{alg:api-hashchain}, esto se traduce como una llamada a
+  \<Query> en el Algoritmo~\ref{alg:abci-hash1}.
+  Sea $(\THESET, \HISTORY, \EPOCH)$ el resultado de dicha invocación.
+  Queremos probar que para todo $i \leq \EPOCH, \HISTORY(i) \subseteq \THESET$.
+  Sea $e$ un elemento $\in \HISTORY(i)$ para algún $i \leq \EPOCH$.
+  Por construcción de \HISTORY, $e$ fue necesariamente agregado en la línea \ref{line:abci-hashchain-history}
+  como parte de la ejecución de \<Query>.
+  Se deduce entonces que $e$ es un elemento válido proveniente de un lote asociado al hash correspondiente a
+  la época $i$.
 
-En el contexto de Tendermint, denotamos con \textit{n} el poder de voto total de los procesos
-en el sistema, y asumimos una cota superior \textit{f} en el poder de voto total proveniente de
-los procesos bizantinos.
-%
-El algoritmo de consenso de Tendermint asume que $n > 3f$, es decir, requiere que el poder de voto
-en manos de procesos bizantinos sea menor a 1/3 del poder de voto total.
-Por simplicidad, en ocasiones se considera $n = 3f + 1$.
+  Dado que la variable \texttt{hash\_to\_batch} solo se modifica en la línea \ref{line:abci-hashchain-hash-to-batch} como
+  parte de \<reverse>, se concluye que dicho código tiene que haber sido ejecutado previamente, lo cual implica también que
+  $e$ fue añadido a \THESET con anterioridad.
+  Por lo tanto, se tiene $e \in \THESET$, concluyendo que $\HISTORY(i) \subseteq \THESET$ para todo $i \leq \EPOCH$.
+  % Esto es trivialmente correcto debido a que la
+  % construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
+  % \<reverse> y \<Query> en el Algoritmo~\ref{alg:abci-hash1} y ~\ref{alg:abci-hash2}).
+\end{proof}
 
-Tendermint resuelve el problema de la replicación de máquinas de estados ejecutando instancias de
-consenso secuencialmente para acordar cada bloque de transacciones que serán luego ejecutadas por el
-servicio siendo replicado.
-Se considera una variante del problema de consenso bizantino llamado \textit{Validity Predicate-based Byzantine consensus}
-que es motivado por los sistemas de blockchain~\cite{Crain2017LeaderRandomizationSignaturefreeBC}.
-El problema es definido por propiedades de acuerdo, terminación, y validés.
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Add-Get-Local}~\ref{api:history->theset-local} de \setchain.
+  %que declara que todo elemento válido añadido a un
+  %servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
+\end{lemma}
 
-Esta variante del problema de consenso bizantino tiene un predicado específico a la aplicación
-denotado \textit{valid()} que indica si un valor es válido. En el contexto de sistemas de blockchain, por ejemplo,
-un valor no es válido si no contiene un hash apropiado del último bloque añadido a la blockchain.
+\begin{proof}
+  Sea $e$ un elemento válido y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
+  Por definción de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
+  $v.\<add>(e)$ se traduce en la llamada \texttt{HashCollector.AddElement($e$)}.
+  Como se puede observar en el algoritmo ~\ref{alg:collector-hash}, $e$ será codificado
+  adecuadamente y añadido a un lote que eventualmente estará listo, se hasheará,
+  se firmará, y se invocará \<broadcastTx>($t$) sobre el servidor $v$, en donde $t = (h, s)$
+  será una tupla conformada por el hash del lote que contiene a $e$
+  y una firma válida para el mismo. A su vez, la correspondencia entre el hash y el lote
+  será añadido a una base de datos local.
 
-\begin{property}[Agreement]\label{tendermint:agreement1}
-  Dos procesos correctos nunca deciden valores distintos.
-\end{property}
+  Por la propiedad \textit{Tendermint-Eventual-CheckTx}, $v$
+  recibirá eventualmente la petición \<CheckTx>($t$).
+  Considerando que la firma $s$ es válida por hipótesis, luego se abren dos casos:
+  que el lote asociado a $h$ ya sea conocido o no.
 
-\begin{property}[Termination]\label{tendermint:termination1}
-    Todos los procesos correctos deciden eventualmente un valor.
-\end{property}
+  Si \texttt{hash\_to\_batch[h]} ya existe, entonces con certeza previamente
+  fue recibido el mismo hash, revertido, y añadido a \texttt{hash\_to\_batch}.
+  Esto únicamente se hace como parte de \<reverse>, en donde, como se puede ver en la línea
+  \ref{line:abci-hashchain-the-set}, $e$ tuvo que haber sido añadido a \THESET,
+  puesto que es un elemento válido por hipótesis.
 
-\begin{property}[Validity]\label{tendermint:validity}
-    Un valor decidido es válido. Es decir, satisface el predicado predefinido
-    denotado con \textit{valid}.
-\end{property}
-%
+  Si, por el contrario, \texttt{hash\_to\_batch[h]} no existe, entonces se invocará
+  a \<reverse>.
+  De este modo, se comunicará con su propio \hcollector para revertir el hash.
+  Con seguridad, el \hcollector tendrá el lote asociado a dicho hash en su base de datos local
+  y lo retornará, de manera que el elemento $e$ (parte del lote) será añadido a \THESET
+  de acuerdo a la línea \ref{line:abci-hashchain-the-set}.
 
-Las propiedades ~\ref{tendermint:safety} y ~\ref{tendermint:liveness} son demostradas en ~\cite{Kwon2014TendermintC}.
-Las propiedades ~\ref{tendermint:agreement1}, ~\ref{tendermint:termination1} y ~\ref{tendermint:validity}
-son demostradas en ~\cite{Buchman.2018.Tendermint}.
+  Por lo tanto, todas las invocaciones a $v.\<get>$ eventualmente tendrán al elemento $e$
+  como parte de \THESET.
+\end{proof}
+
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Get-Global}~\ref{api:history->theset} de \setchain.
+  %que establece que los elementos presentes en un servidor correcto
+  %son propagados a todos los servidores correctos.
+\end{lemma}
+
+\begin{proof}
+  Sean $v$ y $w$ dos servidores correctos y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
+  ejecutó <reverse>, revirtió $h$ correctamente y, como consecuencia,
+  añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set}).
+
+  Acá hay dos opciones: o bien ese reverse se ejecutó como parte de checktx, en cuyo caso retornó true,
+  por lo que quedó en la mempool de $v$ y por Tendermint-Eventual-Injection eventualmente $w$ recibirá
+  DeliverTx, en donde añadirá a 
+
+  NOTA: tengo que hacer algún teoremita previo que trabaje con should consolidate.
+
+  % una
+  % petición \<CheckTx>($t$) -en donde $t = (h, s)$
+  % es una tupla conformada por el hash del lote que contiene a $e$
+  % y una firma válida para el mismo-, revirtió $h$ correctamente y, como consecuencia,
+  % añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set}).
+
+
+  % Al rec
+
+  % Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
+  % \textbf{Tendermint-Global-DeliverTx}
+  % todos los
+  % servidores correctos, y en particular $w$, reciben dicha petición \<DeliverTx>($t$).
+  % Dado que $e$ es válido por hipótesis, se tienen dos opciones: o bien $e$ es parte de $w.\HISTORY$,
+  % en cuyo caso ya se cumple $e \in w.\THESET$ (ver propiedad anterior), o bien $e$ es un elemento nuevo.
+  % En este último caso,
+  % $e$ será añadido a
+  % $w.\THESET$, como se muestra en la línea
+  % \ref{line:abci-compresschain-the-set} en el Algoritmo~\ref{alg:abci-brotli}.
+  % Por lo tanto, se cumplirá eventualmente $e \in w.\THESET$.
+\end{proof}
+
+% \subsection{Otras cosas}
+% \begin{property}[Safety]\label{tendermint:safety}
+%   Si hay menos de 1/3 del poder de voto en manos bizantinas y al menos un validador correcto
+%   decide el bloque $B$, entonces ningún validador correcto decidirá un bloque distinto a $B$.
+% \end{property}
+
+% \begin{property}[Liveness]\label{tendermint:liveness}
+%   Si hay menos de 1/3 de poder de voto en manos bizantinas, luego el procolo de Tendermint
+%   no se bloquea (es decir, no hay \textit{deadlock}).
+% \end{property}
+
+% En el contexto de Tendermint, denotamos con \textit{n} el poder de voto total de los procesos
+% en el sistema, y asumimos una cota superior \textit{f} en el poder de voto total proveniente de
+% los procesos bizantinos.
+% %
+% El algoritmo de consenso de Tendermint asume que $n > 3f$, es decir, requiere que el poder de voto
+% en manos de procesos bizantinos sea menor a 1/3 del poder de voto total.
+% Por simplicidad, en ocasiones se considera $n = 3f + 1$.
+
+% Tendermint resuelve el problema de la replicación de máquinas de estados ejecutando instancias de
+% consenso secuencialmente para acordar cada bloque de transacciones que serán luego ejecutadas por el
+% servicio siendo replicado.
+% Se considera una variante del problema de consenso bizantino llamado \textit{Validity Predicate-based Byzantine consensus}
+% que es motivado por los sistemas de blockchain~\cite{Crain2017LeaderRandomizationSignaturefreeBC}.
+% El problema es definido por propiedades de acuerdo, terminación, y validés.
+
+% Esta variante del problema de consenso bizantino tiene un predicado específico a la aplicación
+% denotado \textit{valid()} que indica si un valor es válido. En el contexto de sistemas de blockchain, por ejemplo,
+% un valor no es válido si no contiene un hash apropiado del último bloque añadido a la blockchain.
+
+% \begin{property}[Agreement]\label{tendermint:agreement1}
+%   Dos procesos correctos nunca deciden valores distintos.
+% \end{property}
+
+% \begin{property}[Termination]\label{tendermint:termination1}
+%     Todos los procesos correctos deciden eventualmente un valor.
+% \end{property}
+
+% \begin{property}[Validity]\label{tendermint:validity}
+%     Un valor decidido es válido. Es decir, satisface el predicado predefinido
+%     denotado con \textit{valid}.
+% \end{property}
+% %
+
+% Las propiedades ~\ref{tendermint:safety} y ~\ref{tendermint:liveness} son demostradas en ~\cite{Kwon2014TendermintC}.
+% Las propiedades ~\ref{tendermint:agreement1}, ~\ref{tendermint:termination1} y ~\ref{tendermint:validity}
+% son demostradas en ~\cite{Buchman.2018.Tendermint}.
 
 % En esta sección se introducen las propiedades que deben cumplir las implementaciones
 % correctas de \setchain.
