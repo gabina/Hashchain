@@ -17,7 +17,7 @@
 
 						\Comment{Si el nodo no tiene el lote original, lanzar una rutina asíncrona que solicita el lote.}
             		
-                		\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}
+                		\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}\label{line:spawn-reverse-checktx}
                 		\State \textbf{return True}
 						\Comment{En caso de ausencia de información, retornar True.}
                 	\Else
@@ -28,12 +28,12 @@
             \Function{\<DeliverTx>}{$hash, signature$}\label{alg:hash_deliver_tx}
             		\If {\<isValidSignature>($hash, signature$)}
             			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}
+						\If {not \texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
+							\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}
+						\EndIf
             			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
             				\State \texttt{epoch\_to\_hash[next\_epoch]} $\leftarrow$ $hash$
             				\State \texttt{next\_epoch} $\leftarrow$ \texttt{next\_epoch} + 1
-            				\If {not \texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
-                				\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}
-                			\EndIf
                	 	\EndIf
                	 \EndIf
                 \State \textbf{return}
@@ -47,7 +47,7 @@
                 			\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hash\_to\_batch}[\texttt{hash}]}
             				\For{\texttt{e in elements}}
 								\Comment{Agregar solo elementos nuevos y válidos.}
-             					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
+             					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}} \label{line:abci-hashchain-history-if}
 									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\) \label{line:abci-hashchain-history}
 									%\State \texttt{history[i]}.AddElement(e)
                     	 		\EndIf

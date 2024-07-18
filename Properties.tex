@@ -300,6 +300,43 @@ propiedades derivadas para cada implementación realizada de \setchain.
   NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo?? Por ahora, únicamente válido.
 \end{proof}
 
+\begin{property}[Tendermint-Haschain-Eventual-Consolidation]\label{tendermint:hashchain-eventual-consolidation}
+  Sea $e$ un elemento válido y $v$ un servidor correcto. Si un cliente invoca
+  $v.\<add>(e)$, eventualmente un hash proveniente de un lote que contiene a $e$ consolidará.
+\end{property}
+
+\begin{proof}
+  Sea $e$ un elemento válido y $v$ un servidor correcto.
+  Si un cliente invoca $v.\<add>(e)$, sabemos por la propiedad \textit{Tendermint-Haschain-Delivery} que,
+  eventualmente $v$ recibirá la petición $\<DeliverTx>(t)$, en donde
+  $t$ es una tupla $(h, s)$, siendo
+  \begin{itemize}
+    \item $h$ un lote hasheado de elementos, donde uno de esos elementos es $e$,
+    \item y $s$ una firma válida de dicho hash realizada con la clave privada de $v$.
+  \end{itemize}
+  Por la propiedad \textit{Tendermint-Global-DeliverTx}, sabemos que todos los nodos correctos
+  recibirán eventualmente la misma petición $\<DeliverTx>(t)$.
+
+  Sea $w$ un nodo correcto que recibe $\<DeliverTx>(t)$. Como lo indica la definición presentada en el algoritmo,
+  $w$ chequeará que $s$ sea una firma válida (lo cual es) y luego sumará la nueva firma a las firmas para el hash $h$.
+  Seguido de esto, si $w$ no conoce aún el reverso de $h$, entonces lanzará una acción asíncrona para revertirlo.
+  Si $w$ ya conoce el reverso de $h$ es porque ya invocó al proceso de inversión de hashes previamente.
+
+  Supongamos que $w$ no conoce el reverso de $h$. Como se puede ver en la definición de \<reverse>,
+  $w$ se conectará con su propio \hcollector para obtener el lote asociado
+  a $h$. Con seguridad obtendrá el reverso puesto que su \hcollector se comunicará con el \hcollector de $v$ (que es correcto
+  por hipótesis y conoce el reverso de $h$) porque $s$ es una firma asociada a $v$. EL \hcollector de $v$ ejecutará \<Reverse>
+  del algoritmo ~\ref{alg:collector-hash}, obteniendo el lote desde su base de datos y devolviéndolo.
+
+  Siguiendo la definición de \<DeliverTx> en $w$, una vez que obtiene el lote asociado a $h$, firmará $h$ con su propia clave privada
+  y lo difundirá como una nueva transacción,
+  lo cual hará que eventualmente llegue una nueva petición $\<DeliverTx>(t')$, donde $t' = (h, s')$, siendo $s'$ la firma generada
+  con la clave privada de $w$.
+
+  Dado que este proceso se repetirá para todo servidor correcto, y considerando que \SPH es menor o igual a la cantidad de nodos
+  correctos, con certeza $h$ obtendrá las \SPH firmas y, por lo tanto, consolidará.
+\end{proof}
+
 \section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
 
 \newcounter{lemma:vanilla}
@@ -709,35 +746,80 @@ que corre la ABCI correspondiente al servidor $w$.
   Sean $v$ y $w$ dos servidores correctos y $e$ un elemento válido, tal que  $e \in v.\THESET$.
   Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
-  ejecutó <reverse>, revirtió $h$ correctamente y, como consecuencia,
+  ejecutó \<reverse>, revirtió $h$ correctamente y, como consecuencia,
   añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set}).
 
-  Acá hay dos opciones: o bien ese reverse se ejecutó como parte de checktx, en cuyo caso retornó true,
-  por lo que quedó en la mempool de $v$ y por Tendermint-Eventual-Injection eventualmente $w$ recibirá
-  DeliverTx, en donde añadirá a 
+  La función \<reverse> puede ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
+  de una petición \<DeliverTx>.
+  Si proviene de la ejecución de \<CheckTx>, entonces como se muestra en la línea \ref{line:spawn-reverse-checktx}
+  de su definición, inmediatamente después de lanzar una llamada asíncrona a \<reverse>, la petición retornó
+  \texttt{True}.
+  Como consecuencia de esto, la transacción en cuestión (llamémosla $t = (h,s)$) fue añadida a la mempool de $v$ y,
+  por el lema \textit{Tendermint-Eventual-Injection} sabemos que eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
+  Aún más, por el lema todos los servidores correctos recibirán $\<DeliverTx>(t)$.
 
-  NOTA: tengo que hacer algún teoremita previo que trabaje con should consolidate.
+  Por lo tanto, podemos concluir que todos los servidores correctos y, en particular $w$, recibirán la petición $\<DeliverTx>(t)$.
+  Como consecuencia de esta ejecutarán \<reverse> (si es que ya no lo hicieron) añadiendo a $e$ a \THESET. 
+\end{proof}
 
-  % una
-  % petición \<CheckTx>($t$) -en donde $t = (h, s)$
-  % es una tupla conformada por el hash del lote que contiene a $e$
-  % y una firma válida para el mismo-, revirtió $h$ correctamente y, como consecuencia,
-  % añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set}).
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Eventual-Get}~\ref{api:theset->history}
+  de \setchain.
+\end{lemma}
 
+\begin{proof}
+  Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$, entonces por construcción de
+  $\THESET$, necesariamente $v$ en algún momento ejecutó \<reverse> para un hash $h$, donde el lote asociado a $h$
+  contenía $e$ como elemento.
+  La función \<reverse> puede ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
+  de una petición \<DeliverTx>.
 
-  % Al rec
+  Si proviene de la ejecución de \<CheckTx>, entonces como se muestra en la línea \ref{line:spawn-reverse-checktx}
+  de su definición, inmediatamente después de lanzar una llamada asíncrona a \<reverse>, la petición retornó
+  \texttt{True}.
+  Como consecuencia de esto, la transacción en cuestión (llamémosla $t = (h,s)$) fue añadida a la mempool de $v$ y,
+  por el lema \textit{Tendermint-Eventual-Injection} sabemos que eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
 
-  % Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
-  % \textbf{Tendermint-Global-DeliverTx}
-  % todos los
-  % servidores correctos, y en particular $w$, reciben dicha petición \<DeliverTx>($t$).
-  % Dado que $e$ es válido por hipótesis, se tienen dos opciones: o bien $e$ es parte de $w.\HISTORY$,
-  % en cuyo caso ya se cumple $e \in w.\THESET$ (ver propiedad anterior), o bien $e$ es un elemento nuevo.
-  % En este último caso,
-  % $e$ será añadido a
-  % $w.\THESET$, como se muestra en la línea
-  % \ref{line:abci-compresschain-the-set} en el Algoritmo~\ref{alg:abci-brotli}.
-  % Por lo tanto, se cumplirá eventualmente $e \in w.\THESET$.
+  Por lo tanto, podemos concluir que eventualmente $v$ recibirá una petición \<DeliverTx>($t$).
+  Debido a esto, todos los servidores correctos recibirán eventualmente una petición \<DeliverTx>($t$),
+  el hash $h$ asociado a dicha transacción consolidarará y, finalmente, $v$ añadirá a $e$ a \HISTORY 
+  como se muestra en la línea \ref{line:abci-hashchain-history}.
+\end{proof}
+
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Unique Epoch}~\ref{api:local_unique_stamp} de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sea $v$ un servidor correcto e ${i,i'\leq v.\EPOCH}$ con ${i\neq i'}$.
+  Queremos probar que $v.\HISTORY(i)\cap{}v.\HISTORY(i')=\emptyset$.
+  %
+
+  Esto es trivialmente correcto debido a que un elemento $e$ se agrega a \HISTORY[j]
+  únicamente si no pertenece a \HISTORY[j'] con $j' \in {0, 1, ..., j -1}$, como se puede
+  ver en la cláusula \texttt{if} de la línea \ref{line:abci-hashchain-history-if}.
+  %
+\end{proof}
+
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Consistent Gets}~\ref{api:consistent-gets} de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
+  Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
+
+  ...
+\end{proof}
+
+\begin{lemma}
+  La implementación \hashchain cumple la propiedad \textit{Add-before-Get}~\ref{api:get->add} de \setchain.
+\end{lemma}
+
+\begin{proof}
+  Sea $v$ un servidor correcto y $e \in \THESET$.
+  ...
+  ¿un servidor maligno no podría invocat Tendermint.Broadcast(h,s)?
 \end{proof}
 
 % \subsection{Otras cosas}
