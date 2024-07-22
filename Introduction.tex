@@ -33,7 +33,37 @@ y solo pueden agregarse cuando los participantes logran un \textit{quorum}. En
 contraste con un sistema centralizado, las bitácoras distribuidas no requieren
 un administrador central y, en consecuencia, no tienen un punto de falla central.
 Un caso particular de bitácora distribuida, en donde los registros se empaquetan
-en forma de bloques, es la \textit{blockchain}. [A completar]
+en forma de bloques, es la \textit{blockchain}.
+
+Las blockchains tomaron
+popularidad con la implementación de Bitcoin, una tecnología propuesta por Nakamoto en
+2009~\cite{nakamoto06bitcoin}.
+Allí se presentó como un método para eliminar terceras partes confiables en sistemas
+de pago electrónico.
+%
+
+Las versiones más modernas de blockchains incorporan contratos inteligentes~\cite{szabo96smart,ethereum},
+los cuales son programas de estado inmutable alojados en la blockchain. Dichos
+programas describen la funcionalidad de las transacciones, incluyendo el intercambio
+de criptomonedas.
+%
+Los contratos inteligentes permiten describir funcionalidades sofisticadas, habilitando
+diversas aplicaciones en finanzas descentralizadas (DeFi)\footnote{En diciembre de 2021,
+el valor monetario alojado en DeFi estaba estimado en alrededor de \$100B, de acuerdo a Statista
+\url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
+gobierno decentralizado, Web3, etc.
+%
+
+Conceptualmente, la blockchain es un \textit{objeto distribuido}
+que contiene las transacciones realizadas
+en nombre de los usuarios, empaquetadas en bloques, y totalmente
+ordenadas~\cite{anta2018formalizing,anta2021principles}.
+%
+En entornos reales, el objeto blockchain es mantenido por múltiples servidores
+sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
+\emph{ataques bizantinos}.
+%
+
 %Las blockchains tomaron popularidad
 %con la implementación de Bitcoin, un sistema de pago electrónico decentralizado, 
 %propuesto por Nakamoto en 2009~\cite{nakamoto06bitcoin}.
@@ -46,45 +76,179 @@ en forma de bloques, es la \textit{blockchain}. [A completar]
 
 \section{El problema}
 % What is the problem. Justifiy that the problem is a problem.
-%Blockchains
-Las blockchains tomaron
-popularidad con la implementación de Bitcoin, una tecnología propuesta por Nakamoto en
-2009~\cite{nakamoto06bitcoin}.
-Allí se presentó como un método para eliminar terceras partes confiables en sistemas
-de pago electrónico.
-%
 
-Las blockchains modernas incorporan contratos inteligentes~\cite{szabo96smart,ethereum},
-los cuales son programas de estado inmutable alojados en la blockchain. Dichos
-programas describen la funcionalidad de las transacciones, incluyendo el intercambio
-de criptomonedas.
-%
-Los contratos inteligentes permiten describir funcionalidades sofisticadas, habilitando
-diversas aplicaciones en finanzas descentralizadas (DeFi)\footnote{En diciembre de 2021,
-el valor monetario alojado en DeFi estaba estimado en alrededor de \$100B, de acuerdo a Statista
-\url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
-gobierno decentralizado, Web3, etc.
-%
+Actualmente, uno de los principales obstáculos para la adopción rápida y generalizada
+de las tecnologías blockchain es su límite en la \emph{escalabilidad}, debido principalmente a los límites
+de \emph{rendimiento} inerentes a los algoritmos de consenso bizantinos.~\cite{Tyagi@BlockchainScalabilitySol,Croman2016ScalingDecentralizedBlockchain}
 
-La blockchain es un \textit{objeto distribuido} que contiene las transacciones realizadas
-en nombre de los usuarios, empaquetadas en bloques, y totalmente
-ordenadas~\cite{anta2018formalizing,anta2021principles}.
+En términos generales, la escalabilidad de un sistema es su habilidad para gestionar una
+cantidad creciente de trabajo.
 %
-En entornos reales, el objeto blockchain es mantenido por múltiples servidores
-sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
-ataques bizantinos.
-%
+Usualmente se habla de escalabilidad \emph{horizontal} cuando se añaden nodos de trabajo a un sistema,
+en contraposición a la escalabilidad \emph{vertical} que refiere a aumentar los recursos de un nodo particular.
 
-Un aspecto clave en la adopción de las tecnologías blockchain es \emph{su rendmiento}, medido
+En el caso específico de la tecnología blockchain, la escalabilidad horizontal consiste en añadir nuevos
+nodos a la red que participen del protocolo de consenso.
+%
+Un ejemplo de problema de escalabilidad vertical en este contexto es la creciente cantidad de datos
+que requiere almacenar un nodo en la blockchain para guardar transacciones desde el bloque más reciente
+hasta el bloque \emph{génesis} (inicial).
+
+En este trabajo nos enfocaremos en la escalabilidad de blockchains desde el punto de vista de su \emph{rendmiento}, medido
 en términos del número de transacciones añadidas por segundo.
 %
-Consecuentemente, diversas técnicas para mejorarlo están siendo desarrolladas.
+Por dar algunos números representativos de hoy en día, al sistema Bitcoin le toma 10 minutos o más
+confirmar transacciones, logrando un rendimiento máximo de 7 transacciones por segundo.
+%
+Ethereum, una de las blockchains más populares, admite en promedio 20 transacciones por segundo.
+%
+Estos números son muy bajos comparados con los que observamos en otros campos de pago convencionales,
+como PayPal que soporta hasta 200 transacciones por segundo, o Visa, que confirma y procesa 2000 transacciones
+por segundo en promedio.
+%
+Por lo tanto, el rendimiento de las blockchains es un aspecto clave en la adopción de esta tecnología.
 %
 
+%  from seven transactions per second to thousands of transactions per second to handle real-life problems in the field of visa, healthcare, flights, etc
+% In bitcoin Blockchain 7 transactions are carried out in one
+% second ,which is very low compared to VISA and PayPal.
+% The time required to confirm the transaction is around 10
+% minutes and the size of each block is around 1 MB . 7
+% transactions per second is obtained by dividing the
+% maximum size of block by an average size of each bitcoin
+% transaction as 250 bytes.
+
+% Today’s representative blockchain such as Bitcoin takes 10 min or longer
+% to confirm transactions, achieves 7 transactions/sec maximum throughput. In
+% comparison, a mainstream payment processor such as Visa credit card confirms a
+% transaction within seconds, and processes 2000 transactions/sec on average, with
+% a peak rate of 56,000 transactions/sec
+
+% Bitcoin processes 7 transactions per second and Etherium
+% processes 20 transactions per second ,whereas payment by
+% VISA is 2000 and PayPal is 200 .
+% Scaling can be achieved by including more transactions in a
+% block .
+
+% Un aspecto clave en la adopción de las tecnologías blockchain es \emph{su rendmiento}, medido
+% en términos del número de transacciones añadidas por segundo.
+%
+
+\section{Estado del arte}
+Diversas técnicas están siendo desarrolladas para incrementar el rendimiento de las blockchains y
+aumentar la cantidad de transacciones añadidas por segundo.
+%
+A continuación se presentan las más novedosas.
+
+\subsection{Nuevos algoritmos de consenso}
+
+\subsection{\emph{Inter-Blockchain Communication}}
+
+\subsection{Paralelismo}
+Los sistemas de base de datos tradicionales logran escalabilidad dividiendo
+los estados de la base de datos en fragmentos independientes (o particiones).
+%
+Al distribuir la carga sobre múltiples particiones, la capacidad global del sistema
+se incrementa.
+%
+La técnica de \emph{sharding} requiere cierta coordinación para lograr propiedades
+básicas de atomocidad, consistencia, aislamiento y durabilidad para aquellas transacciones
+que acceden a múltiples fragmentos.
+%
+En la Figura se representa la idea de \emph{sharding} como la combinación entre
+réplica y partición.
+%
+Cada partición se replica sobre múltiples réplicas, y su contenido se mantiene consistente
+mediante protocolos de consenso.
+
+En el contexto de blockchains, el enfoque de \emph{sharding} se basa en aplicar este concepto
+originario de la escalabilidad de bases de datos, dividiendo la red de blockchain en comités más
+pequeños de modo de reducir la sobrecarga de los protocolos de consenso.
+%
+Sin embargo, este concepto no puede ser directamente extendido a los sistemas de blockchain, debido
+a diferencias fundamentales en los modelos de fallas que se consideran en las bases de datos
+y en las blockchains.
+%
+Tradicionalmente, las bases de datos asumen modelos de fallo por caída, en los cuales un nodo que falla
+simplemente deja de enviar y responder peticiones.
+%
+Por el otro lado, los sistemas de blockchain operan en ambientes más hostiles, asumiendo modelos de fallas
+más fuertes, conocidos como bizantinos, que tienen en cuenta a atacantes malintencionados.
+%
+La Figura remarca las diferencias entre las bases de datos distribuidas y las blockchains fragmentadas,
+mostrando la necesidad de un protocolo de formación de particiones.
+
+[AGREGAR IMÁGENES]
+[AGREGAR REFERENCIAS]
+% Traditional databases assume the crash-failure model, in which a
+% faulty node simply stops sending and responding to requests. On
+% the other hand, blockchain systems operate in a more hostile environment, therefore they assume a stronger failure model, namely
+% Byzantine failure, to account for malicious attackers. Figure 1 highlights the differences between distributed databases and sharded
+% blockchains
+
+
+% approach is to use sharding, a well-studied and proven
+% technique to scale out databases, to divide the blockchain network
+% into smaller committees so as to reduce the overhead of consensus
+% protocols. Examples of sharded blockchains include Elastico [33],
+% OmniLedger [27] and RapidChain [49].
+
+% Two important coordination protocols are distributed commit such as twophase commit (2PC) which ensures atomicity, and concurrency
+% control such as two-phase locking (2PL) which achieves isolation.
+% In this paper, we use the term sharding to refer to the combination
+% of replication and partitioning as shown in Figure 1a.
+% This architecture is adopted by recent distributed database systems to achieve
+% fault tolerance and scalability [22]. Each partition is replicated over
+% multiple replicas, and its content is kept consistent by consensus
+% protocols [29, 42]. Transaction management and consensus protocols can be combined more judiciously, as opposed to layering one
+% on top of another, to achieve better performance [40, 48, 50].
+
+% Sharding in database systems assumes crash-failure model, in
+% which a faulty node stops sending and responding to requests.
+% There are three important implications of this assumption. First,
+% efficient consensus protocols catered for crash-failure model can
+% be used to achieve high performance. Second, creating a shard is
+% simple. For example, a node can be assigned to a shard based on its
+% location. Third, the coordinators that drive coordination protocols
+% are fully trusted
+
+% sharding is a well-studied and proven technique to scale out databases.
+% In this work, we take a principled approach to apply
+% to blockchain systems in order to improve their transaction throughput at scale.
+
+\subsection{Capa 2}
+Los enfoques para incrementar el número de transacciones por segundo en las blockchains pueden
+ser categorizados según la \emph{capa} que involucran.
+%
+Las técnicas de capa 0 son aquellas que trabajan sobre la instraestructura de la red.
+%
+Por ejemplo, apostando a decrementar la latencia de la misma.
+% 
+La capa 1 es la que cuenta con más propuestas en la literatura, abarcando todas aquellas que
+mejoran los algoritmos de consenso.
+%
+Por último, la capa 2, también conocida como \emph{off-chain} (fuera de la cadena),
+incluye aquellos protocolos que funcionan con una interacción mínima con la
+blockchain.
+
+Existen diferentes enfoques dentro de la capa 2.
+%
+Uno de los principales consiste en la computación \emph{off-chain} de pruebas de \emph{conocimiento cero}
+(\emph{Zero-Knowledge proofs}), que solo necesitan ser validadas dentro de la cadena.
+%
+La adopción de funcionalidades limitadas (pero útiles) de canales es otra técnica perteneciente a la capa 2.
+%
+Por último, tecnologías conocidas como \emph{optimistic rollups} se basan en evitar ejecutar contratos inteligentes
+en los servidores, manteniendo la mínima sincronización requerida con la cadena para preservar las garantías
+de la blockchain (por ejemplo, cuando se necesitan anotar reclamos o resolver disputas).
+
+[AGREGAR REFERENCIAS]
+
+\subsection{\setchain}
 Las blockchains actuales requieren de algoritmos de consenso que garanticen que las
 transacciones, empaquetadas en bloques, estén totalmente ordenadas.
 %
-Esta imposición de un orden total puede ser innecesario para algunas aplicaciones.
+Esta imposición de un orden total puede ser innecesaria para algunas aplicaciones.
 
 %
 Un enfoque prometedor para escalar la cantidad de transacciones agregadas por segundo
@@ -101,7 +265,6 @@ en donde los elementos en la blockchain no necesitan estar ordenados, excepto a 
 de barreras ocasionales.
 
 %
-
 Distintos algoritmos bizantinos distribuidos que implementan \setchain fueron
 propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
 los requerimientos de una aplicación del mundo real.
