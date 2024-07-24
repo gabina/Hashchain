@@ -138,10 +138,50 @@ Por lo tanto, el rendimiento de las blockchains es un aspecto clave en la adopci
 Diversas técnicas están siendo desarrolladas para incrementar el rendimiento de las blockchains y
 aumentar la cantidad de transacciones añadidas por segundo.
 %
-A continuación se presentan las más novedosas.
+A continuación se exploran distintas propuestas, intentando abarcar una gama de enfoques novedosos.
 
-\subsection{Nuevos algoritmos de consenso}
+\subsection{Desarrollo de algoritmos más rápidos}
 
+En los sistemas blockchains existen múltiples parámaetros que se tienen en cuenta
+a la hora de calcular o mejorar el rendimiento de los mismos.
+%
+En contextos de blockchains que utilizan \emph{proof-of-work}, como Bitcoin, el \emph{ratio de bloque}
+se define como el número de bloques minados por segundo.
+%
+El \emph{tamaño de bloque} se define como el número de bytes en un bloque.
+%
+Toma tiempo transmitir un bloque sobre la red de pares.
+%
+El \emph{tiempo de propagación de bloque} se define como el tiempo necesario para que un minero
+reciba un nuevo bloque.
+%
+Dado que un bloque es recibido por diferentes mineros en diferentes momentos, usualmente se utiliza
+la \emph{distribución del tiempo de propagación de bloques}.
+%
+Si se mina un bloque conflictivo mientras otro bloque se propaga en la red, ocurre una bifurcación
+(o \emph{fork}) en la red.
+%
+Los mineros resuelven las bifurcaciones en la blockchain eligiendo la cadena que contiene la mayor
+cantidad de bloques.
+%
+Los bloques no incluidos en la cadena más larga se descartan.
+%
+El \emph{ratio de bifurcación} se define como el número de bloques descartados por segundo.
+
+Para mejorar el rendimiento de la blockchain no se puede simplemente incrementar el tamaño del bloque
+o minar bloques con mayor frecuencia.
+%
+Hay un triple compromiso entre el tamaño del bloque, el ratio de bloques y el ratio de bifurcación.
+
+FastChain~\cite{fastchain} es un enfoque para mejorar la escalabilidad de los sistemas blockchains
+a través de la red de pares.
+%
+Utiliza un algoritmo de selección del mejor vecino para reducir el tiempo de propagación de los bloques.
+%
+De esta forma, los mineros se desconectan de los vecinos con ancho de banda limitado y
+favorecen a los nodos con mayor ancho de banda.
+
+[Añadir imagen]
 \subsection{\emph{Inter-Blockchain Communication}}
 
 \subsection{Paralelismo}
