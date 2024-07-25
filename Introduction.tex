@@ -181,8 +181,58 @@ Utiliza un algoritmo de selección del mejor vecino para reducir el tiempo de pr
 De esta forma, los mineros se desconectan de los vecinos con ancho de banda limitado y
 favorecen a los nodos con mayor ancho de banda.
 
-[Añadir imagen]
+\begin{figure}
+  \centering
+  \subfloat[Política aleatoria.]{\includegraphics[scale=0.1]{figures/fastchain0.png}\label{subfig:fastchain-a}}
+  \hspace{1.5cm}
+  \subfloat[Política de FastChain.]{\includegraphics[scale=0.1]{figures/fastchain1.png}\label{subfig:fastchain-b}}
+  \caption{Selección de vecinos. Ejemplo motivador para FastChain}
+  \label{fig:fastchain}
+\end{figure}
+
+En la Figura \ref{fig:fastchain} se muestra un ejemplo motivador para la lógica detrás de FastChain.
+%
+El nodo $A$ tiene 10Mbps de ancho de banda.
+%
+El nodo $B$ tiene 100Mbps.
+%
+Todos los enlaces tienen 200ms de latencia.
+%
+La Figura \ref{subfig:fastchain-a} corresponde a una política de selección de vecinos aleatoria.
+%
+Los nodos $A$ y $B$ tienen 5 vecinos.
+%
+La Figura \ref{subfig:fastchain-b} muestra una política de selección de vecinos
+con información de ancho de banda.
+%
+El nodo $A$ se conecta únicamente con el nodo $B$, mientras que el nodo $B$ se conecta
+a todos los otros.
+%
+Supongamos que el nodo $A$ mina un bloque de tamaño $10^6$ bytes.
+%
+En la Figura \ref{subfig:fastchain-a}, el ancho de banda del nodo $a$ se reparte entre las 5 conexiones.
+%
+Cada conección tiene un ancho de banda de 2Mbps.
+%
+Por lo tanto, a sus vecinos les toma 4.2s recibir el nuevo bloque.
+%
+En la Figura \ref{subfig:fastchain-b}, el nodo $A$ primero le transmite el bloque a $B$ en 1s.
+%
+El nodo $B$ luego transmite el bloque al resto de los nodos en 0.52s.
+%
+El tiempo de propagación de bloque promedio en la topología de FastChain es 1.416s,
+casi 3 veces menor que su contraparte para la topología de selección de vecinos aleatoria.
+%
+
+El nodo $A$ es el cuello de botella para la propagación de bloques.
+%
+Mientras el nodo $A$ está transmitiendo el bloque, otros nodos con mayor ancho de banda
+están ociosos.
+%
+FastChain propone una política de selección de vecinos para escalar el sistema blockchain.
+
 \subsection{\emph{Inter-Blockchain Communication}}
+
 
 \subsection{Paralelismo}
 Los sistemas de base de datos tradicionales logran escalabilidad dividiendo
