@@ -232,6 +232,85 @@ están ociosos.
 FastChain propone una política de selección de vecinos para escalar el sistema blockchain.
 
 \subsection{\emph{Inter-Blockchain Communication}}
+La tecnología blockchain está creciendo masivamente; el número de plataformas y
+aplicaciones decentralizadas se incrementó rápidamente en los últimos años.
+%
+Sin embargo, la mayoría de las redes de blockchain operan en entornos autónomos aislados
+de los demás.
+%
+La interoperabilidad de blockchains es la habilidad de conectar mútiples redes de
+blockchain entre sí, lo cual puede constituir un enfoque para mejorar la escalabilidad en
+las plataformas.
+%
+De esta forma múltiples blockchains paralelas pueden interoperar, manteniendo las
+propiedades de seguridad de las mismas.
+
+Una arquitectura novedosa de redes de blockchains es Cosmos, que conecta diversas
+blockchains independientes, llamadas \emph{zonas}.
+%
+Las zonas funcionan con Tendermint Core, un motor de consenso consistente de alto rendimiento.
+%
+El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchains públicas que
+trabajan con modelos \emph{proof-of-stake}.
+%
+Sin embargo, blockchains con modelos de consenso \emph{proof-of-work}, como Bitcoin o Ethereum,
+se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
+
+% Blockchain technology is growing massively where the number of
+% blockchain platforms and decentralized applications are increasing
+% rapidly in the last years. However, most of the existing blockchain
+% networks are operating in a standalone environment isolated from
+% each other, which increases scalability and connectivity issues in
+% the current blockchain platforms as well as limiting the
+% blockchain adoption in industry ecosystems. In the current phase,
+% different blockchain networks don’t have mutual trust where they
+% cannot interact with each other and their capacity level has only
+% reached a level similar to LAN. Due to the high barriers between
+% the independent isolated blockchain platforms, researchers have
+% started to focus on the concept of Blockchain interoperability.
+% Blockchain interoperability is the ability of connecting multiple
+% blockchain networks together, which significantly increases and
+% solves scalability and connectivity issues in the blockchain
+% platforms.
+% An ideal solution is one that allows multiple parallel blockchains to interoperate while retaining their security properties.
+
+% Here we present Cosmos, a novel blockchain network architecture that addresses all of these problems.
+% Cosmos is a network connecting many independent blockchains, called zones. The zones are powered by Tendermint Core [8],
+% which provides a high-performance, consistent, secure PBFT-like consensus engine, where strict fork-accountability guarantees
+% hold over the behaviour of malicious actors. Tendermint Core's BFT consensus algorithm is well suited for scaling public
+% proof-of-stake blockchains. Blockchains with other consensus models, including proof-of-work blockchains like Ethereum and
+% Bitcoin can be connected to the Cosmos network using adapter zones.
+
+La primera zona de Cosmos se llama \emph{Cosmos Hub}.
+%
+Cosmos Hub conecta varias blockchains (o zonas) mediante un protocolo de comunicación entre blockchains,
+funcionando como un protocolo TCP para blockchains.
+%
+Gestiona numerosos tipos de \emph{tokens} y mantiene un registro del número total de los mismos en cada zona conectada.
+%
+Los tokens pueden transferirse de una zona a otra de forma segura y rápida sin necesidad de un intercambio \emph{líquido} entre zonas.
+%
+En su lugar, todas las transferencias de tokens inter-blockchains pasan a través del Cosmos Hub.
+%
+En la Figura se ilustra un ejemplo simplificado de esta arquitectura.
+
+La interaoperabilidad de blockchains ...
+
+[AÑADIR REFERENCIAS] [AÑADIR IMÁGENES]
+% Esta arquitectura resuelve muchos problemas a los que se enfrenta actualmente el espacio blockchain, como la interoperabilidad de las aplicaciones,
+% escalabilidad y capacidad de actualización sin fisuras. Por ejemplo, las zonas derivadas de Bitcoind, Go-Ethereum, CryptoNote, ZCash, o
+% cualquier sistema de cadena de bloques. Estas zonas permiten a Cosmos escalar infinitamente para satisfacer la demanda global de transacciones.
+% demanda global de transacciones. Las zonas son también un gran ajuste para un intercambio distribuido, que será apoyado también.
+
+% Cosmos no es sólo un libro mayor distribuido, y el Hub Cosmos no es un jardín amurallado o el centro de su universo.
+% Estamos diseñando un protocolo para una red abierta de libros de contabilidad distribuidos que puede servir como una nueva base para
+% futuros sistemas financieros,
+% basado en principios de criptografía, economía sólida, teoría del consenso, transparencia y responsabilidad.
+
+% A constant stream of recent block commits from zones posted on the Hub allows the Hub to keep up with the state of each zone.
+% Likewise, each zone keeps up with the state of the Hub (but zones do not keep up with each other except indirectly through the Hub).
+% Packets of information are then communicated from one zone to another by posting Merkle-proofs as evidence that the information was
+% sent and received. This mechanism is called inter-blockchain communication, or IBC for short.
 
 
 \subsection{Paralelismo}
