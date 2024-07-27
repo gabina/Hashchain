@@ -143,7 +143,7 @@ A continuación se exploran distintas propuestas, intentando abarcar una gama de
 \subsection{Desarrollo de algoritmos más rápidos}
 
 En los sistemas blockchains existen múltiples parámaetros que se tienen en cuenta
-a la hora de calcular o mejorar el rendimiento de los mismos.
+a la hora de querer calcular o mejorar su rendimiento.
 %
 En contextos de blockchains que utilizan \emph{proof-of-work}, como Bitcoin, el \emph{ratio de bloque}
 se define como el número de bloques minados por segundo.
@@ -176,20 +176,6 @@ Hay un triple compromiso entre el tamaño del bloque, el ratio de bloques y el r
 FastChain~\cite{fastchain} es un enfoque para mejorar la escalabilidad de los sistemas blockchains
 a través de la red de pares.
 %
-Utiliza un algoritmo de selección del mejor vecino para reducir el tiempo de propagación de los bloques.
-%
-De esta forma, los mineros se desconectan de los vecinos con ancho de banda limitado y
-favorecen a los nodos con mayor ancho de banda.
-
-\begin{figure}
-  \centering
-  \subfloat[Política aleatoria.]{\includegraphics[scale=0.1]{figures/fastchain0.png}\label{subfig:fastchain-a}}
-  \hspace{1.5cm}
-  \subfloat[Política de FastChain.]{\includegraphics[scale=0.1]{figures/fastchain1.png}\label{subfig:fastchain-b}}
-  \caption{Selección de vecinos. Ejemplo motivador para FastChain}
-  \label{fig:fastchain}
-\end{figure}
-
 En la Figura \ref{fig:fastchain} se muestra un ejemplo motivador para la lógica detrás de FastChain.
 %
 El nodo $A$ tiene 10Mbps de ancho de banda.
@@ -210,9 +196,9 @@ a todos los otros.
 %
 Supongamos que el nodo $A$ mina un bloque de tamaño $10^6$ bytes.
 %
-En la Figura \ref{subfig:fastchain-a}, el ancho de banda del nodo $a$ se reparte entre las 5 conexiones.
+En la Figura \ref{subfig:fastchain-a}, el ancho de banda del nodo $A$ se reparte entre las 5 conexiones.
 %
-Cada conección tiene un ancho de banda de 2Mbps.
+Cada conexión tiene un ancho de banda de 2Mbps.
 %
 Por lo tanto, a sus vecinos les toma 4.2s recibir el nuevo bloque.
 %
@@ -223,13 +209,49 @@ El nodo $B$ luego transmite el bloque al resto de los nodos en 0.52s.
 El tiempo de propagación de bloque promedio en la topología de FastChain es 1.416s,
 casi 3 veces menor que su contraparte para la topología de selección de vecinos aleatoria.
 %
-
 El nodo $A$ es el cuello de botella para la propagación de bloques.
 %
 Mientras el nodo $A$ está transmitiendo el bloque, otros nodos con mayor ancho de banda
 están ociosos.
 %
-FastChain propone una política de selección de vecinos para escalar el sistema blockchain.
+
+\begin{figure}
+  \centering
+  \subfloat[Política aleatoria.]{\includegraphics[scale=0.1]{figures/fastchain0.png}\label{subfig:fastchain-a}}
+  \hspace{1.5cm}
+  \subfloat[Política de FastChain.]{\includegraphics[scale=0.1]{figures/fastchain1.png}\label{subfig:fastchain-b}}
+  \caption{Selección de vecinos. Ejemplo motivador para FastChain}
+  \label{fig:fastchain}
+\end{figure}
+
+%
+FastChain propone un algoritmo de selección del mejor vecino para reducir el tiempo de propagación de los bloques.
+%
+De esta forma, los mineros se desconectan de los vecinos con ancho de banda limitado y
+favorecen a los nodos con mayor ancho de banda.
+%
+Esta política de selección de vecinos escala el sistema blockchain,
+reduciendo el tiempo de propagación de bloque sin incrementar el ratio de bifurcación.
+%
+
+
+% system. We observe that
+% reducing the block propagation time improves the scalability of
+% the blockchain without increasing the forking rate. We propose
+% FastChain to scale the effective block rate of blockchain systems.
+% FastChain reduces the block propagation time through its
+% informed neighbor selection policy.
+% Miners periodically refresh
+% their connections and disconnect from bandwidth-limited
+% neighbors.
+% We evaluate the performance of FastChain through
+% extensive simulations.
+% FastChain increases effective block rate
+% by up to 40%. Network topologies with shorter average link
+% latency can benefit significantly from FastChain. FastChain is
+% effective when nodes have different mining powers. When the
+% mining power of a node is inversely proportional to the node
+% bandwidth, the advantage of FastChain is the largest.
 
 \subsection{\emph{Inter-Blockchain Communication}}
 La tecnología blockchain está creciendo masivamente; el número de plataformas y
@@ -245,10 +267,10 @@ las plataformas.
 De esta forma múltiples blockchains paralelas pueden interoperar, manteniendo las
 propiedades de seguridad de las mismas.
 
-Una arquitectura novedosa de redes de blockchains es Cosmos, que conecta diversas
+Una arquitectura novedosa de redes de blockchains es Cosmos~\cite{cosmos}, que conecta diversas
 blockchains independientes, llamadas \emph{zonas}.
 %
-Las zonas funcionan con Tendermint Core, un motor de consenso consistente de alto rendimiento.
+Las zonas funcionan con Tendermint Core~\cite{Buchman.2018.Tendermint}, un motor de consenso consistente de alto rendimiento.
 %
 El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchains públicas que
 trabajan con modelos \emph{proof-of-stake}.
@@ -283,8 +305,10 @@ se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
 
 La primera zona de Cosmos se llama \emph{Cosmos Hub}.
 %
-Cosmos Hub conecta varias blockchains (o zonas) mediante un protocolo de comunicación entre blockchains,
-funcionando como un protocolo TCP para blockchains.
+Conecta varias blockchains (o zonas) mediante un protocolo de comunicación entre blockchains (IBC),
+funcionando como un protocolo TCP para blockchains\footnote{El protocolo de control de transmisión conocido como
+TCP (proveniente de \emph{Transmission Control Protocol}) es uno de los protocolos fundamentales de internet,
+perteneciente a la capa de transporte.}.
 %
 Gestiona numerosos tipos de \emph{tokens} y mantiene un registro del número total de los mismos en cada zona conectada.
 %
@@ -292,11 +316,21 @@ Los tokens pueden transferirse de una zona a otra de forma segura y rápida sin 
 %
 En su lugar, todas las transferencias de tokens inter-blockchains pasan a través del Cosmos Hub.
 %
-En la Figura se ilustra un ejemplo simplificado de esta arquitectura.
+En la Figura \ref{fig:cosmos} se ilustra un ejemplo simplificado de esta arquitectura.
 
-La interaoperabilidad de blockchains ...
+\begin{figure}[!h]
+  \centering
+  \includegraphics[scale=0.12]{figures/cosmos.png}
+  \caption{Arquitectura simplificada de Cosmos.}
+  \label{fig:cosmos}
+\end{figure}
 
-[AÑADIR REFERENCIAS] [AÑADIR IMÁGENES]
+La interaoperabilidad de blockchains puede contribuir a la escalabilidad del sistema, debido a que 
+la carga de procesamiento se distribuye, evitando cuellos de botella en una sola red.
+%
+A su vez, al operar varias blockchains en paralelo, el número total de transacciones que
+pueden ser procesadas simultáneamente aumenta significativamente.
+
 % Esta arquitectura resuelve muchos problemas a los que se enfrenta actualmente el espacio blockchain, como la interoperabilidad de las aplicaciones,
 % escalabilidad y capacidad de actualización sin fisuras. Por ejemplo, las zonas derivadas de Bitcoind, Go-Ethereum, CryptoNote, ZCash, o
 % cualquier sistema de cadena de bloques. Estas zonas permiten a Cosmos escalar infinitamente para satisfacer la demanda global de transacciones.
@@ -320,15 +354,29 @@ los estados de la base de datos en fragmentos independientes (o particiones).
 Al distribuir la carga sobre múltiples particiones, la capacidad global del sistema
 se incrementa.
 %
-La técnica de \emph{sharding} requiere cierta coordinación para lograr propiedades
+La técnica de \emph{sharding}~\cite{Dang2019Sharding} requiere cierta coordinación para lograr propiedades
 básicas de atomocidad, consistencia, aislamiento y durabilidad para aquellas transacciones
 que acceden a múltiples fragmentos.
 %
-En la Figura se representa la idea de \emph{sharding} como la combinación entre
+En la Figura ~\ref{fig:sharding} se representa la idea de \emph{sharding} como la combinación entre
 réplica y partición.
 %
 Cada partición se replica sobre múltiples réplicas, y su contenido se mantiene consistente
 mediante protocolos de consenso.
+
+
+\begin{figure}
+  \centering
+  \subfloat[Bases de datos distribuidas.]{\includegraphics[scale=0.13]{figures/sharding1.png}\label{subfig:sharding-a}}
+  
+  \hspace{1.5cm}
+  \vspace{0.5cm}
+
+  \subfloat[Blockchains fragmentadas.]{\includegraphics[scale=0.13]{figures/sharding2.png}\label{subfig:sharding-b}}
+  \caption{Protocolos de fragmentación.}
+  \label{fig:sharding}
+\end{figure}
+
 
 En el contexto de blockchains, el enfoque de \emph{sharding} se basa en aplicar este concepto
 originario de la escalabilidad de bases de datos, dividiendo la red de blockchain en comités más
@@ -344,11 +392,9 @@ simplemente deja de enviar y responder peticiones.
 Por el otro lado, los sistemas de blockchain operan en ambientes más hostiles, asumiendo modelos de fallas
 más fuertes, conocidos como bizantinos, que tienen en cuenta a atacantes malintencionados.
 %
-La Figura remarca las diferencias entre las bases de datos distribuidas y las blockchains fragmentadas,
+La Figura ~\ref{fig:sharding} remarca las diferencias entre las bases de datos distribuidas y las blockchains fragmentadas,
 mostrando la necesidad de un protocolo de formación de particiones.
 
-[AGREGAR IMÁGENES]
-[AGREGAR REFERENCIAS]
 % Traditional databases assume the crash-failure model, in which a
 % faulty node simply stops sending and responding to requests. On
 % the other hand, blockchain systems operate in a more hostile environment, therefore they assume a stronger failure model, namely
@@ -398,20 +444,20 @@ mejoran los algoritmos de consenso.
 %
 Por último, la capa 2, también conocida como \emph{off-chain} (fuera de la cadena),
 incluye aquellos protocolos que funcionan con una interacción mínima con la
-blockchain.
+blockchain\cite{Jourenko2019SoKAT}.
 
 Existen diferentes enfoques dentro de la capa 2.
 %
 Uno de los principales consiste en la computación \emph{off-chain} de pruebas de \emph{conocimiento cero}
-(\emph{Zero-Knowledge proofs}), que solo necesitan ser validadas dentro de la cadena.
+(\emph{Zero-Knowledge proofs})~\cite{Sasson2014ZKvonNeumann}, que solo necesitan ser validadas dentro de la cadena.
 %
-La adopción de funcionalidades limitadas (pero útiles) de canales es otra técnica perteneciente a la capa 2.
+La adopción de funcionalidades limitadas (pero útiles) de canales como \emph{Lightning}~\cite{Poon2016lightning}
+es otra técnica perteneciente a la capa 2.
 %
-Por último, tecnologías conocidas como \emph{optimistic rollups} se basan en evitar ejecutar contratos inteligentes
+Por último, tecnologías conocidas como \emph{optimistic rollups} (por ejemplo, \emph{Arbitrum}~\cite{Kalodner2018Arbitrum})
+se basan en evitar ejecutar contratos inteligentes
 en los servidores, manteniendo la mínima sincronización requerida con la cadena para preservar las garantías
 de la blockchain (por ejemplo, cuando se necesitan anotar reclamos o resolver disputas).
-
-[AGREGAR REFERENCIAS]
 
 \subsection{\setchain}
 Las blockchains actuales requieren de algoritmos de consenso que garanticen que las

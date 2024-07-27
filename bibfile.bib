@@ -508,6 +508,43 @@
   OPTannote = 	 {}
 }
 
+@article{Jourenko2019SoKAT,
+  title           = {SoK: A Taxonomy for Layer-2 Scalability Related Protocols
+                  for Cryptocurrencies},
+  author          = {Maxim Jourenko and Kanta Kurazumi and Mario Larangeira and
+                  Keisuke Tanaka},
+  journal         = {IACR Cryptol. ePrint Arch.},
+  year            = 2019,
+  volume          = 2019,
+  pages           = 352
+}
+
+@inproceedings {Sasson2014ZKvonNeumann,
+  author          = {Eli Ben-Sasson and Alessandro Chiesa and Eran
+                  Tromer and Madars Virza},
+  title           = {Succinct Non-Interactive {Z}ero {K}nowledge for a von {N}eumann
+                  Architecture},
+  OPTbooktitle       = {Proc. of the 23rd USENIX Security Symp},
+  booktitle       = {Proc. of USENIX Sec.'14 },
+  year            = 2014,
+  isbn            = {978-1-931971-15-7},
+  OPTaddress         = {San Diego, CA},
+  pages           = {781--796},
+  url             =
+                  {https://www.usenix.org/conference/usenixsecurity14/technical-sessions/presentation/ben-sasson},
+  publisher       = {USENIX},
+  month           = aug,
+}
+
+@online{Poon2016lightning,
+  title           = {The Bitcoin Lightning Network: Scalable Off-Chain Instant
+                  Payments},
+  author          = {Poon, Joseph and Dryja, Thaddeus},
+  year            = 2016,
+  url             = {https://lightning.network/lightning-network-paper.pdf},
+  urldate         = {\today}
+}
+
 
 @InProceedings{li20securing,
   author = 	 {Ao Li and Jemin Andrew Choi and an. Long},
@@ -867,3 +904,54 @@ Participation in the Bitcoin blockchain validation process requires specialized 
   pages={376-383},
   keywords={Blockchain;Peer-to-peer computing;Bitcoin;Throughput;Scalability;Bandwidth;Mathematical model;Bitcoin, blockchain, scalability, throughput, forking rate, peer-to-peer network, neighbor selection},
   doi={10.1109/Blockchain.2019.00058}}
+
+@misc{cosmos,
+  title           = {Cosmos whitepaper},
+  author          = {Kwon, Jae and Buchman, Ethan},
+  journal         = {2020-10-08]. https://cosmos. network/resources/whitepaper},
+  year            = 2019
+}
+
+@inproceedings{Dang2019Sharding,
+  author          = {Hung Dang and  Tien Tuan Anh Dinh and Dumitrel Loghin and
+                   Ee-Chien Chang and Qian Lin and  Beng Chin Ooi},
+  title           = {Towards Scaling Blockchain Systems via Sharding},
+  year            = 2019,
+  isbn            = 9781450356435,
+  publisher       = {ACM},
+  OPTaddress         = {New York, NY, USA},
+  url             = {https://doi.org/10.1145/3299869.3319889},
+  doi             = {10.1145/3299869.3319889},
+  abstract        = {Existing blockchain systems scale poorly because of their
+                  distributed consensus protocols. Current attempts at improving
+                  blockchain scalability are limited to cryptocurrency. Scaling
+                  blockchain systems under general workloads (i.e.,
+                  non-cryptocurrency applications) remains an open question.
+                  This work takes a principled approach to apply sharding to
+                  blockchain systems in order to improve their transaction
+                  throughput at scale. This is challenging, however, due to the
+                  fundamental difference in failure models between databases and
+                  blockchain. To achieve our goal, we first enhance the
+                  performance of Byzantine consensus protocols, improving
+                  individual shards' throughput. Next, we design an efficient
+                  shard formation protocol that securely assigns nodes into
+                  shards. We rely on trusted hardware, namely Intel SGX, to
+                  achieve high performance for both consensus and shard
+                  formation protocol. Third, we design a general distributed
+                  transaction protocol that ensures safety and liveness even
+                  when transaction coordinators are malicious. Finally, we
+                  conduct an extensive evaluation of our design both on a local
+                  cluster and on Google Cloud Platform. The results show that
+                  our consensus and shard formation protocols outperform
+                  state-of-the-art solutions at scale. More importantly, our
+                  sharded blockchain reaches a high throughput that can handle
+                  Visa-level workloads, and is the largest ever reported in a
+                  realistic environment.},
+  OPTbooktitle       = {Proc. of the 2019 Int'l Conf. on Management of Data},
+  booktitle       = {Proc. of SIGMOD'19},
+  pages           = {123–-140},
+  numpages        = 18,
+  keywords        = {blockchain, sharding, distributed transactions},
+  OPTlocation        = {Amsterdam, Netherlands},
+  OPTseries          = {SIGMOD '19}
+}
