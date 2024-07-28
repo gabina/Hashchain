@@ -151,7 +151,8 @@ a la hora de querer calcular o mejorar su rendimiento.
 En contextos de blockchains que utilizan \emph{proof-of-work}\footnote{La noción de \emph{proof-of-work} (POW)
 refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
 que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
-Los POWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.},
+Los POWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
+Su traducción al español de conoce como \emph{prueba de trabajo}.},
 como Bitcoin, el \emph{ratio de bloque}
 se define como el número de bloques minados por segundo.
 %
@@ -280,7 +281,10 @@ blockchains independientes, llamadas \emph{zonas}.
 Las zonas funcionan con Tendermint Core~\cite{Buchman.2018.Tendermint}, un motor de consenso consistente de alto rendimiento.
 %
 El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchains públicas que
-trabajan con modelos \emph{proof-of-stake}.
+trabajan con modelos \emph{proof-of-stake}\footnote{El concepto de \emph{proof-of-stake} (traducido al español
+como \emph{prueba de participación}) surge como oposición a los esquemas de prueba de trabajo.
+En estos tipos de protocolos, en lugar de probarse que se realizó un esfuerzo computacional lo suficientemente
+cosoto, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna cryptomoneda~\cite{King2012PPCoinPC}.}.
 %
 Sin embargo, blockchains con modelos de consenso \emph{proof-of-work}, como Bitcoin o Ethereum,
 se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
@@ -312,8 +316,9 @@ se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
 
 La primera zona de Cosmos se llama \emph{Cosmos Hub}.
 %
-Conecta varias blockchains (o zonas) mediante un protocolo de comunicación entre blockchains (IBC),
-funcionando como un protocolo TCP para blockchains\footnote{El protocolo de control de transmisión conocido como
+Conecta varias blockchains (o zonas) mediante un protocolo de comunicación entre blockchains, conocido en inglés
+como \emph{inter-blockchain communication} (IBC).
+Funciona como un protocolo TCP para blockchains\footnote{El protocolo de control de transmisión conocido como
 TCP (proveniente de \emph{Transmission Control Protocol}) es uno de los protocolos fundamentales de internet,
 perteneciente a la capa de transporte.}.
 %
@@ -371,20 +376,6 @@ réplica y partición.
 Cada partición se replica sobre múltiples réplicas, y su contenido se mantiene consistente
 mediante protocolos de consenso.
 
-
-\begin{figure}
-  \centering
-  \subfloat[Bases de datos distribuidas.]{\includegraphics[scale=0.13]{figures/sharding1.png}\label{subfig:sharding-a}}
-  
-  \hspace{1.5cm}
-  \vspace{0.5cm}
-
-  \subfloat[Blockchains fragmentadas.]{\includegraphics[scale=0.13]{figures/sharding2.png}\label{subfig:sharding-b}}
-  \caption{Protocolos de fragmentación.}
-  \label{fig:sharding}
-\end{figure}
-
-
 En el contexto de blockchains, el enfoque de \emph{sharding} se basa en aplicar este concepto
 originario de la escalabilidad de bases de datos, dividiendo la red de blockchain en comités más
 pequeños de modo de reducir la sobrecarga de los protocolos de consenso.
@@ -401,6 +392,18 @@ más fuertes, conocidos como bizantinos, que tienen en cuenta a atacantes malint
 %
 La Figura ~\ref{fig:sharding} remarca las diferencias entre las bases de datos distribuidas y las blockchains fragmentadas,
 mostrando la necesidad de un protocolo de formación de particiones.
+
+\begin{figure}
+  \centering
+  \subfloat[Bases de datos distribuidas.]{\includegraphics[scale=0.13]{figures/sharding1.png}\label{subfig:sharding-a}}
+  
+  \hspace{1.5cm}
+  \vspace{0.5cm}
+
+  \subfloat[Blockchains fragmentadas.]{\includegraphics[scale=0.13]{figures/sharding2.png}\label{subfig:sharding-b}}
+  \caption{Protocolos de fragmentación.}
+  \label{fig:sharding}
+\end{figure}
 
 % Traditional databases assume the crash-failure model, in which a
 % faulty node simply stops sending and responding to requests. On
@@ -486,9 +489,15 @@ Las \setchains se pueden usar para aquellas aplicaciones, como los registros dig
 en donde los elementos en la blockchain no necesitan estar ordenados, excepto a través
 de barreras ocasionales.
 
+Una descripción más detallada del funcionamiento de \setchain y sus propiedades se da
+en el capítulo \ref{chapter:setchain}.
+
+\section{Contribuciones}
+En este trabajo se realiza una modesta contribución al estudio de la escalabilidad en blockchain mediante 
+una familia de implementaciones robustas de \setchain.
 %
-Distintos algoritmos bizantinos distribuidos que implementan \setchain fueron
-propuestos, pero no existía al momento ninguna implementacion eficiente compatible con
+Si bien distintos algoritmos bizantinos distribuidos que implementaban \setchain fueron
+propuestos, no existía al momento ninguna implementacion eficiente compatible con
 los requerimientos de una aplicación del mundo real.
 Es decir, una aplicación capaz de soportar un \textit{deployment} con miles de nodos\footnote{Si bien
 es difícil saber con exactitud cuántos nodos existen en la red de Blockcahin o Ethereum, se estima
@@ -496,16 +505,15 @@ que este número varía entre aproximadamente 10000 y 50000 nodos.}
 distribuidos geográficamente en todos los continentes, con clientes enviando peticiones para
 añadir nuevas transacciones a los servidores constantemente.
 
-\section{Contribuciones}
-En este trabajo se propone una familia de implementaciones robustas de \setchain,
-construidas sobre la plataforma de aplicación de blockchain \textit{Tendermint}.
+Cada una de las soluciones propuestas en este trabajo está enteramente construida sobre 
+la plataforma de aplicación de blockchain \textit{Tendermint}~\cite{Buchman.2018.Tendermint}.
 
 %% Motivate the use of tendermint. Why tendermint is relevant
 
 % Fuente: TENDERMINT: BYZANTINE FAULT TOLERANCE IN THE AGE OF BLOCKCHAINS
 % https://docs.tendermint.com/v0.34/introduction/what-is-tendermint.html
 
-Tendermint~\cite{Buchman.2018.Tendermint} es una plataforma novedoza y popular para la
+Tendermint es una plataforma novedoza y popular para la
 replicación segura y consistente de aplicaciones en distintas máquinas.
 %
 \textit{Segura} en este contexto significa que Tendermint funciona incluso si a lo sumo
@@ -557,9 +565,9 @@ La hipótesis fundamental con la que se trabaja es que intercambiar latencia por
 ancho de banda resulta en una mejora significativa en el rendimiento.
 %
 Es decir, hacer consenso sobre hashes de tamaño fijo conlleva un incremento en la cantidad de elementos
-añadidos a la \setchain por segundo, incluso si esto significara un aumento en la latencia.
+añadidos a la \setchain por segundo, incluso si esto significara un aumento en la latencia,
+debido al algoritmo distribuido necesario para obtener el conjunto de elementos desde un hash.
 
-Cada una de las soluciones presentadas en este trabajo está enteramente construida sobre Tendermint.
 
 % The article is structured as follows: in Section~\ref{sec:prelim}, we present a
 % brief description of Setchain and Tendermint; in Section~\ref{sec:impl}, we

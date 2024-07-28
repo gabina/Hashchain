@@ -1,4 +1,4 @@
-  \chapter*{Resumen}
+  %\chapter*{Resumen}
   %
   %
   % What is the problem. Justifiy that the problem is a problem.
@@ -16,7 +16,7 @@
   un enfoque prometedor para mejorar el rendimiento se basa en relajar esta exigencia.
   %
 
-  Bajo esta idea subyacente nace \textit{Setchain}, una estructura de
+  Bajo esta idea subyacente nace \textit{Setchain}~\cite{Capretto.2022.Setchain}, una estructura de
   datos concurrente que implementa conjuntos distribuidos que solo crecen
   (\textit{distributed grown-only sets}).
   %
@@ -49,9 +49,9 @@
   % What is the solution.
   %
   En el presente trabajo se propone una familia de implementaciones de \setchain 
-  de mundo real y tolerantes a fallas bizantinas construidas sobre \textit{Tendermint}.
+  de mundo real y tolerantes a fallas bizantinas construidas sobre \textit{Tendermint}~\cite{Buchman.2018.Tendermint}.
   Tendermint es una plataforma madura de aplicación de blockchain usada en distintos
-  proyectos de blockchain, como Cosmos o Tezos. 
+  proyectos de blockchain, como Cosmos~\cite{cosmos} o Tezos~\cite{goodman14tezos}. 
   % 
   
   La familia de implementaciones que se presenta en este trabajo sigue un enfoque
@@ -70,6 +70,35 @@
   % En este trabajo se discute una implementación práctica de \hashchain construida enteramente
   % sobre Tendermint, una plataforma madura
   % Ver qué se dice sobre las pruebas mas o menos formales que existen
+
+  \section{Organización del trabajo}
+  Este documento se estructura según se describe a continuación.
+  %
+  En el capítulo 2 se
+  contextualiza el problema sobre el cual se trabaja, detallándolo y presentando brevemente
+  el estado del arte.
+  %
+  En el capítulo 3 se presentan los conceptos de las ciencias de la computación que se
+  consideran pertienentes para el análisis y comprensión de las contribuciones de este trabajo.
+  %
+  El capítulo 4 ofrece una descripción detallada de la estructura de datos \setchain,
+  comentando su interfaz y las propiedades que satisface.
+  %
+  El capítulo 5 aborda las tres implementaciones de \setchain, contribuciones originales
+  de este trabajo.
+  %
+  En el capítulo 6 se demuestra formalmente que las tres implementaciones propuestas
+  cumplen las propiedades de \setchain.
+  %
+  El capítulo 7 detalla cómo fue llevada a cabo la evaluación empírica de las nuevas implementaciones
+  y se presentan los resultados obtenidos.
+  %
+  En el capítulo 8 se discuten las conclusiones de este trabajo.
+  %
+  El capítulo 9 comenta trabajos futuros que se derivan de esta tesina.
+  %
+  Finalmente, el capítulo 10 consta de un breve glosario con algunos conceptos
+  utilizados en inglés a lo largo del trabajo, que no cuentan con traducciones al español.
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"
