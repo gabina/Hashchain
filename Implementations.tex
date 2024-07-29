@@ -249,7 +249,7 @@ una llamada a \<get> para estar seguros de que el elemento fue añadido a la \se
 Las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
 un cliente y elementos de prueba de época; significando que cada elemento de prueba de época
 pertenece a su vez a una época. Sin embargo, los elementos de prueba de época no necesitan ser
-incluídos como elementos en el hash firmado que es parte de la prueba de época para una época
+incluidos como elementos en el hash firmado que es parte de la prueba de época para una época
 dada.
 %
 Consecuentemente, es necesario diferenciar entre elementos regulares y elementos de prueba de época.
@@ -266,7 +266,7 @@ Sin embargo, un elemento de prueba de época necesita ser validado verificando l
 
 El aspecto criptográfico de la implementación de los elementos de prueba de época se
 hace a través del paquete \textit{crypto} de \textit{go-ethereum}, la implementación
-del protocolo Ethereum en Golang~\footnote{Dispnible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
+del protocolo Ethereum en Golang~\footnote{Disponible en \url{https://pkg.go.dev/github.com/ethereum/go-ethereum/crypto}.}.
 %
 Este paquete trabaja con el algoritmo de firma digital ECDSA, uno de los esquemas de firmas más
 utilizado~\cite{real.world.crypto}.

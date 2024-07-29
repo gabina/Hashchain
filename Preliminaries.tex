@@ -84,7 +84,7 @@ poniéndose de acuerdo en un valor específico.
 Los protocolos que resuelven el problema de consenso son diseñados para lidiar con un número limitado de procesos
 que fallan.
 %
-Estos protoclos deben satisfacer un número de requerimientos para ser utilizados.
+Estos protocolos deben satisfacer ciertos requerimientos para ser utilizados.
 %
 A lo largo de la historia se han desarrollado distintos algoritmos de consenso, que funcionan bajo diferentes
 escenarios (cantidad de nodos, cantidad de nodos que pueden fallar, formas en las que pueden fallar, etc.)
@@ -108,13 +108,14 @@ otros.
 El problema es encontrar un algoritmo que asegure que los generales leales lleguen a un acuerdo.
 Está demostrado que, usando solo mensajes orales, este problema es resoluble si y solo si más de dos tercios
 de los generales son leales~\cite{byzantineproblem}.
-La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
-es conocida como tolerancia a fallas bizantinas (\textit{Bizantyne fault-tolerance}).
 
 %
 
-Con esta analogía de los generales bizantinos, Lamport inició el estudio de los algoritmos de consenso tolerantes a fallas
-bizantinas (\textit{Bizantyne fault-tolerant}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
+Con esta analogía de los generales bizantinos se instauraron nuevos conceptos que hoy son ampliamente utilizados.
+La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
+es conocida como \emph{tolerancia a fallas bizantinas}.
+A su vez, se inició el estudio de los algoritmos de consenso tolerantes a fallas
+bizantinas (\textit{Bizantyne fault-tolerant algoritms}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
 Si bien la teoría de
 BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
 debido al amplio éxito de tecnologías blockchains como Bitcoin~\cite{nakamoto06bitcoin} y Ethereum~\cite{ethereum}.
@@ -156,7 +157,7 @@ En la Figura ~\ref{fig:digital-signatures} se recapitulan estos tres algoritmos.
 
 \begin{figure}
   \centering
-  \subfloat[Generación de claves]{\includegraphics[width = 1.7in]{figures/signature-00.png}}
+  \subfloat[Generación de claves]{\includegraphics[width = 1.6in]{figures/signature-0000.png}}
   \hspace{1.4em}
   \subfloat[Firma de mensajes]{\includegraphics[width = 1.7in]{figures/signature-1.png}}
   \hspace{1.4em}
@@ -183,7 +184,7 @@ Electronic Cash System}\footnote{Bitcoin: un sistema de dinero electrónico de p
 bajo el pseudónimo de Satoshi Nakamoto.
 Nakamoto combinó diversas invenciones previas como
 \textit{b-money}~\cite{b.money} y \textit{HashCash}~\cite{hashcash} para crear un sistema de dinero electrónico completamente
-descentralizado que, justamente, no necesita confiar en ninguna autoridad central para la emisión de monedas,
+descentralizado que, justamente, no necesita confiar en ninguna autoridad central para la emisión de monedas
 o la ejecución de transacciones. 
 La innovación clave en Bitcoin fue el uso de un sistema de cómputo distribuido que lleva
 a cabo una elección global de las nuevas transacciones, permitiendo
@@ -202,7 +203,7 @@ dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
 %
 Si bien la noción de Bitcoin como criptomoneda no es imprescindible para la comprensión de las
 contribuciones de este trabajo, es el primer caso de uso que da particular importancia a la blockchain
-como tal, y a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
+como tal y, por lo tanto, a su rendimiento. Por este motivo se considera pertinente presentar un breve resumen sobre
 su funcionamiento, poniendo foco en el aspecto técnico del mismo (no monetario).
 
 \subsection{Cuentas y transacciones}
@@ -214,7 +215,7 @@ con la cual inician sesión; en lugar de eso, tienen un par de claves ECDSA (\te
 Curve Digital Signature Algorithm}) que generan ellos mismos mediante la interfaz de firmas
 digitales vista en la sección anterior.
 %
-El balance de un usuario no es más que una cantidad de BTCs asociada a una clave pública,
+El balance de un usuario no es más que una cantidad de BTCs\footnote{BTC es el código asociado a la moneda Bitcoin.} asociada a una clave pública,
 y por lo tanto, para recibir BTCs, simplemente se debe compartir la clave pública con otros.
 
 %
@@ -226,7 +227,7 @@ De forma simplificada, una transacción se podría pensar tan solo como un mensa
 Una característica fundamental de Bitcoin es que no existe una base de datos real que contenga los
 balances de cada cuenta.
 %
-En lugar de eso, los usuarios tienen BTCs dispnibles para gastar, llamados
+En lugar de eso, los usuarios tienen BTCs disponibles para gastar, llamados
 \textit{Unspent Transaction Outputs} (UTXOs).
 %
 Cada usuario puede gastar únicamente sus propios UTXOs
@@ -302,7 +303,7 @@ Ahora surgen algunas preguntas. ¿Quién está a cargo de elegir y ordenar las t
  \subsection{Prueba de trabajo}
 
  Para acordar el ordenamiento de las transacciones, Bitcoin permite a cualquiera proponer una lista
- de transacciones a incluírse en la siguiente página de la bitácora.
+ de transacciones a incluirse en la siguiente página de la bitácora.
  %
  Esta propuesta contiene una lista de transacciones llamada \textit{bloque}.
  %
@@ -314,7 +315,7 @@ Ahora surgen algunas preguntas. ¿Quién está a cargo de elegir y ordenar las t
 Para lograr esto, el protocolo de Bitcoin establece que para proponer un bloque debe resolverse
 un problema lo suficientemente difícil.
 %
-Este mecanismo se conoce como prueba de trabajo (\textit{PoW}, por sus siglas en inglés).
+Este mecanismo se conoce como prueba de trabajo (\textit{POW}, por sus siglas en inglés).
 %
 En el caso de Bitcoin, el rompecabezas a resolver consisten en que el hash del bloque a proponer
 tenga una representación binaria que comience con un número dado de ceros.
@@ -336,7 +337,7 @@ se dice que llegaron a un consenso.
 %called consensus rules. This section describes many of the consensus rules used by Bitcoin Core.
 
 La Figura \ref{fig:blockchain} muestra una versión simplificada de una blockchain.
-En la sección de datos de un bloque
+Cada bloque tiene una sección de datos en donde
 se agrupan y alojan una o más transacciones nuevas. Copias de cada transacción se hashean, los hashes luego
 se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un único hash: la raíz de un
 \textit{merkle tree}~\cite{merkle.tree}. 
@@ -374,7 +375,7 @@ que la contiene y todos los bloques siguientes~\cite{bitcoin}.
 %\subsection{Blockchain actuales}
 
 \section{Tendermint}\label{sec:tendermint}
-Tendermint es un motor de replicación de máquinas de estado que tolera fallas bizantinas. 
+Tendermint~\cite{Buchman.2018.Tendermint} es un motor de replicación de máquinas de estado que tolera fallas bizantinas. 
 %
 Fue uno de los primeros sistemas en adaptar protocolos de consenso clásicos tolerantes a fallas bizantinas
 al paradigma de blockchain.
@@ -392,7 +393,7 @@ Las transacciones se reciben desde el cliente, quien se comunica, mediante una A
 en la red.
 %
 Estas transacciones pasan a través del protocolo de consenso, quien es el encargado de ordernar dichas
-transacciones en bloques, mediante una serie de pasos que involucra comunicación entre todas las máquinas
+transacciones en bloques, mediante una serie de pasos que involucran comunicación entre todas las máquinas
 (señalizada en la figura con líneas punteadas).
 %
 Una vez ordenadas, las transacciones son ejecutadas en cada una de las máquinas, modificando el estado
@@ -413,7 +414,7 @@ Estos nodos varian con el tiempo, a medida que se unen o abandonan la red subyac
 %
 Un subconjunto de estos nodos son quienes ejecutan el algoritmo de consenso de Tendermint.
 %
-A estos nodos los denominamos \textit{validadores}.
+A estos nodos se los denomina \textit{validadores}.
 %
 Los nodos que no ejecutan el algoritmo de consenso de Tendermint pueden, sin embargo, participar
 activamente en otros módulos del sistema.
@@ -479,7 +480,7 @@ El módulo de mempool es un punto de entrada de Tendermint.
 %
 Recibe, valida, almacena y difunde transacciones enviadas por los clientes. 
 %
-%Estas transacciones, en caso de ser consideradas válidas por la aplicación, son eventualmente incluídas en bloques
+%Estas transacciones, en caso de ser consideradas válidas por la aplicación, son eventualmente incluidas en bloques
 %por el protocolo de consenso.
 %
 Los nodos exponen una interfaz para recibir dichas transacciones de los clientes, mediante llamadas
@@ -536,7 +537,7 @@ en que fueron recibidas por el nodo validador.
 %bloques en la blockchain. Estos validadores participan en el protocolo de consenso mediante la difusión de votos, los
 %cuales contienen firmas criptográficas generadas por las claves privadas de cada validador.}.
 %
-Si \CheckTx retorna \textit{OK}, la transacción se mantiene en memoria y se retransmite a otros pares en el mismo orden
+Si \CheckTx retorna \texttt{OK}, la transacción se mantiene en memoria y se retransmite a otros pares en el mismo orden
 en que fue recibida.
 %
 En caso contrario, se descarta.
