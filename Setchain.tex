@@ -1,7 +1,11 @@
-\section{Presentación}~\label{sec:setchain}
+\section{Objetivo del capítulo}
+En este capítulo se presenta una descripción detallada de la estructura de datos \setchain,
+ejemplos básicos de uso y sus propiedades más importantes.
 
+
+\section{Presentación}~\label{sec:setchain}
 \setchain~\cite{Capretto.2022.Setchain} es una estructura de datos concurrente y distribuida que implementa
-conjuntos distribuidos que solo crecen, con barreras de sincronización (llamadas épocas).
+conjuntos distribuidos que solo crecen, con barreras de sincronización llamadas épocas.
 %
 
 Las barreras imponen un orden entre elementos pertenecientes a diferentes épocas pero no entre elementos
@@ -68,8 +72,8 @@ que los clientes puedan forzar un incremento de época, $v.\<epocinc>(h)$.
 %
 Debe cumplirse $h = \EPOCH + 1$.
 
-Informalmente, un proceso cliente $p$ invoca $v.\<get>()$ sobre un servidor $v$ para obtener $(S, H, h)$,
-el punto de vista de $v$ sobre $v.\THESET$, y $v.\HISTORY$ con dominio $[1...h]$.
+Informalmente, un proceso cliente $p$ invoca $v.\<get>()$ sobre un servidor $v$ para obtener $(v.\THESET, v.\HISTORY, v.\EPOCH)$:
+el punto de vista de $v$ sobre la \setchain, donde $v.\HISTORY$ tiene dominio $[1...v.\EPOCH]$.
 %
 El proceso $p$ invoca $v.\<add>(e)$ para insertar un nuevo elemento $e$ en $v.\THESET$.
 
@@ -83,6 +87,19 @@ Después de esperar cierto tiempo, el cliente invoca \<get> en uno (o más) serv
 elemento fue efectivamente agregado y estampado con una época.
 
 \section{Ejemplo}
+\begin{figure}
+  \centering
+  \subfloat[Estado de la \setchain según $v$]{\includegraphics[width = 5in]{figures/setchain_api_02.png}\label{subfig:setchain-api-0}}\\
+  \bigskip
+  \subfloat[Un cliente invoca $v$.\<add>(a)]{\includegraphics[width = 5in]{figures/setchain_api_12.png}\label{subfig:setchain-api-1}}\\
+  \bigskip
+  \subfloat[Un cliente invoca $v$.\<add>(b)]{\includegraphics[width = 5in]{figures/setchain_api_22.png}\label{subfig:setchain-api-2}}\\
+  \bigskip
+  \subfloat[Ocurre un nuevo incremento de época]{\includegraphics[width = 5in]{figures/setchain_api_32.png}\label{subfig:setchain-api-3}}
+  \caption{Ejemplo de evolución de la \setchain}
+  \label{fig:setchain-api-flow}
+\end{figure}
+
 En la Figura ~\ref{fig:setchain-api-flow} se muestra un breve ejemplo del funcionamiento de la \setchain.
 %
 Sea $v$ un servidor correcto que mantiene la \setchain.
@@ -114,19 +131,6 @@ de ser estampados (en este caso $a$ y $b$).
 De este modo, se tiene
 \[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}, 4: \{a, b\}\}, 4) \]
 
-
-\begin{figure}
-  \centering
-  \subfloat[Estado de la \setchain según $v$]{\includegraphics[width = 5in]{figures/setchain_api_02.png}\label{subfig:setchain-api-0}}\\
-  \bigskip
-  \subfloat[Un cliente invoca $v$.\<add>(a)]{\includegraphics[width = 5in]{figures/setchain_api_12.png}\label{subfig:setchain-api-1}}\\
-  \bigskip
-  \subfloat[Un cliente invoca $v$.\<add>(b)]{\includegraphics[width = 5in]{figures/setchain_api_22.png}\label{subfig:setchain-api-2}}\\
-  \bigskip
-  \subfloat[Ocurre un nuevo incremento de época]{\includegraphics[width = 5in]{figures/setchain_api_32.png}\label{subfig:setchain-api-3}}
-  \caption{Ejemplo de evolución de la \setchain}
-  \label{fig:setchain-api-flow}
-\end{figure}
 
 
 \section{Propiedades}\label{subsubsec:setchain-properties}
