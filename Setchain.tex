@@ -58,24 +58,32 @@ de $\THESET$, $\EPOCH$ y $\HISTORY$ que dicho servidor mantiene. De este modo:
   \item $v.\<get>()$: retorna los valores de $v.\THESET $, $v.\HISTORY $,
     y $v.\EPOCH $.
 \end{itemize}
-  
+
+
+\subsection{Incrementos de época}  
 Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
-deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
+deciden cuáles \emph{elementos añadidos} son estampados con la época actual, y se incrementa el número de época.
+%
+Con \emph{elementos añadidos} nos referimos a elementos para los cuales algún cliente invocó previamente \<add>.
+Es decir, elementos que pertenecen al conjunto $\THESET$ mantenido por algún servidor.
 %
 Estos eventos se llaman \textit{incrementos de época}.
-%
+
+
 En este trabajo se asume que las barreras de sincronización se lanzan periódicamente y, por lo tanto, que
 siempre existe un instante futuro en el cual un nuevo incremento de época ocurre.
 %
-Sin embargo, en la interfaz original de \setchain, un nodo servidor $v$ también provee una operación para
-que los clientes puedan forzar un incremento de época, $v.\<epocinc>(h)$.
-%
-Debe cumplirse $h = \EPOCH + 1$.
+Sin embargo, en la interfaz original de \setchain, los nodos servidores también proveen una operación para
+que los clientes puedan forzar un incremento de época, $\<epocinc>(h)$, donde
+debe cumplirse $h = \EPOCH + 1$.
 
-Informalmente, un proceso cliente $p$ invoca $v.\<get>()$ sobre un servidor $v$ para obtener $(v.\THESET, v.\HISTORY, v.\EPOCH)$:
+\subsection{Flujo de trabajo}  
+
+Informalmente, un proceso cliente $p$ invoca $v.\<get>()$ sobre un servidor $v$ para obtener la terna $(v.\THESET, v.\HISTORY, v.\EPOCH)$:
 el punto de vista de $v$ sobre la \setchain, donde $v.\HISTORY$ tiene dominio $[1...v.\EPOCH]$.
 %
-El proceso $p$ invoca $v.\<add>(e)$ para insertar un nuevo elemento $e$ en $v.\THESET$.
+El proceso $p$ invoca $v.\<add>(e)$ para insertar un nuevo elemento $e$ en $v.\THESET$, con la intención de que
+en el futuro sea estampado con un número de época.
 
 Un flujo de trabajo típico desde el punto de vista del cliente es como sigue: un cliente invoca $\<add>(e)$ en
 uno (o más) servidores para insertar un nuevo elemento válido $e$ en la \setchain.
@@ -93,9 +101,9 @@ elemento fue efectivamente agregado y estampado con una época.
   \bigskip
   \subfloat[Un cliente invoca $v$.\<add>(a)]{\includegraphics[width = 5in]{figures/setchain_api_12.png}\label{subfig:setchain-api-1}}\\
   \bigskip
-  \subfloat[Un cliente invoca $v$.\<add>(b)]{\includegraphics[width = 5in]{figures/setchain_api_22.png}\label{subfig:setchain-api-2}}\\
+  \subfloat[Un cliente invoca $v$.\<add>(b)]{\includegraphics[width = 5in]{figures/setchain_api_23.png}\label{subfig:setchain-api-2}}\\
   \bigskip
-  \subfloat[Ocurre un nuevo incremento de época]{\includegraphics[width = 5in]{figures/setchain_api_32.png}\label{subfig:setchain-api-3}}
+  \subfloat[Ocurre un nuevo incremento de época]{\includegraphics[width = 5in]{figures/setchain_api_33.png}\label{subfig:setchain-api-3}}
   \caption{Ejemplo de evolución de la \setchain}
   \label{fig:setchain-api-flow}
 \end{figure}
@@ -107,18 +115,21 @@ Sea $v$ un servidor correcto que mantiene la \setchain.
 En la Figura ~\ref{subfig:setchain-api-0} se muestra un estado posible para la \setchain desde el punto de vista
 de $v$.
 %
-En dicho estado, la invocación $v$.\<get> por parte de un cliente resulta en la terna 
-
-\[ (v.\THESET, v.\HISTORY, v.\EPOCH) \]
-donde
-\[ v.\THESET = \{x, y, z, w, m, n\}, \ v.\HISTORY = \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, \ v.\EPOCH = 3 \]
+En dicho estado, la invocación $v$.\<get> por parte de un cliente resulta en la terna $(v.\THESET, v.\HISTORY, v.\EPOCH)$,
+donde:
+%donde $v.\THESET = \{x, y, z, w, m, n\}, \ v.\HISTORY = \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, \ v.\EPOCH = 3$
+%\[ (v.\THESET, v.\HISTORY, v.\EPOCH) \]
+%donde
+\[ v.\THESET = \{x, y, z, w, m, n\},\]
+\[\ v.\HISTORY = \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\},\]
+\[\ v.\EPOCH = 3. \]
 
 
 En la Figura ~\ref{subfig:setchain-api-1} y la Figura ~\ref{subfig:setchain-api-1} se presentan los resultados de un cliente
 invocando $v$.\<add>(a) y $v$.\<add>(b), respectivamente.
 %
-Luego de añadir ambos elementos, se tiene
-\[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, 3) \]
+Luego de añadir ambos elementos, se tiene:
+\[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, 3). \]
 %
 Es decir, el único cambio se percibe en el valor de $v.\THESET$ (que ahora incluye a los elementos $a$ y $b$).
 
@@ -126,10 +137,16 @@ Finalmente, en la Figura ~\ref{subfig:setchain-api-3} se muestra el estado de la
 incremento de época.
 %
 Este evento tiene como consecuencia la creación de una nueva época que incluye a los elementos hasta entonces pendientes 
-de ser estampados (en este caso $a$ y $b$).
+de ser estampados, en este caso $a$, $b$ y $c$.
 %
-De este modo, se tiene
-\[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}, 4: \{a, b\}\}, 4) \]
+Si bien el elemento $c$ no era conocido por el servidor $v$ previamente, los nodos servidores deciden colaborativamente
+los nuevos elementos que son estampados.
+%
+En este sentido, se puede suponer que un cliente invocó $w.\<add>(c)$ sobre un servidor correcto $w$ y, por lo tanto,
+$c$ pertenecía a $w.\THESET$.
+%
+De este modo, se tiene el nuevo punto de vista del servidor $v$:
+\[ v.\<get> = (\{x, y, z, w, m, n, a, b, c\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}, 4: \{a, b, c\}\}, 4). \]
 
 
 
@@ -181,7 +198,7 @@ Luego, la siguiente propiedad establece que todos los elementos añadidos son ev
 con un número de época.
 %
 \begin{property}[Eventual-Get]\label{api:theset->history}
-  Sea $v$ un servidor correcto, $e \in U$ y  $(S,H,h)=v.\<get>()$.
+  Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$ y $e \in U$.
   % 
   Si $e \in S$, luego eventualmente todas las invocaciones
   $(S',H',h')=v.\<get>()$ satisfacen que $e \in H'$.
@@ -238,17 +255,17 @@ añadiendo un elemento.
 
 %
 \begin{property}[Add-before-Get]\label{api:get->add}
-  Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$,
+  Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$
   y $e \in S$.
   %
   Luego, hubo una operación $w.\<add>(e)$ en el pasado en algún servidor $w$.
 \end{property}
 
-Propiedades~\ref{api:consistent-set}, \ref{api:local_unique_stamp},
+Las propiedades~\ref{api:consistent-set}, \ref{api:local_unique_stamp},
 \ref{api:consistent-gets} y \ref{api:get->add} son propiedades de \textit{safety}.
 %
-Propiedades~\ref{api:history->theset-local}, \ref{api:history->theset},
-\ref{api:theset->history} y
+Las propiedades~\ref{api:history->theset-local}, \ref{api:history->theset},
+y \ref{api:theset->history}
 %\ref{api:get-after-add}
 son propiedades de \textit{liveness}.
 
