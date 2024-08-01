@@ -22,9 +22,9 @@ A su vez, los procesos clientes pueden pedirle a los servidores que les retornen
 \section{La interfaz de Setchain}
 Sea \(U\) el universo de elementos que los procesos clientes pueden inyectar en la \setchain.
 %
-Sea \<isValidElement> una función que los nodos pueden usar para validar elementos en \(U\)
-localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
-$\<isValidElement>(e)$ retorne verdadero.
+%Sea \<isValidElement> una función que los nodos pueden usar para validar elementos en \(U\)
+%localmente. De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
+%$\<isValidElement>(e)$ retorne verdadero.
 %
 Luego, una \setchain se define como una estructura de datos distribuida en donde cada nodo servidor
 (correcto) mantiene:
@@ -59,13 +59,19 @@ de $\THESET$, $\EPOCH$ y $\HISTORY$ que dicho servidor mantiene. De este modo:
     y $v.\EPOCH $.
 \end{itemize}
 
+En un servidor $v$, el conjunto $v.\THESET $ contiene el conocimiento de $v$ sobre los elementos que fueron \emph{añadidos},
+incluyendo aquellos que aún no fueron estampados con un número de época.
+%
+Con \emph{elementos añadidos} nos referimos a elementos para los cuales algún cliente invocó previamente \<add>.
+%
+Por otro lado, $v.\HISTORY $ contiene solo aquellos elementos que ya han sido estampados con un número de época.
 
 \subsection{Incrementos de época}  
 Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
-deciden cuáles \emph{elementos añadidos} son estampados con la época actual, y se incrementa el número de época.
+deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
 %
-Con \emph{elementos añadidos} nos referimos a elementos para los cuales algún cliente invocó previamente \<add>.
-Es decir, elementos que pertenecen al conjunto $\THESET$ mantenido por algún servidor.
+Es decir, se inicia un proceso en el cual se recolectan todos los elementos en el conjunto $\THESET$
+mantenido por cada servidor, y se decide cuáles son estampados con la época actual, para dar paso a la siguiente época.
 %
 Estos eventos se llaman \textit{incrementos de época}.
 
@@ -86,7 +92,7 @@ El proceso $p$ invoca $v.\<add>(e)$ para insertar un nuevo elemento $e$ en $v.\T
 en el futuro sea estampado con un número de época.
 
 Un flujo de trabajo típico desde el punto de vista del cliente es como sigue: un cliente invoca $\<add>(e)$ en
-uno (o más) servidores para insertar un nuevo elemento válido $e$ en la \setchain.
+uno (o más) servidores para insertar un nuevo elemento $e$ en la \setchain.
 % 
 El elemento $e$ será propagado hacia los servidores, y cuando un incremento de época ocurra, los servidores
 intentarán incluirlo en la nueva época.
@@ -174,7 +180,8 @@ La segunda propiedad declara que todo elemento añadido a un servidor correcto $
 retornado en todas las llamadas futuras a $v$.\<get>.
 %
 \begin{property}[Add-Get-Local]\label{api:history->theset-local}
-  Sea $e$ un elemento válido y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
+  %Sea $e$ un elemento válido y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
+  Sea $e \in U$ y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   %
   Luego, eventualmente todas las invocaciones $(S,H,h)=v.\<get>()$ 
   satisfacen $e\in S$.
