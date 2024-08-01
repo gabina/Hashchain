@@ -55,10 +55,13 @@ con la red de Tendermint subyacente (los ya mencionados \texttt{Tendermint.Broad
 \texttt{Tendermint.Query}).
 %
 
-Finalmente, \setchain asume que hay un predicado definido por el usuario que define
+Finalmente, se asume que hay un predicado definido por el usuario que define
 cuándo un elemento es válido para ser admitido en el conjunto.
 %
 En esta sección, dicho predicado se referencia con la función \<isValidElement>.
+%
+De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
+$\<isValidElement>(e)$ retorne verdadero.
 
 %
 A continuación se presentan diferentes definiciones de métodos
@@ -83,11 +86,25 @@ Que $e$ sea finalmente añadido a la \setchain dependerá de si la transacción 
 al mismo se incluye en un bloque que, a su vez, eventualmente se agrega a la blockchain
 subyacente de Tendermint.
 
-A su vez, otro aspecto fundamental de esta solución es que cada bloque de Tendermint
+Otro aspecto fundamental de esta solución es que cada bloque de Tendermint
 define una única época de \setchain, a la cual pertenecen todos los elementos asociados
 a las transacciones en dicho bloque.
 
 \subsection{Flujo de mensajes}
+
+\begin{figure}
+  \subfloat[Estado inicial]{\includegraphics[width = 3in]{figures/vanilla-reflow-0.png}\label{subfig:vanilla-flow-a}}
+  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3in]{figures/vanilla-reflow-1.png}\label{subfig:vanilla-flow-b}}\\
+  \vspace{0.5cm}
+  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3in]{figures/vanilla-reflow-2.png}\label{subfig:vanilla-flow-c}}
+  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3in]{figures/vanilla-reflow-3.png}\label{subfig:vanilla-flow-d}}\\
+  \vspace{0.5cm}
+  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3in]{figures/vanilla-reflow-4.png}\label{subfig:vanilla-flow-e}}
+  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3in]{figures/vanilla-reflow-5.png}\label{subfig:vanilla-flow-f}}
+  \caption{Flujo usual de mensajes para \vanilla}
+  \label{fig:vanilla-flow}
+\end{figure}
+
 En la Figura~\ref{fig:vanilla-flow} se muestra el flujo usual de mensajes que se inicia
 cuando un cliente invoca $v.$\<add>(e) sobre un servidor correcto $v$.
 %
@@ -124,9 +141,9 @@ se representa que el siguiente bloque fue consensuado por parte del Tendermint C
 El siguiente paso será que el Tendermint Core envíe
 la secuencia correspondiente de pedidos a la aplicación: \BeginBlock para indicar el inicio de
 un nuevo bloque,
-una lista de llamadas a \DeliverTx por cada transacción agregada (en el orden en que fueron
-consensuadas dentro del bloque)\footnote{En esta implementación
-una \textit{transacción} agregada coincide con un \textit{elemento} agregado.},
+una lista de llamadas a \DeliverTx por cada transacción agregada\footnote{En esta implementación
+una \textit{transacción} agregada coincide con un \textit{elemento} agregado.} (en el orden en que fueron
+consensuadas dentro del bloque),
 \EndBlock para indicar la finalización del bloque y \Commit para señalizar que el nuevo estado
 puede ser persistido.
 %
@@ -137,17 +154,6 @@ Esto se visualiza en la Figura \ref{subfig:vanilla-flow-e}.
 %
 El último paso en este flujo (Figura \ref{subfig:vanilla-flow-f}) muestra que una nueva época se agregó a la \setchain,
 en donde uno de sus elementos es $e$.
-
-\begin{figure}
-  \subfloat[Estado inicial]{\includegraphics[width = 3.5in]{figures/vanilla-flow-0.png}\label{subfig:vanilla-flow-a}}
-  \subfloat[El cliente invoca \<add>(e)]{\includegraphics[width = 3.5in]{figures/vanilla-flow-2.png}\label{subfig:vanilla-flow-b}}\\
-  \subfloat[$t_e$ se chequea contra \CheckTx]{\includegraphics[width = 3.5in]{figures/vanilla-flow-3.png}\label{subfig:vanilla-flow-c}}
-  \subfloat[Se consensúa el próximo bloque]{\includegraphics[width = 3.5in]{figures/vanilla-flow-4.png}\label{subfig:vanilla-flow-d}}\\
-  \subfloat[Se envían los pedidos de la ABCI a la aplicación]{\includegraphics[width = 3.5in]{figures/vanilla-flow-5.png}\label{subfig:vanilla-flow-e}}
-  \subfloat[Se agrega la época $n$ a la \setchain]{\includegraphics[width = 3.5in]{figures/vanilla-flow-6.png}\label{subfig:vanilla-flow-f}}
-  \caption{Flujo usual de mensajes para \vanilla}
-  \label{fig:vanilla-flow}
-\end{figure}
 
 \subsubsection{Detalles de implementación}
 La implementación de la API de \setchain establece comunicación con un nodo mediante el protocolo HTTP.
@@ -168,7 +174,7 @@ que provee una base de datos simple y rápida de tipo clave-valor, escrita compl
 Dependiendo del caso de uso de \setchain se pueden pensar distintas formas de almacenar los elementos y sus
 respectivas épocas, de modo de hacer más eficiente las búsquedas necesarias.
 %
-Por ejemplo, si fuera importante determinar rápidamente si un elemento ya es parte de la \setchain y con que número de época
+Por ejemplo, si fuera importante determinar rápidamente si un elemento ya es parte de la \setchain y con cuál número de época
 fue estampado, entonces, al agregar un nueva entrada a la base de datos, las claves podrían ser elementos, y los
 valores, el número de época al que dicho elemento pertenece.
 %
@@ -180,8 +186,8 @@ Incluso podría utilizarse un sistema híbrido, de modo de hacer eficiente diver
 \subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
 %
 Como se mencionó antes, cuando un proceso cliente utiliza la API de \setchain
-para añadir un elemento, o para recuperar el estado actual de la \setchain,
-se comunica con un nodo parituclar de la red. Es importante notar que, en este
+para añadir un elemento o para recuperar el estado actual de la \setchain,
+se comunica con un nodo particular de la red. Es importante notar que, en este
 sentido, un proceso cliente no puede saber si se está contactando con un nodo
 correcto o con un nodo bizantino.
 %Client processes do not know if they are contacting a Byzantine or correct
@@ -212,7 +218,7 @@ En este trabajo se utilizará la extensión a Setchain presentada como
 criptográficas. El mecanismo se introduce a continuación.
 
 Los nodos correctos firman criptográficamente un hash del conjunto de elementos
-pertenecientes a una época, e insertan este hash como un elemento en la \setchain.
+pertenecientes a una época e insertan este hash como un elemento en la \setchain.
 %
 A esos hashes los llamamos \textit{elementos de prueba de época}.
 %
