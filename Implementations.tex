@@ -242,6 +242,19 @@ en la época dada y verificando, a través de la clave pública, si la firma de 
 para el hash obtenido. Este proceso se corresponde con la verificación de firmas vista en la
 sección~\ref{subsec:signatures}.
 
+\begin{figure}
+  \centering
+  \subfloat[\<add>(e)]{\includegraphics[width = 1.5in]{figures/epoch-proof-0.png}\label{subfig:epoch-proof-a}}
+  \hspace{0.5in}
+  \subfloat[Época $n$]{\includegraphics[width = 1.5in]{figures/epoch-proof-1.png}\label{subfig:epoch-proof-b}}\\
+  \vspace{0.25in}
+  \subfloat[Pruebas de época]{\includegraphics[width = 1.5in]{figures/epoch-proof-2.png}\label{subfig:epoch-proof-c}}
+  \hspace{0.5in}
+  \subfloat[\<get>]{\includegraphics[width = 1.5in]{figures/epoch-proof-3.png}\label{subfig:epoch-proof-d}}
+  \caption{Mecanismo de pruebas de época.}
+  \label{fig:epoch-proof}
+\end{figure}
+
 %
 Las claves públicas de los validadores necesitan ser públicamente conocidas para los usuarios.
 %
@@ -251,6 +264,26 @@ concluír que la época es correcta y que $e$ fue éxitosamente insertado en la 
 En caso de comunicarse con nodos correctos, solo se requieren una llamada a \<add> y
 una llamada a \<get> para estar seguros de que el elemento fue añadido a la \setchain.
 %
+
+En la Figura \ref{fig:epoch-proof} se muestra un ejemplo de este mecanismo, en un sistema que cuenta
+con un cliente y 4 servidores, de los cuales uno es bizantino (señado en rojo).
+%
+El cliente invoca $\<add>.(e)$ sobre un servidor cualquiera de la red, sin saber
+si es correcto o bizantino, con la intención de agregar un nuevo elemento a la \setchain.
+Esto se indica en la Figura \ref{subfig:epoch-proof-a}.
+%
+Los servidores deciden colaborativamente los elementos pertenecientes a la época $n$.
+En la Figura \ref{subfig:epoch-proof-b} se puede ver que $e$ pertenece a dicha época.
+%
+En la Figura \ref{subfig:epoch-proof-c} se representa que todos los servidores correctos
+inyectan un elemento de prueba de época que contiene: el número de época,
+la clave pública perteneciente a cada nodo (señalizada con una llave),
+y la firma del hash de los elementos de la época $n$ (señalizada con un candado).
+%
+Luego de esperar cierto tiempo, el cliente invoca \<get> en un servidor cualquiera y,
+si obtiene suficientes pruebas de época (en este caso, 3) para la época $n$, entonces
+puede estar seguro que el elemento $e$ fue efectivamente agregado a la \setchain.
+
 
 Las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
 un cliente y elementos de prueba de época; significando que cada elemento de prueba de época
@@ -265,6 +298,7 @@ La validez de los elementos regulares se chequea a través de la ya mencionada f
 %
 Sin embargo, un elemento de prueba de época necesita ser validado verificando la firma.
 %
+
 
 \subsubsection{Detalles de implementación}
 %Estas pruebas de época pueden implementarse utilizando \textit{Ed25519}~\cite{ed25519}
@@ -407,7 +441,6 @@ manera completa en $\HISTORY $.
 
 %$\HISTORY = history up to epoch - 1$, y $\EPOCH = epoch$
 %[COMPLETAR. EXPLICITAR QUÉ PINTA TIENE ESTO.]
-
 \subsection{Conclusión}
 Si bien los algoritmos descriptos en esta sección implementan \setchain, no se está explotando su idea
 principal: relajar el orden total entre los elementos.
