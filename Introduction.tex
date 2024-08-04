@@ -510,7 +510,16 @@ que este número varía entre aproximadamente 10000 y 50000 nodos.}
 distribuidos geográficamente en todos los continentes, con clientes enviando peticiones para
 añadir nuevas transacciones a los servidores constantemente.
 
-Cada una de las soluciones propuestas en este trabajo está enteramente construida sobre 
+Las implementaciones prototípicas previas de \setchain\footnote{Presentadas en ~\cite{Capretto.2022.Setchain}.} fueron construidas
+a partir de distintos
+componentes básicos: \emph{Bizantine Reliable Broadcast}~\cite{DBLP:journals/iandc/Bracha87, raynal.dist.systems},
+\emph{Byzantine Atomic Broadcast}~\cite{Defago2004BAB},
+\emph{Byzantine Distributed Grow-only Sets}~\cite{Cholvi2021BDSO-arxiv} y \emph{Set Byzantine Consensus}~\cite{redbelly}.
+%
+En este trabajo se toma un enfoque diferente, haciendo hincapié en la construcción de implementaciones
+que cumplan con la especificación de \setchain pero que al mismo tiempo sean compatibles con los requerimientos
+del mundo real.
+Es por eso que cada una de las soluciones originales propuestas en este trabajo está enteramente construida sobre 
 la plataforma de aplicación de blockchain \textit{Tendermint}~\cite{Buchman.2018.Tendermint}.
 
 %% Motivate the use of tendermint. Why tendermint is relevant
@@ -566,7 +575,7 @@ El precio a pagar es un algoritmo distribuido adicional para obtener el conjunto
 elementos desde un hash, garantizando tolerancia a servidores bizantinos.
 %
 
-La hipótesis fundamental con la que se trabaja es que intercambiar latencia por un aumento en el
+La hipótesis fundamental en la que se basa \hashchain es que intercambiar latencia por un aumento en el
 ancho de banda resulta en una mejora significativa en el rendimiento.
 %
 Es decir, hacer consenso sobre hashes de tamaño fijo conlleva un incremento en la cantidad de elementos
