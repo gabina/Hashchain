@@ -39,7 +39,7 @@
             
             \Function{\<isValidTransaction>}{$transaction$}\label{alg:van_is_valid_tx}
                 \State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$}
-                \State \textbf{return} \<isValidElement>(\<element>)
+                \State \textbf{return} \<isValidElement>(\<element>) and not \<element> in \texttt{history}
             \EndFunction
             
             \Function{\<getElementFromTransaction>}{$transaction$}\label{alg:van_get_element}

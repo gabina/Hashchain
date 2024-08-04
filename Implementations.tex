@@ -123,10 +123,10 @@ Si bien el cliente envía \textit{elementos}, en la red de Tendermint
 lo que circulan son \textit{transacciones}.
 %
 
-Para determinar si la nueva transacción debe ser difundida en la red, Tendermint chequea que
-sea válida por medio de \CheckTx, y si lo es, entonces inserta la transacción en la mempool.
-En caso contrario, la descartará, el flujo de dicha transacción terminará y el elemento $e$
-asociado a ella no será agregado a la \setchain.
+Para determinar si la nueva transacción debe ser difundida en la red, Tendermint chequea por medio de \CheckTx
+que sea válida y que el elemento asociado a ella no pertenezca ya a la \setchain.
+En caso afirmativo, inserta la transacción en la mempool.
+En caso contrario, la descartará y el flujo de dicha transacción terminará.
 La petición \CheckTx se muestra en la Figura \ref{subfig:vanilla-flow-c}.
 
 %
@@ -645,21 +645,22 @@ Se necesita definir un nuevo criterio para determinar cuándo una transacción (
 comprimido) se considera válida.
 %
 La función \<isValidBatch>~(en el Algoritmo~\ref{alg:abci-brotli}) implementa este nuevo criterio, permitiendo
-a las transacciones ser consideradas válidas si al menos uno de sus elementos es válido.
+a las transacciones ser consideradas válidas si al menos uno de sus elementos es válido y nuevo (es decir,
+no fue agregado a la \setchain previamente).
 %
 La elección de este criterio se basa en que, si bien se espera
 que un \collector correcto genere lotes de elementos válidos (puesto que chequea la validez de los elementos
-antes de agregarlos),
-un \collector bizantino podría incoporar elementos inválidos en un lote.
+antes de agregarlos), no puede asegurarse que sean nuevos.
+A su vez, un \collector bizantino también podría incoporar elementos inválidos en un lote.
 %
-En ese caso, la transacción será considerada válida si al menos uno de sus elementos lo es.
+Por lo tanto, las transacciones se considern válidas si al menos uno de sus elementos es válido y nuevo.
 % La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos
 % a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
 % ser añadidos a la \setchain.
 %
-A pesar de que una transacción válida puede contener algún elemento inválido,
-como se ilustra en el método \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
-mientras que los inválidos simplemente se descartan.
+A pesar de que una transacción válida puede contener algún elemento inválido o repetido,
+como se ilustra en el método \<DeliverTx>, solo elementos válidos y nuevos se agregan a la \setchain,
+mientras que el resto simplemente se descarta.
 %
 
 La última diferencia a mencionar con respecto a \vanilla es que en Compresschain los bloques no delimitan épocas.
@@ -730,17 +731,15 @@ análoga al enfoque empleado para los lotes comprimidos en \compresschain.
 
 Al igual que se hizo para las versiones \vanilla y \compresschain, el objetivo es presentar el flujo usual
 de la vida de un elemento en el contexto de \hashchain.
-
 %
-
 Retomando la Figura ~\ref{fig:compresschain-flow} de la sección anterior, podemos pensar que el flujo de mensajes
 debería ser similar. El cliente se comunica con la API de \setchain, mientras que el \hcollector colecciona elementos
 hasta que el próximo lote esté listo para ser hasheado y enviado al Tendermint Core.
 Una vez allí es sometido a
 \<CheckTx> para determinar si debe ser añadido a la mempool o descartado.
 
-
-En \compresschain, para decidir si una transacción es válida, debe revertirse el proceso hecho a la misma.
+Analicemos con mayor profundidad esta situación. En \compresschain, para decidir si una
+transacción es válida, debe revertirse el proceso hecho a la misma.
 Es decir, descomprimir la transacción para
 así obtener los elementos de cliente que la componen y analizarlos de forma individual.
 Cuando se piensa en la contraparte para \hashchain, una de las primeras preguntas que surge es cómo se determina si una
@@ -876,7 +875,7 @@ para, o bien ser añadidos a la mempool, o bien ser descartados.
 %
 Para determinar la validez de un hash se necesita chequear los elementos en él. Similar a
 \compresschain, los hashes son considerados válidos si al menos un elemento
-en el hash es válido.
+en el hash es válido y nuevo.
 %
 Sin embargo, para un nodo dado, en el punto en que \<CheckTx> corre, no podemos asegurar que el
 lote original de elementos sea conocido.
@@ -932,7 +931,7 @@ Es decir, si esos elementos ya fueron estampados con un número de época.
 % validation against it, and
 %Moreover, if at least one element in the batch is valid, the node verifying the
 Cuando un nodo solicita la inversión de un hash, si al menos un elemento en el lote
-es válido, el nodo firma el hash con sus propia clave privada y difunde el hash junto
+es válido y nuevo, el nodo firma el hash con sus propia clave privada y difunde el hash junto
 con su propia firma.
 %
 Al difundir el hash y su firma, el nodo anuncia a la red que conoce el lote detrás de ese hash.
@@ -946,7 +945,7 @@ así como también un mapeo de hashes a lotes.
 Durante la ejecución de \<DeliverTx> se chequea la validez de la firma.
 %
 Si la firma es válida y nueva para el hash en cuestión, se incrementa el contador de
-\texttt{firmas por hash}.
+firmas por hash.
 %
 Además, cada vez que un hash es invertido, se chequea la correctitud del lote original
 (es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hashes a lotes
