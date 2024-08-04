@@ -1021,7 +1021,7 @@ el hash consolida, estampando los elementos en el hash $k$ con época $a$ primer
 a los elementos en el hash $j$ con la época $a+1$.
 %
 Por el otro lado, la consolidación de época de primera vista no asigna la época al hash $k$
-apenas éste consolida, porque el hash $j$ fue visto por primera vez antes que $k$.
+apenas este consolida, porque el hash $j$ fue visto por primera vez antes que $k$.
 %
 Dado que el hash $j$ consolida justo después que el hash $k$, los elementos del hash $j$ son
 estampados
@@ -1151,7 +1151,7 @@ un actor malicioso explota conocimiento sobre transacciones pendientes para obte
 desleal. Debido a que las transacciones pendientes son públicas, un usuario malicioso puede
 observar las transacciones que le llegan a una víctima, construir una nueva transacción y luego
 encontrar una forma de ubicarla antes que la transacción de la víctima. En la red Ethereum, esta
-\textquotedblleft forma \textquotedblright de colocar una transacción antes de otra es usualmente
+\textquotedblleft forma\textquotedblright\ de colocar una transacción antes de otra es usualmente
 llevada a cabo mediante pagos: o bien pagando impuestos de transacción (\textit{transacction fees}) más altos
 que la víctima, o haciendo pagos directos a ciertos validadores.
 %
@@ -1233,7 +1233,7 @@ con una época menor que los elementos provenientes del hash $h_l$.
 %
 
 Esta situación es particularmente interesante porque el validador $v$ puede hacer algo
-suceder en el pasado (elemento del hash $h_k$ se estampan con época $e$) teniendo información
+suceder en el pasado (elementos del hash $h_k$ se estampan con época $e$) teniendo información
 del futuro (elementos del hash $h_l$ se estampan con época $e+n$). A este ataque en el contexto
 de \hashchain lo llamamos \textit{el ataque del clarividente}.
 %
