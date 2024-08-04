@@ -621,7 +621,8 @@ Sin embargo, esto puede resolverse sencillamente gracias al uso de candados.
 Para completar nuestra definición, se provee el pseudocódigo para la ABCI de Compresschain en el
 Algoritmo~\ref{alg:abci-brotli}.
 %
-Existen varias diferencias con respecto a la implementación previa de \setchain.
+Existen varias diferencias con respecto a la implementación previa de \setchain. Se elaboran
+a continuación.
 %
 \input{algorithms/alg-abci-brotli}
 
@@ -629,15 +630,16 @@ La diferencia principal con la implementación \vanilla radica en que las transa
 potencialmente más de un elemento de usuario. Esto se da porque las transacciones en este contexto
 son lotes comprimidos de elementos.
 %
-Más aún, para recuperar elementos dentro de las transacciones, se necesita primero descomprimir
+Más aún, para recuperar elementos dentro de las transacciones se necesita primero descomprimir
 el lote y, una vez que se tiene el lote original, debe RLP-decodificarse para así obtener los elementos
 originales enviados por los clientes.
 %
 Aquellos elementos son los que deben ser agregados a la \setchain. La función \texttt{getElementsFromTransaction()}
 muestra este comportamiento.
 
-En la definición de Compresschain, las transacciones de Tendermint pueden contener tanto elementos válidos
-como inválidos.
+En la definición de Compresschain, las transacciones de Tendermint contienen, en principio, más de un elemento.
+% En la definición de Compresschain, las transacciones de Tendermint pueden contener tanto elementos válidos
+% como inválidos.
 %
 Se necesita definir un nuevo criterio para determinar cuándo una transacción (es decir, un lote de elementos
 comprimido) se considera válida.
@@ -645,20 +647,27 @@ comprimido) se considera válida.
 La función \<isValidBatch>~(en el Algoritmo~\ref{alg:abci-brotli}) implementa este nuevo criterio, permitiendo
 a las transacciones ser consideradas válidas si al menos uno de sus elementos es válido.
 %
-La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos~\footnote{
-Los elementos pueden ser válidos al momento en que los clientes los envían, pero ser inválidos una vez que
-los bloques fueron consensuados.} a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
-ser añadidos a la \setchain.
+La elección de este criterio se basa en que, si bien se espera
+que un \collector correcto genere lotes de elementos válidos (puesto que chequea la validez de los elementos
+antes de agregarlos),
+un \collector bizantino podría incoporar elementos inválidos en un lote.
 %
-Sin embargo, como se ilustra en el método \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
+En ese caso, la transacción será considerada válida si al menos uno de sus elementos lo es.
+% La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos
+% a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
+% ser añadidos a la \setchain.
+%
+A pesar de que una transacción válida puede contener algún elemento inválido,
+como se ilustra en el método \<DeliverTx>, solo elementos válidos se agregan a la \setchain,
 mientras que los inválidos simplemente se descartan.
 %
-Finalmente, en Compresschain, los bloques no delimitan épocas por lo que no se peresenta una definición para
-el método \<EndBlock>.
+
+La última diferencia a mencionar con respecto a \vanilla es que en Compresschain los bloques no delimitan épocas.
+Por esta razón no se peresenta una definición para el método \<EndBlock>.
 En este caso, las épocas se definen como transacciones: cada lote de elementos define una época.
 
 %
-Por último, el método \<Query> se comporta de la misma forma que en \vanilla.
+El método \<Query> se comporta de la misma forma que en \vanilla.
 % %
 % definition was given in this case, as the block does not
 % delimit the epoch anymore, but the epoch is defined by all the elements
