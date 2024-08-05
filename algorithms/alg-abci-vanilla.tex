@@ -15,7 +15,7 @@
       
             \Function{\<DeliverTx>}{$transaction$}\label{alg:van_deliver_tx}
                 \State \<element> $\leftarrow$ \Call{\<getElementFromTransaction>}{$transaction$} \label{line:abci-vanilla-if2}
-                \If {\Call{\<isValidTransaction>}{$transaction$} and not \texttt{element} in \texttt{history}} \label{line:abci-vanilla-if}
+                \If {\Call{\<isValidTransaction>}{$transaction$}} \label{line:abci-vanilla-if}
                     \State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\<element>\}\) \label{lst:line:blah2} \label{line:abci-vanilla-set}
                 		\State  \texttt{history[next\_epoch]} \(<- \, \texttt{history}[\texttt{next\_epoch}] \cup \{\<element>\}\) \label{line:abci-vanilla-history}
                 	\EndIf

@@ -378,7 +378,8 @@ el resto tiene implementaciones triviales.
 \input{algorithms/alg-abci-vanilla}
 
 Chequear si una transacción es válida consiste simplemente en chequear
-la validez del elemento, dado que las transacciones contienen un único elemento.
+que el elemento asociado a ella sea válido y nuevo,
+dado que las transacciones contienen un único elemento.
 %
 Puede parecer absurdo definir la función \texttt{getElementFromTransaction()}
 en este caso, debido a que es la función identidad. Sin embargo, la decisión de dar
@@ -394,7 +395,7 @@ de Tendermint.
 %
 Para este algoritmo, la única acción a realizar por parte de la ABCI cuando se recibe una
 transacción es añadir el elemento subyacente a la \setchain siempre y cuando el mismo
-sea válido.
+sea válido y nuevo.
 %
 Siempre es necesario chequear del lado de la ABCI si una transacción es válida,
 %
