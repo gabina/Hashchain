@@ -27,7 +27,7 @@
             \Function{\<isValidBatch>}{$batch$}\label{alg:brotli_is_valid}
             		\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{$batch$}
 
-            		\Comment{Si al menos un elemento en el lote es válido, entonces el lote se considera válido.}
+            		\Comment{Si al menos un elemento en el lote es válido y nuevo, el lote es válido.}
             		\For{\texttt{e in} $elements$}
                     \If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}}
                     		\State \textbf{return} \texttt{True}
