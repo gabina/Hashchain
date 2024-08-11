@@ -9,6 +9,7 @@ Dado que todas las soluciones presentadas en este trabajo son construidas sobre 
 para probar la correctitud de ellas, será necesario recapitular las propiedades que la
 plataforma Tendermint garantiza.
 
+\subsection{Modelo de computación}
 El modelo de Tendermint considera un sistema de procesos que se comunican mediante el intercambio de
 mensajes.
 Los procesos pueden ser correctos o defectuosos, donde un proceso defectuoso se comporta de maneras
@@ -35,6 +36,9 @@ Para lograr homogeneidad con el modelo de computación presentado en ~\ref{sec:m
 consideramos que el poder de voto de cada validador es igual a 1, y por lo tanto existen exactamente
 $n$ procesos en total y $f$ procesos bizantinos.
  
+\subsection{Propiedades nativas}
+Se presentan dos propiedades fundamentales de Tendermint, debidamente demostradas en \cite{Buchman.2018.Tendermint}.
+
 \newcounter{prop:tendermint}
 \setcounter{prop:tendermint}{\value{property}}
 
@@ -46,37 +50,7 @@ $n$ procesos en total y $f$ procesos bizantinos.
     Todos los procesos correctos deciden eventualmente un valor.
 \end{property}
 
-Las propiedades ~\ref{tendermint:agreement} y ~\ref{tendermint:termination}
-son demostradas en \cite{Buchman.2018.Tendermint}.
-
-En el contexto de estas demostraciones
-se asume una mempool de tamaño tal que nunca se satura.
-Es decir, el ratio de invocaciones \<add> por parte de los clientes nunca
-llena la capacidad de la mempool, de modo que los elementos enviados por clientes
-nunca son descartados por mempool llena.
-De aquí se desprenden las siguientes propiedades.
-
-\begin{property}[Tendermint-Eventual-CheckTx]\label{tendermint:eventual-checktx}
-  Sea $t$ una transacción.
-  Si se invoca \<broadcastTx>($t$) sobre un servidor correcto $v$, luego
-  $v$ recibirá la petición \<CheckTx>($t$).
-\end{property}
-
-\begin{property}[Tendermint-Eventual-Injection]\label{tendermint:eventual-injection}
-  Sea $t$ una transacción en la mempool de un servidor correcto.
-  Eventualmente, $t$ formará parte de un bloque.
-\end{property}
-
-\begin{property}[Tendermint-DeliverTx-BroadcastTx]\label{tendermint:delivery-broadcast}
-  Sea $v$ un servidor correcto.
-  Si $v$ recibe una petición $\<DeliverTx>(t)$,
-  entonces necesariamente, en el pasado, 
-  \<broadcastTx>($t$) fue invocado en algún servidor.
-  % NOTA: acá no se puede asegurar que fue invocado en un servidor correcto,
-  % ni tampoco que la transacción es válida.
-\end{property}
-
-A continuación se presenta una propiedad que desprende de la concepción de Tendermint
+A continuación se presenta una propiedad que se desprende de la concepción de Tendermint
 como máquina de replicación de estados.
 
 \begin{property}[Tendermint-Global-DeliverTx]\label{tendermint:global-delivery}
@@ -99,6 +73,36 @@ como máquina de replicación de estados.
   ya fueron decididas y ordenadas.
 \end{proof}
 
+
+\subsection{Propiedades adicionales}
+En el contexto de estas demostraciones
+se asume una mempool de tamaño tal que nunca se satura.
+Es decir, el ratio de invocaciones \<add> por parte de los clientes nunca
+llena la capacidad de la mempool, de modo que los elementos enviados por clientes
+nunca son descartados por mempool llena.
+De aquí se desprenden las siguientes propiedades.
+
+\begin{property}[Tendermint-Eventual-CheckTx]\label{tendermint:eventual-checktx}
+  Sea $t$ una transacción.
+  Si se invoca \<broadcastTx>($t$) sobre un servidor correcto $v$, luego
+  $v$ recibirá la petición \<CheckTx>($t$).
+\end{property}
+
+\begin{property}[Tendermint-Eventual-Injection]\label{tendermint:eventual-injection}
+  Sea $t$ una transacción en la mempool de un servidor correcto.
+  Eventualmente, $t$ formará parte de un bloque.
+\end{property}
+
+% No la necesito si add-before-get se cumple trivialmente
+% \begin{property}[Tendermint-DeliverTx-BroadcastTx]\label{tendermint:delivery-broadcast}
+%   Sea $v$ un servidor correcto.
+%   Si $v$ recibe una petición $\<DeliverTx>(t)$,
+%   entonces necesariamente, en el pasado, 
+%   \<broadcastTx>($t$) fue invocado en algún servidor.
+%   % NOTA: acá no se puede asegurar que fue invocado en un servidor correcto,
+%   % ni tampoco que la transacción es válida.
+% \end{property}
+
 % \begin{property}[Tendermint-Delivery-Mempool]\label{tendermint:delivery-mempool}
 %   Sea $v$ un servidor correcto.
 %   Si $v$ recibe una petición $\<DeliverTx>(t)$,
@@ -113,7 +117,7 @@ como máquina de replicación de estados.
 %   $\<CheckTx>(t)$ en $v$ retornó \texttt{true}.
 % \end{property}
 
-\subsection{Propiedades derivadas}
+\section{Propiedades derivadas}
 
 Con el objetivo de hacer las demostraciones más sencillas, se definen y demuestran las siguientes
 propiedades derivadas para cada implementación realizada de \setchain.
@@ -152,32 +156,33 @@ propiedades derivadas para cada implementación realizada de \setchain.
   % ya fueron decididas y ordenadas al momento de hacerse.
 \end{proof}
 
-\begin{property}[Tendermint-Vanilla-Deliver-Add]\label{tendermint:vanilla-deliver-add}
-  Sea $v$ un servidor correcto.
-  Si $v$ recibe una petición $\<DeliverTx>(t)$, donde $t$ es una transacción válida,
-  entonces necesariamente, en el pasado, un cliente invocó $\<add>(e)$ sobre un servidor,
-  donde $e=t$.
-  % NOTA: acá no se puede asegurar que fue invocado en un servidor correcto.
-\end{property}
+% No lo necesito si considero que add-before-get vale trivialmente
+% \begin{property}[Tendermint-Vanilla-Deliver-Add]\label{tendermint:vanilla-deliver-add}
+%   Sea $v$ un servidor correcto.
+%   Si $v$ recibe una petición $\<DeliverTx>(t)$, donde $t$ es una transacción válida,
+%   entonces necesariamente, en el pasado, un cliente invocó $\<add>(e)$ sobre un servidor,
+%   donde $e=t$.
+%   % NOTA: acá no se puede asegurar que fue invocado en un servidor correcto.
+% \end{property}
 
-\begin{proof}
-  Sea $v$ un servidor correcto que recibe una petición $\<DeliverTx>(t)$, donde $t$
-  es una transacción válida.
-  Por la propiedad \emph{Tendermint-DeliverTx-BroadcastTx}~\ref{tendermint:delivery-broadcast}
-  sabemos que necesariamente, en el pasado, 
-  \<broadcastTx>($t$) fue invocado en algún servidor.
-  %
-  Como $t$ es una transacción válida, el elemento $e = t$ también lo es.
-  %
-  Por el modelo de computación definido en la sección \ref{sec:model_system}, un nodo bizantino no
-  puede generar un elemento válido.
-  Por lo tanto, \<broadcastTx>($t$) tuvo que haber sido invocado por un nodo correcto.
-  %
-  Puesto que \<broadcastTx> solo se llama como parte de la definición de \<add>, con certeza
-  un cliente invocó $\<add>(e)$ en dicho servidor, donde $e = t$.
-  %NOTA: si el servidor no es correcto podría invocar \<broadcastTx>($t$) sin necesidad de
-  %un cliente invocando add? No porque la transacción es válida.
-\end{proof}
+% \begin{proof}
+%   Sea $v$ un servidor correcto que recibe una petición $\<DeliverTx>(t)$, donde $t$
+%   es una transacción válida.
+%   Por la propiedad \emph{Tendermint-DeliverTx-BroadcastTx}~\ref{tendermint:delivery-broadcast}
+%   sabemos que necesariamente, en el pasado, 
+%   \<broadcastTx>($t$) fue invocado en algún servidor.
+%   %
+%   Como $t$ es una transacción válida, el elemento $e = t$ también lo es.
+%   %
+%   Por el modelo de computación definido en la sección \ref{sec:model_system}, un nodo bizantino no
+%   puede generar un elemento válido.
+%   Por lo tanto, \<broadcastTx>($t$) tuvo que haber sido invocado por un nodo correcto.
+%   %
+%   Puesto que \<broadcastTx> solo se llama como parte de la definición de \<add>, con certeza
+%   un cliente invocó $\<add>(e)$ en dicho servidor, donde $e = t$.
+%   %NOTA: si el servidor no es correcto podría invocar \<broadcastTx>($t$) sin necesidad de
+%   %un cliente invocando add? No porque la transacción es válida.
+% \end{proof}
 
 % \begin{property}[Tendermint-Eventual-Mempool]\label{tendermint:eventual-mempool}
 %   Sea $t$ una transacción válida.
@@ -250,27 +255,28 @@ propiedades derivadas para cada implementación realizada de \setchain.
   % NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo? VÁLIDO Y NUEVO.
 \end{proof}
 
-\begin{property}[Tendermint-Compresschain-Deliver-Add]\label{tendermint:compresschain-deliver-add}
-  Sea $v$ un servidor correcto y $e$ un elemento válido.
-  Sea $t$ un lote de elementos comprimidos, donde uno de esos elementos es $e$.
-  Si $v$ recibe una petición $\<DeliverTx>(t)$,
-  entonces necesariamente, en el pasado, un cliente invocó $\<add>(e)$ sobre un servidor.
-  %NOTA: acá no se puede asegurar que fue invocado en un servidor correcto.
-\end{property}
+% No la necesito si add-before-get se cumple trivialmente
+% \begin{property}[Tendermint-Compresschain-Deliver-Add]\label{tendermint:compresschain-deliver-add}
+%   Sea $v$ un servidor correcto y $e$ un elemento válido.
+%   Sea $t$ un lote de elementos comprimidos, donde uno de esos elementos es $e$.
+%   Si $v$ recibe una petición $\<DeliverTx>(t)$,
+%   entonces necesariamente, en el pasado, un cliente invocó $\<add>(e)$ sobre un servidor.
+%   %NOTA: acá no se puede asegurar que fue invocado en un servidor correcto.
+% \end{property}
 
-\begin{proof}
-  Sea $v$ un servidor correcto que recibe una petición $\<DeliverTx>(t)$.
-  Por la propiedad \emph{Tendermint-DeliverTx-BroadcastTx}~\ref{tendermint:delivery-broadcast}
-  sabemos que necesariamente, en el pasado, 
-  \<broadcastTx>($t$) fue invocado en algún servidor.
-  Por el modelo de computación definido en la sección \ref{sec:model_system}, un nodo bizantino no
-  puede generar un elemento válido.
-  Por lo tanto, el lote de elementos $t$ difundido en la red de Tendemrint tuvo que haberse generado
-  con al menos un elemento generado por un cliente, puesto que $e$ es válido.
-  De ahí se concluye que un cliente tiene que haber invocado $\<add>(e)$ en un servidor y que
-  \<broadcastTx> se invocó como parte de la definición de \<AddElement> una vez que el lote estuvo listo,
-  como se puede ver en la línea \ref{line:compresschain-broadcast} del
-  algoritmo ~\ref{alg:collector-brotli}.
+% \begin{proof}
+%   Sea $v$ un servidor correcto que recibe una petición $\<DeliverTx>(t)$.
+%   Por la propiedad \emph{Tendermint-DeliverTx-BroadcastTx}~\ref{tendermint:delivery-broadcast}
+%   sabemos que necesariamente, en el pasado, 
+%   \<broadcastTx>($t$) fue invocado en algún servidor.
+%   Por el modelo de computación definido en la sección \ref{sec:model_system}, un nodo bizantino no
+%   puede generar un elemento válido.
+%   Por lo tanto, el lote de elementos $t$ difundido en la red de Tendemrint tuvo que haberse generado
+%   con al menos un elemento generado por un cliente, puesto que $e$ es válido.
+%   De ahí se concluye que un cliente tiene que haber invocado $\<add>(e)$ en un servidor y que
+%   \<broadcastTx> se invocó como parte de la definición de \<AddElement> una vez que el lote estuvo listo,
+%   como se puede ver en la línea \ref{line:compresschain-broadcast} del
+%   algoritmo ~\ref{alg:collector-brotli}.
 
   % Si \<broadcastTx>($t$) fue invocado, entonces con certeza el lote de elementos comprimido $t$
   % fue construido por el \collector a partir de elementos añadidos al mismo.
@@ -283,7 +289,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   % NOTA: si el servidor no es correcto podría invocar \<broadcastTx>($t$) sin necesidad de
   % un cliente invocando add? No, porque contiene un elemento válido y los elementos válidos no pueden
   % ser generados por nodos bizantinos.
-\end{proof}
+  % \end{proof}
 
 \begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
   VER SI LA NECESITO
@@ -358,14 +364,38 @@ propiedades derivadas para cada implementación realizada de \setchain.
   correctos, con certeza $h$ obtendrá las \SPH firmas y, por lo tanto, consolidará.
 \end{proof}
 
-\section{Prueba de correctitud para \vanilla}\label{sec:proof-vanilla}
-
+\section{Pruebas de correctitud}
+\subsection{Consideraciones generales}\label{subsection:proof-comments}
 Muchas propiedades de \setchain razonan sobre el resultado $(S, H, h)$ de una invocación
 a $v.\<get>$ sobre un servidor $v$.
 %
-Siendo que en \vanilla \<get> se limita a retornar los valores actuales de $v.\THESET$, $v.\HISTORY$ y $v.\EPOCH$,
+Siendo que en todas las implementaciones \<get> retorna los valores actuales de $v.\THESET$, $v.\HISTORY$ y $v.\EPOCH$,
 en las demostraciones se razonará directamente sobre la construcción de ellos, omitiendo la invocación
 a \<get>.
+%
+Esto requiere un tratamiento especial para \hashchain, siendo que allí la definición de \<Query>~\ref{alg:hash_query}
+(asociada a \<get>) no solo se limita a retornar la terna mencionada sino que además inicia la construcción
+de $\HISTORY$ y difunde las pruebas de época.
+%
+Sin embargo, como fue mencionado en la sección \ref{subsec:hashchain-algorithms} ambos procesos podrían
+ser ejecutados periódicamente mediante planificación, independientemente de la petición de consultas.
+
+Por otro lado, como se presentó en el modelo de computación definido en la sección \ref{sec:model_system},
+un nodo bizantino no puede generar un elemento válido.
+%
+Es decir, los elementos válidos son solo creados por clientes (no por procesos bizantinos).
+%
+Además, suponemos que los elementos solo pueden ser añadidos mediante una llamada a \<add>.
+%
+Por lo tanto, la propiedad \emph{Add-before-get} \ref{api:get->add} de \setchain se cumple
+trivialmente para todas las soluciones presentadas en este trabajo.
+%
+Notemos que consideramos de la misma manera a los elementos de cliente como a los elementos
+de prueba de época. Es decir, incluso un elemento de prueba de época $e'$ fue añadido mediante una llamada
+a $w.\<add>(e')$ en algún servidor correcto $w$, donde el \textit{cliente} que invocó tal llamada fue el
+mismo proceso que corre la ABCI correspondiente al servidor $w$.
+
+\subsection{\vanilla}\label{subsec:proof-vanilla}
 
 \newcounter{lemma:vanilla}
 \setcounter{lemma:vanilla}{\value{lemma}}
@@ -391,11 +421,12 @@ a \<get>.
   Sea $e \in $ \(V\) y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
   Como $e \in $ \(V\), sabemos que $e$ es válido.
   Si $e$ no es nuevo, entonces $e \in v.\THESET$ y la demostración es trivial.
-  Si $e$ es nuevo, por la propiedad Tendermint-Vanilla-Delivery~\ref{tendermint:vanilla-delivery}
+  Si $e$ es nuevo, por la propiedad \emph{Tendermint-Vanilla-Delivery}~\ref{tendermint:vanilla-delivery}
   \ sabemos que
   eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$, en donde $t = e$.
   Como se puede observar
-  en la condición \texttt{if} de la línea~\ref{line:abci-vanilla-if} y en la definición de \texttt{isValidTransaction}
+  en la condición \texttt{if} de la línea~\ref{line:abci-vanilla-if} y en la definición de
+  \texttt{isValidTransaction}~\ref{alg:van_is_valid_tx}
   en el Algoritmo~\ref{alg:abci-vanilla},
   se analizan dos aspectos: que $e$ sea válido
   y que $e$ no forme parte de $v.\HISTORY$.
@@ -419,7 +450,7 @@ a \<get>.
   Sean $v$ y $w$ dos servidores correctos y $e \in $ \(U\), tal que  $e \in v.\THESET$.
   Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
-  petición \<DeliverTx>($t$), donde $t = e$.
+  petición \<DeliverTx>($t$), donde $t = e$, y $e$ es válido.
   Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
   \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery}
   \ todos los
@@ -456,7 +487,7 @@ a \<get>.
 \begin{proof}
   Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$, entonces por construcción de
   $\THESET$, necesariamente $v$ en algún momento recibió una
-  petición \<DeliverTx>($t$), donde $t = e$.
+  petición \<DeliverTx>($t$), donde $t = e$, y $e$ es válido.
   Como se puede ver en las líneas ~\ref{line:abci-vanilla-set} y ~\ref{line:abci-vanilla-history} en
   el Algoritmo~\ref{alg:abci-vanilla}, inmediatamente después de agregar un elemento a $v.\THESET$,
   el elemento se agrega a $v.\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será eventualmente
@@ -485,18 +516,18 @@ a \<get>.
   Por construcción, esto necesariamente debe haber pasado en la línea
   \ref{line:abci-vanilla-history} en el Algoritmo~\ref{alg:abci-vanilla},
   con lo cual se concluye que la condición del \texttt{if} de
-  la línea ~\ref{line:abci-vanilla-if} evaluó a \texttt{true} (*)
-  (ya que de otro modo, el elemento no hubiese sido añadido).
+  la línea ~\ref{line:abci-vanilla-if} evaluó a \texttt{true} ($\star$), ya que de otro modo
+  el elemento no hubiese sido añadido.
   %
 
-  Dado que ${i < i'}$, y las peticiones se hacen ordenadamente, al momento de la
+  Dado que ${i < i'}$ y las épocas se construyen ordenadamente, al momento de la
   petición \<DeliverTx> mencionada anteriormente, la época $i$ ya fue construida,
   y por lo tanto se tiene
   $e \in v.\HISTORY(i)$.
   Por este motivo, al procesar dicha petición \<DeliverTx>, la condición \texttt{if} de
   la línea ~\ref{line:abci-vanilla-if} evaluará a \texttt{false}, dado que 
   \texttt{not} $e$ \texttt{in} $v.\HISTORY$ es falso, puesto que $e \in v.\HISTORY(i)$ .
-  Esto lleva a una contradicción por (*).
+  Esto lleva a una contradicción por ($\star$).
   La contradicción proviene de suponer que $e \in v.\HISTORY(i')$.
   Por lo tanto, se concluye que $e \not\in v.\HISTORY(i')$. Luego se tiene
   $v.\HISTORY(i)\cap{}v.\HISTORY(i')=\emptyset$.
@@ -516,8 +547,8 @@ a \<get>.
   Lema ~\ref{proof:get-global}.
   Sea $e$ un elemento $\in v.\HISTORY(i)$. 
   Por construcción de $\HISTORY$, necesariamente $v$ en un momento determinado recibió una
-  petición \<DeliverTx>($t$), donde $t = e$, lo cual
-  produjo que $e$ fuera estampado con el número de época $i$.
+  petición \<DeliverTx>($t$), donde $t = e$, y $e$ es válido.
+  Esto produjo que $e$ fuera estampado con el número de época $i$.
   % Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
   % envía una vez que las transacciones fueron decididas y ordenadas.
   % Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos y, en particular $w$,
@@ -538,21 +569,18 @@ a \<get>.
 \end{lemma}
 
 \begin{proof}
-  Sea $v$ un servidor correcto y $e \in \THESET$. Por construcción de $\THESET$,
-  necesariamente $v$ en algún momento recibió una
-  petición $\<DeliverTx>(t)$, donde $t = e$, y $t$ es una transacción válida.
-  Luego, por la propiedad \textit{Tendermint-Vanilla-Deliver-Add}~\ref{tendermint:vanilla-deliver-add}
-  en el pasado existitó una operación
-  $w.\<add>(e)$ en algún servidor $w$.
+  Se cumple trivialmente por lo mencionado en \ref{subsection:proof-comments}.
 \end{proof}
+% \begin{proof}
+%   Sea $v$ un servidor correcto y $e \in \THESET$. Por construcción de $\THESET$,
+%   necesariamente $v$ en algún momento recibió una
+%   petición $\<DeliverTx>(t)$, donde $t = e$, y $t$ es una transacción válida.
+%   Luego, por la propiedad \textit{Tendermint-Vanilla-Deliver-Add}~\ref{tendermint:vanilla-deliver-add}
+%   en el pasado existitó una operación
+%   $w.\<add>(e)$ en algún servidor $w$.
+% \end{proof}
 
-Notemos que el Lema ~\ref{lemma:vanilla-add-before-get} considera de la misma manera a los elementos de cliente como a los elementos
-de prueba de época. Es decir, incluso un elemento de prueba de época $e'$ fue añadido mediante una llamada
-a $w.\<add>(e')$ en algún servidor correcto $w$, donde el \textit{cliente} que invocó tal llamada fue el mismo proceso
-que corre la ABCI correspondiente al servidor $w$.
-
-
-\section{Prueba de correctitud para \compresschain}\label{sec:proof-compresschain}
+\subsection{\compresschain}\label{sec:proof-compresschain}
 
 \begin{lemma}
   La implementación \compresschain cumple la propiedad \textit{Consistent Sets}~\ref{api:consistent-set} de \setchain.
@@ -698,15 +726,19 @@ que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sea $v$ un servidor correcto y $e \in \THESET$. Por construcción de $\THESET$,
-  necesariamente $e$ es un elemento válido, y $v$ en algún momento recibió una
-  petición \<DeliverTx>$(t)$, donde $t$ es un lote comprimido de elementos, y uno de esos
-  elementos es $e$.
-  Luego, por la propiedad \textit{Tendermint-Compresschain-Deliver-Add} en el pasado existitó una operación
-  $w.\<add>(e)$ en algún servidor $w$.
+  Se cumple trivialmente por lo mencionado en \ref{subsection:proof-comments}.
 \end{proof}
 
-\section{Prueba de correctitud para \hashchain}\label{sec:proof-hashchain}
+% \begin{proof}
+%   Sea $v$ un servidor correcto y $e \in \THESET$. Por construcción de $\THESET$,
+%   necesariamente $e$ es un elemento válido, y $v$ en algún momento recibió una
+%   petición \<DeliverTx>$(t)$, donde $t$ es un lote comprimido de elementos, y uno de esos
+%   elementos es $e$.
+%   Luego, por la propiedad \textit{Tendermint-Compresschain-Deliver-Add} en el pasado existitó una operación
+%   $w.\<add>(e)$ en algún servidor $w$.
+% \end{proof}
+
+\subsection{\hashchain}\label{sec:proof-hashchain}
 
 \begin{lemma}
   La implementación \hashchain cumple la propiedad \textit{Consistent Sets}~\ref{api:consistent-set} de \setchain.
@@ -854,10 +886,14 @@ que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sea $v$ un servidor correcto y $e \in \THESET$.
-  ...
-  ¿un servidor maligno no podría invocat Tendermint.Broadcast(h,s)?
+  Se cumple trivialmente por lo mencionado en \ref{subsection:proof-comments}.
 \end{proof}
+
+% \begin{proof}
+%   Sea $v$ un servidor correcto y $e \in \THESET$.
+%   ...
+%   ¿un servidor maligno no podría invocat Tendermint.Broadcast(h,s)?
+% \end{proof}
 
 % \subsection{Otras cosas}
 % \begin{property}[Safety]\label{tendermint:safety}

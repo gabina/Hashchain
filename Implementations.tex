@@ -1085,7 +1085,7 @@ consigan las \SPH firmas dentro del período de gracia.
 % Do not use this because we want a proof that specific elements belong to a specific epoch.
 %Client processes do not know if they are contacting a Byzantine or correct process. The general idea of a client protocol that wants to ensure that an element is going to be added to the \setchain is to interact with enough servers to guarantee that some are correct. To guarantee contacting at least one correct server, the client needs to send f + 1 messages. However, each element added to the \setchain comes from a consolidated hash. That means that we already have \textbf{SIGNATURES\_PER\_HASH} validator's signatures for that hash. Those signatures may act as a proof for the batch of elements that really belongs to the \setchain. If that proof is added to the epoch as an extra element, a client sending an element, waiting for a while, and then requesting a Get to only one server (hoping it is correct server) may be sure that its element belongs to the \setchain because the epoch comes along a proof of their elements. 
 
-\subsection{Algoritmos}\label{subsubsec:details}
+\subsection{Algoritmos}\label{subsec:hashchain-algorithms}
 
 Al igual que se hizo para \vanilla y \compresschain, en esta subsección se presentan los pseudocódigos
 para los distintos algoritmos. 

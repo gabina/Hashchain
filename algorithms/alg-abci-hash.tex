@@ -39,7 +39,7 @@
                 \State \textbf{return}
             \EndFunction
             
-            \Function{\<Query>}{\null}
+            \Function{\<Query>}{\null}\label{alg:hash_query}
             		\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history})
             		\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
             			\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}
