@@ -19,16 +19,16 @@ con 12 núcleos y 64GB de RAM.
 Todas las implementaciones fueron escritas en Golang y residen en un único ejecutable, el cual se encarga
 de inicializar los siguiente servicios.
 \begin{itemize}
-	\item Un nodo de Tendermint adjunto a una versión específica de la aplicación (la cual impelementa los métodos
+	\item Un nodo de Tendermint adjunto a una versión específica de la aplicación (la cual implementa los métodos
 	de la ABCI). Las versiones disponibles de la aplicación son: \vanilla, \compresschain, y \hashchain.
 	La versión de \hashchain utilizada implementa la estrategia de consolidación de época actual.
 	Todas estas versiones de la 
 	aplicación necesitan de una base de datos persistente para alojar la \setchain en sí.
-	\item Para \compresschain y \hashchain, un servidor \collector RPC. Este servidor se encarga de recibir transacciones,
+	\item Para \compresschain y \hashchain, un servidor \collector RPC. Este servidor se encarga de recibir elementos,
 	armar los lotes adecuados (siguiendo la lógica correspondiente), y difundirlos mediante comunicación con el nodo
 	de Tendermint. Por su parte, el \hcollector también requiere una base de datos persistente para guardar el mapeo de
 	hashes a lotes de elementos.
-	\item Un cliente, el cual se encarga de leer e interpretar transacciones, y enviarlas (comunicándose con el nodo de
+	\item Un cliente, el cual se encarga de leer e interpretar elementos, y enviarlos (comunicándose con el nodo de
 	Tendermint en la versión \vanilla, o con el \collector correspondiente en los otros casos). Cada cliente se comunica
 	con un único nodo servidor.
 \end{itemize}
@@ -38,11 +38,11 @@ Para las funciones criptográficas se utilizó el paquete \textit{crypto} de \te
 del protocolo de Ethereum en Golang). 
 
 %
-Cada instancia fue empaquetada en un contenedor Docker con uso limitado a 6 núcleos y 32GB de RAM.
+Cada instancia fue empaquetada en un contenedor Docker~\cite{docker} con uso limitado a 6 núcleos y 32GB de RAM.
 %
 La cantidad de nodos utilizados varió según cada experimento.
 %
-Fue utilizada la herramienta Docker-Compose para iniciar y correr los contenedores necesarios,
+Fue utilizada la herramienta Docker-Compose~\cite{docker-compose} para iniciar y correr los contenedores necesarios,
 y proveer una red entre ellos de manera sencilla.
 
 
@@ -67,7 +67,7 @@ Los experimentos funcionan en rondas.
 %
 Cada experimento ejecuta 5 rondas, de 120 segundos cada una.
 %
-Los clientes envían elementos cada \textit{N} segundos (determinado en función del valor
+Los clientes envían elementos cada \textit{S} segundos (determinado en función del valor
 de \texttt{sleep\_time}).
 %
 Luego de cada ronda, cada cliente envía una petición \<get> para registrar cuántas épocas y cuántos
@@ -90,7 +90,7 @@ Así, los parámetros que se modifican en los experimentos son los siguientes:
 \begin{itemize}
 	\item \texttt{n\_nodes}: cantidad de nodos corriendo
 	\item \texttt{sleep\_time}: cantidad de tiempo que espera el cliente antes de añadir un nuevo elemento
-	\item \texttt{collector\_size}: cantidad de transacciones que el correspondiente \collector aloja antes de generar
+	\item \texttt{collector\_size}: cantidad de elementos que el correspondiente \collector aloja antes de generar
 	un lote (no válido para \vanilla).
 \end{itemize}
 La idea es ajustar los valores de los parámetros \texttt{sleep\_time} y \texttt{collector\_size},
@@ -111,7 +111,7 @@ como los costos en comparación a la red principal.
 Arbitrum fue fundada en 2021 y es al momento una de las tecnologías de capa 2 más populares en el mercado.}.
 %
 
-La elección de las transacciones fue tomada priorizando que los experimentos sean fieles a un contexto
+La elección de los elementos fue tomada priorizando que los experimentos sean fieles a un contexto
 real, respetando el contenido de las transacciones.
 %
 Fueron descargadas utilizando las API de Alchemy y de Chainstack\footnote{Disponibles en \url{https://www.alchemy.com/} y \url{https://chainstack.com/},
@@ -120,7 +120,7 @@ cuales permiten conectarse directamente a un nodo específico de Arbitrum que es
 de modo de interactuar con los datos en la cadena y hacer las peticiones necesrias para descargar las transacciones.
 
 %
-Al analizar el conjunto de transacciones descargadas (alrededor de X transacciones) se encontró que el tamaño de
+Al analizar el conjunto de transacciones descargadas (alrededor de 3 millones de transacciones) se encontró que el tamaño de
 estas presentaba algunos valores extremos hacia la derecha.
 Es decir, mientras que la mediana rondaba los 350 bytes, y la desviación estándar los 600 bytes, los valores mínimos y máximos eran de
 110 bytes y  50 mil bytes, respectivamente.
@@ -139,7 +139,7 @@ durante los experimentos (solo transacciones de hasta 1KB de tamaño), se obtuvi
 
 A continuación se presentan los resultados obtenidos al ejecutar los experimentos para las tres alternativas,
 con redes de 4, 10 y 20 nodos. A su vez, los tamaños de \collector utilizados fueron de
-800, 5000 y 10000 transacciones.
+800, 5000 y 10000 elementos.
 
 \subsection{Comentarios generales}
 
@@ -160,7 +160,7 @@ añadidos a la \setchain, generando también un degradamiento en la cantidad de 
 Es por esto que los resultados estables son aquellos que no llegan a saturar la mempool en ningún momento del
 experimento. Con \textit{resultado estable} nos referimos a que la cantidad de elementos enviados por parte de
 los clientes así como también la cantidad de elementos añadidos a la \setchain se mantiente similar en cada
-una de las rondas. 
+una de las rondas y en cada uno de los nodos.
 
 \subsection{\vanilla}
 Los experimentos para \vanilla fueron los más sencillos de llevar a cabo debido a que, variando la cantidad de nodos,
@@ -175,7 +175,7 @@ rechazados, lo que genera una degradación en el ratio de elementos enviados por
 
 A su vez, es interesante notar que la cantidad de elementos enviados en cada caso no es proporcional a la variación del valor del
 parámetro \texttt{sleep\_time}.
-Esto se explica considerando el hecho de que la invocación de \<add> tarda un tiempo no despreciable en comparación con
+Esto se explica considerando el hecho de que la invocación a \<add> tarda un tiempo no despreciable en comparación con
 los valores de \texttt{sleep\_time}.
 
 \begin{figure}
@@ -187,14 +187,7 @@ los valores de \texttt{sleep\_time}.
 
 En la Figura~\ref{fig:vanilla_results} se muestra una comparación de la máxima cantidad de elementos añadidos en \vanilla para experimentos con
 4, 10 y 20 nodos.
-
-\begin{figure}
-	\centering
-	\includegraphics[scale=0.5]{figures/vanilla_añadidos.pdf}
-	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
-	\label{fig:vanilla_results}
-\end{figure}
-
+%
 Se nota una clara degradación en la cantidad de elementos añadidos al aumentar la cantidad de nodos corriendo en el experimento.
 Esta baja es esperable, sin embargo, es importante notar el siguiente punto.
 Mientras más entidades (clientes y servidores) participen del consenso dentro de la red de Tendermint el experimento se hace más exigente en cuanto a recursos
@@ -203,6 +196,13 @@ Dado que el límite de recursos destinados a Docker se mantiene constante durant
 se genera una degradación en la cantidad de elementos que los clientes pueden enviar por segundo.
 Naturalmente, y como ya se mencionó antes, al disminuir el ratio de elementos enviados por segundo, invariablemente también lo hace el ratio de
 elementos añadidos por segundo.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{figures/vanilla_añadidos.pdf}
+	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
+	\label{fig:vanilla_results}
+\end{figure}
 
 \subsection{\compresschain}
 
@@ -218,13 +218,13 @@ En los experimentos para \compresschain se utilizaron los tres parámetros ya me
 La cantidad de nodos varió, al igual que para \vanilla, en 4, 10 y 20 nodos.
 Para ajustar el parámetro \texttt{sleep\_time} se utilizó el mismo criterio que para \vanilla, pero se obtuvieron valores 
 menores para los cuales los experimentos resultaron estables y sin saturación de la mempool.
-Por otro lado, para el \collector se utilizaron tamaños de 800 y 5000 transacciones.
-No fue posible utilizar un tamaño de 10000 transacciones puesto que el lote comprimido era más grande
-que lo que la configuracion usada de Tendermint permitía. 
+Por otro lado, para el \collector se utilizaron tamaños de 800 y 5000 elementos.
+No fue posible utilizar un tamaño de 10000 elementos puesto que el lote comprimido de 10000 elementos era más grande
+que lo que la configuracion usada de Tendermint permitía para una transacción. 
 
 Una observación que se hizo al realizar estos experimentos es que, para los mismos valores de \texttt{sleep\_time},
 el cliente es capaz de enviar más elementos en \compresschain que en \vanilla.
-Esto se atribuye principalmente a dos motivos.
+Esto se atribuye principalmente a dos motivos que se presentan a continuación.
 
 Por un lado, la mempool no se satura tan fácilmente. Esto evita, por ejemplo, que el cliente espere un determinado tiempo
 extra (más allá del \texttt{sleep\_time}) para volver a intentar el envío de un elemento cuando recibe un mensaje de error por mempool llena,
@@ -242,7 +242,7 @@ sean menores en \vanilla que en \compresschain.
 
 En cuanto al tamaño del \collector, los resultados arrojados por los experimentos de 4 nodos no mostraron diferencias significativas
 al usar uno o el otro.
-Sin embargo, en experimentos con 10 o 20 nodos, el uso de un \collector de mayor tamaño implica una mayor diferencia en la cantidad
+Sin embargo, en experimentos con 10 o 20 nodos, el uso de un \collector de mayor tamaño implica un mayor rango en la cantidad
 de elementos añadidos a la \setchain por los distintos nodos.
 Esto es esperable dado que, cuanta más cantidad de elementos contenga un lote, mayor será la diferencia de elementos totales añadidos
 entre un nodo que ya agregó un determinado lote y un nodo que aún no lo hizo.
@@ -253,8 +253,8 @@ En la Figura~\ref{fig:compresschain_results} se muestra una comparación de la m
 
 \subsection{\hashchain}
 
-En el caso de \hashchain, los experimentos fueron ejecutados variando el tamaño del \collector en 800, 5000 y 10000 transacciones.
-Al igual que en \compresschain, al aumentar la cantidad de transacciones que conforman un lote, aumenta la diferencia en la cantidad
+En el caso de \hashchain, los experimentos fueron ejecutados variando el tamaño del \collector en 800, 5000 y 10000 elementos.
+Al igual que en \compresschain, al aumentar la cantidad de elementos que conforman un lote, aumenta el rango en la cantidad
 de elementos añadidos por los distintos nodos, lo que se hace aún más notable en experimentos con 10 y 20 nodos en la red.
 
 \begin{figure}
