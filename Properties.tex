@@ -622,13 +622,14 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sean $v$ y $w$ dos servidores correctos y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
   Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
-  Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
+  Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $e$ es válido y
+  $v$ en algún momento recibió una
   petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos elementos
   es $e$.
   Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
-  \textbf{Tendermint-Global-DeliverTx}
+  \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery}
   todos los
   servidores correctos, y en particular $w$, reciben dicha petición \<DeliverTx>($t$).
   Dado que $e$ es válido por hipótesis, se tienen dos opciones: o bien $e$ es parte de $w.\HISTORY$,
@@ -647,13 +648,13 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 
 \begin{proof}
   Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$, entonces por construcción de
-  $\THESET$, necesariamente $v$ en algún momento recibió una
+  $\THESET$, necesariamente $e$ es válido y $v$ en algún momento recibió una
   petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos elementos
   es $e$.
   Como se puede ver en la definición de \<DeliverTx> y en las líneas \ref{line:abci-compresschain-the-set}
   y \ref{line:abci-compresschain-history} de \texttt{newEpoch} en
   el Algoritmo~\ref{alg:abci-brotli}, inmediatamente después de agregar un elemento a $\THESET$,
-  el elemento se agrega a $\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será eventualmente
+  el elemento se agrega a $\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será
   agregado a $v.\HISTORY$ y, por lo tanto, estampado con un número de época.
 \end{proof}
 
@@ -680,17 +681,17 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Por construcción, esto necesariamente debe haber pasado en la línea
   \ref{line:abci-compresschain-history} en el Algoritmo~\ref{alg:abci-brotli},
   con lo cual se concluye que la condición del \texttt{if} de
-  la línea ~\ref{line:abci-compresschain-if} evaluó a \texttt{true} (*)
-  (ya que de otro modo, el elemento no hubiese sido añadido).
+  la línea ~\ref{line:abci-compresschain-if} evaluó a \texttt{true} ($\star$),
+  ya que de otro modo el elemento no hubiese sido añadido.
   %
 
-  Dado que ${i < i'}$, y las peticiones se hacen ordenadamente, al momento de la
+  Dado que ${i < i'}$ y las épocas se construyen ordenadamente, al momento de la
   petición \<DeliverTx>$(t)$, la época $i$ ya fue construida, y por lo tanto se tiene
   $e \in \HISTORY(i)$.
   Por este motivo, al procesar la petición \<DeliverTx>$(t)$, la condición \texttt{if} de
   la línea ~\ref{line:abci-compresschain-if} evaluará a \texttt{false}, dado que 
   \texttt{not} $e$ \texttt{in} $\HISTORY$ es falso, puesto que $e \in \HISTORY(i)$.
-  Esto lleva a una contradicción por (*).
+  Esto lleva a una contradicción por ($\star$).
   La contradicción proviene de suponer que $e \in \HISTORY(i')$.
   Por lo tanto, se concluye que $e \not\in \HISTORY(i')$. Esto vale para cualquier elemento $e$.
   Luego se tiene $\HISTORY(i)\cap{}\HISTORY(i')=\emptyset$.
@@ -704,10 +705,9 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
   Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
-  Se seguirá un razonamiento similar al presentado en la demostración del
-  \textbf{Lema ~\ref{proof:get-global}}.
+  Se seguirá un razonamiento similar al presentado en la demostración del Lema ~\ref{proof:get-global}.
   Sea $e$ un elemento $\in v.\HISTORY(i)$. 
-  Por construcción de $\HISTORY$, necesariamente $v$ en un momento determinado recibió una
+  Por construcción de $\HISTORY$, necesariamente $e$ es válido y $v$ en un momento determinado recibió una
   petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos
   elementos es $e$. Como consecuencia de esta petición,
   $e$ fue estampado con el número de época $i$.
@@ -715,10 +715,12 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   % envía una vez que las transacciones fueron decididas y ordenadas.
   % Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos y, en particular $w$,
   % deciden la misma transacción asociada al elemento $e$ (en el mismo orden que $v$).
-  Por la propiedad \textbf{Tendermint-Global-DeliverTx} podemos asegurar que todos los servidores correctos,
+  Por la propiedad \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery} podemos asegurar que todos los servidores correctos,
   y en particular $w$, reciben la petición \<DeliverTx>($t$) en el mismo orden en que lo hace $v$, es decir,
   durante la construcción de la época $i$, añadiendo a $e$ a $w.\HISTORY(i)$, como se muestra en la línea
   \ref{line:abci-compresschain-history} en el Algoritmo~\ref{alg:abci-brotli}.
+  El mismo razonamiento se puede hacer para un elemento $e \in w.\HISTORY(i)$.
+  Luego, $v.\HISTORY(i)=w.\HISTORY(i)$.
 \end{proof}
 
 \begin{lemma}
@@ -812,7 +814,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sean $v$ y $w$ dos servidores correctos y $e$ un elemento válido, tal que  $e \in v.\THESET$.
+  Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
   Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
   ejecutó \<reverse>, revirtió $h$ correctamente y, como consecuencia,
