@@ -1,4 +1,4 @@
-\section{Resumen y conclusión final}\label{sec:conclusion}
+%\section{Resumen y conclusión final}\label{sec:conclusion}
 %
 Las tecnologías blockchain están atravesando un problema de escalabilidad.
 %
@@ -17,8 +17,9 @@ recursos que si se actuara directamente sobre ella.
 %
 Un ejemplo de lo segundo es \setchain.
 
-\setchain presenta un algoritmo de consenso más rápido, basado en
-\textit{set-consensus}\cite{redbelly},
+\setchain presenta un algoritmo de consenso más rápido
+%basado en
+%\textit{set-consensus}\cite{redbelly},
 que abandona el clásico orden total de las transacciones en las blockchains.
 %
 El orden parcial de \setchain establece que no es posible comparar los elementos
@@ -47,10 +48,10 @@ de mundo real de una estructura basada en blockchain, presentando una separació
 entre las primitivas de la blockchain y la interfaz definida por el usuario.
 
 
-Se presentaron tres alternativas posibles para la implementación
+Como contribuciones originales de este trabajo se presentaron tres alternativas posibles para la implementación
 de \setchain construidas sobre Tendermint. Dado que los algoritmos de \setchain
-presentados en \cite{Capretto.2022.Setchain} emplean un algoritmo de
-\textit{set-consensus}, 
+presentados en \cite{Capretto.2022.Setchain} emplean bloques primitivos como
+\emph{Set Byzantine Consensus}
 no es posible replicar los mismos comportamientos.
 Sin embargo, tomamos un enfoque ligeramente diferente,
 intentando obtener tanto como se pueda de lo que Tendermint es capaz de ofrecer.
@@ -65,24 +66,23 @@ un conjunto de solo crecimiento.
 %
 La segunda solución (ver Sección~\ref{sec:compresschain}) mejora la alternativa anterior
 usando un algoritmo de compresión: las transacciones de Tendermint ahora son conjuntos
-de elementos (comprimidos).
+comprimidos de elementos.
 
 %
 Finalmente, la tercera solución (ver Sección~\ref{sec:hashchain}) va más allá de la
 segunda alternativa y usa funciones hash para reducir la sobrecarga en la red.
-Aunque reduzca el tráfico (haciendo consenso sobre transacciones pequeñas
-y de tamaño fijo), el uso de funciones hash requiere una forma de
-invertirlos para así obtener los elementos originales.
+Aunque reduzca el tráfico haciendo consenso sobre transacciones pequeñas
+y de tamaño fijo (es decir, sobre hashes), el uso de los mismos requiere de una forma de
+invertirlos para así obtener los elementos originales enviados por los clientes.
 Para resovler esto, se diseñó
 un algoritmo distribuido, tolerante a fallas bizantinas, que trabaja como un objeto
 distribuido de resolución de hashes.
-Estos dos aspectos funcionando juntos conforman una implementación de \setchain
-de mundo real.
+De este modo se conforma una implementación de \setchain de mundo real.
 
 %
-\hashchain es la solución más cercana a \setchain sin usar un algoritmo de set-consensus.
-Dado que los nodos no conocen los elementos dentro de un hash \emph{a priori}, el
-consenso consiste en elegir cuál época irá próxima.
+% \hashchain es la solución más cercana a \setchain sin usar un algoritmo de set-consensus.
+% Dado que los nodos no conocen los elementos dentro de un hash \emph{a priori}, el
+% consenso consiste en elegir cuál época irá próxima.
 %
 
 % No entiendo a qué va esta idea:
