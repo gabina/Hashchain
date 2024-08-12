@@ -2,7 +2,7 @@
 En este capítulo se exponen las pruebas de correctitud de los algoritmos presentados para
 \vanilla, \compresschain, y \hashchain en el capítulo~\ref{chapter:sol}.
 Es decir, se prueba que dichos algoritmos satisfacen las propiedades deseadas para una
-implementación de \setchain introducidas en~\ref{subsubsec:setchain-properties}.
+implementación de \setchain introducidas en~\ref{sec:setchain-properties}.
 
 \section{Propiedades de Tendermint}\label{sec:properties}
 Dado que todas las soluciones presentadas en este trabajo son construidas sobre Tendermint,
@@ -63,7 +63,8 @@ como máquina de replicación de estados.
 \begin{proof}
   Si un servidor correcto $v$ recibe una petición $\<DeliverTx>(t)$ entonces, por definición
   de \<DeliverTx>, $t$ fue decidida como una transacción parte de un bloque.
-  Por las propiedades \textbf{Tendermint-Agreement} y \textbf{Tendermint-Termination},
+  Por las propiedades \emph{Tendermint-Agreement}~\ref{tendermint:agreement} y
+  \emph{Tendermint-Termination}~\ref{tendermint:termination},
   podemos asegurar que todos los servidores correctos deciden a $t$ como
   parte del mismo bloque y, por lo tanto, todos recibirán la petición \<DeliverTx>($t$),
   incluso 
@@ -122,7 +123,7 @@ De aquí se desprenden las siguientes propiedades.
 Con el objetivo de hacer las demostraciones más sencillas, se definen y demuestran las siguientes
 propiedades derivadas para cada implementación realizada de \setchain.
 
-\begin{property}[Tendermint-Vanilla-Delivery]\label{tendermint:vanilla-delivery}
+\begin{property}[Vanilla-Delivery]\label{tendermint:vanilla-delivery}
   Sea $e$ un elemento válido y nuevo, y $v$ un servidor correcto.
   Luego de cada invocación
   $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
@@ -216,7 +217,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
 %   ya fueron decididas y ordenadas al momento de hacerse).
 % \end{proof}
 
-\begin{property}[Tendermint-Compresschain-Delivery]\label{tendermint:compresschain-delivery}
+\begin{property}[Compresschain-Delivery]\label{tendermint:compresschain-delivery}
   Sea $e$ un elemento válido y nuevo, y $v$ un servidor correcto. Luego de cada invocación
   $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
   una petición $v.\<DeliverTx>(t)$, en donde
@@ -291,7 +292,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   % ser generados por nodos bizantinos.
   % \end{proof}
 
-\begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
+\begin{property}[Haschain-Delivery]\label{tendermint:hashchain-delivery}
   % Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
   % $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
   % una petición $v.\<DeliverTx>(t)$, en donde.
@@ -332,7 +333,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
 \end{proof}
 
-\begin{property}[Tendermint-Haschain-Eventual-Consolidation]\label{tendermint:hashchain-eventual-consolidation}
+\begin{property}[Haschain-Eventual-Consolidation]\label{tendermint:hashchain-eventual-consolidation}
   Sean $v$ y $w$ dos servidores. Sea $t$ una tupla $(h, s)$ donde
   \begin{itemize}
     \item $h$ es un lote hasheado de elementos con al menos un elemento válido y nuevo,
@@ -347,7 +348,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
 
 \begin{proof}
   % Sea $e$ un elemento válido y $v$ un servidor correcto.
-  % Si un cliente invoca $v.\<add>(e)$, sabemos por la propiedad \textit{Tendermint-Haschain-Delivery} que,
+  % Si un cliente invoca $v.\<add>(e)$, sabemos por la propiedad \textit{Haschain-Delivery} que,
   % eventualmente $v$ recibirá la petición $\<DeliverTx>(t)$, en donde
   % $t$ es una tupla $(h, s)$, siendo
   % \begin{itemize}
@@ -380,7 +381,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   firmará $h$ con su propia clave privada y lo difundirá como
   una nueva transacción invocando \<broadcastTx>($t'$), donde $t' = (h, s')$, siendo $s'$ la firma
   generada con la clave privada de $w$.
-  Por la propiedad \emph{Tendermint-Haschain-Delivery}~\ref{tendermint:hashchain-delivery},
+  Por la propiedad \emph{Haschain-Delivery}~\ref{tendermint:hashchain-delivery},
   eventualmente llegará una nueva petición $\<DeliverTx>(t')$.
   Luego, por la propiedad \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery},
   todos los servidores correctos
@@ -450,7 +451,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Sea $e \in $ \(V\) y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
   Como $e \in $ \(V\), sabemos que $e$ es válido.
   Si $e$ no es nuevo, entonces $e \in v.\THESET$ y la demostración es trivial.
-  Si $e$ es nuevo, por la propiedad \emph{Tendermint-Vanilla-Delivery}~\ref{tendermint:vanilla-delivery}
+  Si $e$ es nuevo, por la propiedad \emph{Vanilla-Delivery}~\ref{tendermint:vanilla-delivery}
   \ sabemos que
   eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$, en donde $t = e$.
   Como se puede observar
@@ -632,7 +633,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Sea $e \in $ \(V\) y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
   Como $e \in $ \(V\), sabemos que $e$ es válido.
   Si $e$ no es nuevo, entonces $e \in v.\THESET$ y la demostración es trivial.
-  Si $e$ es nuevo, por la propiedad \textit{Tendermint-Compresschain-Delivery}~\ref{tendermint:compresschain-delivery} sabemos que
+  Si $e$ es nuevo, por la propiedad \textit{Compresschain-Delivery}~\ref{tendermint:compresschain-delivery} sabemos que
   eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$, donde $t$ es un lote de elementos comprimidos
   y uno de esos elementos es $e$.
   Como se puede observar
@@ -644,7 +645,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   $v$.\<get>.
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}\label{proof:compresschain-get-global}
   La implementación \compresschain cumple la propiedad \textit{Get-Global}~\ref{api:history->theset} de \setchain.
   %que establece que los elementos presentes en un servidor correcto
   %son propagados a todos los servidores correctos.
@@ -734,7 +735,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
   Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
-  Se seguirá un razonamiento similar al presentado en la demostración del Lema ~\ref{proof:get-global}.
+  Se seguirá un razonamiento similar al presentado en la demostración del Lema ~\ref{proof:compresschain-get-global}.
   Sea $e$ un elemento $\in v.\HISTORY(i)$. 
   Por construcción de $\HISTORY$, necesariamente $e$ es válido y $v$ en un momento determinado recibió una
   petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos
@@ -850,7 +851,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
   ejecutó \<reverse>~\ref{alg:hash_revert}, revirtió $h$ correctamente y, como consecuencia,
-  añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}).
+  añadió a $e$ a $\THESET$ (ver línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}).
 
   La función \<reverse> puede ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
   de una petición \<DeliverTx>.
@@ -888,9 +889,9 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 
   Por lo tanto, podemos concluir que eventualmente $v$ recibirá una petición \<DeliverTx>($t$).
   Luego, considerando que el servidor que generó la firma $s$ estuvo dispuesto a revertir $h$ a $v$,
-  por la propiedad \emph{Tendermint-Haschain-Eventual-Consolidation}\ref{tendermint:hashchain-eventual-consolidation}
+  por la propiedad \emph{Haschain-Eventual-Consolidation}\ref{tendermint:hashchain-eventual-consolidation}
   podemos concluir que el hash $h$ consolidará y, finalmente, $v$ añadirá a $e$ a $\HISTORY$ 
-  como se muestra en la línea \ref{line:abci-hashchain-history}.
+  como se muestra en la línea \ref{line:abci-hashchain-history} en el Algoritmo~\ref{alg:abci-hash1}.
 \end{proof}
 
 \begin{lemma}
@@ -904,7 +905,8 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 
   Esto es trivialmente correcto debido a que un elemento $e$ se agrega a \HISTORY[j]
   únicamente si no pertenece a $\HISTORY[j']$ con $j' \in \{0, 1, ..., j -1\}$, como se puede
-  ver en la cláusula \texttt{if} de la línea \ref{line:abci-hashchain-history-if}.
+  ver en la cláusula \texttt{if} de la línea \ref{line:abci-hashchain-history-if}
+  en el Algoritmo \ref{alg:abci-hash1}.
   %
 \end{proof}
 
@@ -921,11 +923,13 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Por construcción de $\HISTORY$, necesariamente $e$ es válido y pertenece al lote asociado a un hash $h$ que
   ya consolidó.
   Notemos que para añadir un nuevo elemento a $\HISTORY$, el hash en cuestión debe tener una época asignada
-  (a través de la variable \texttt{epoch\_to\_hash}) como se muestra en la línea \ref{alg:hash-epoch-to-hash-use}.
+  (a través de la variable \texttt{epoch\_to\_hash}) como se muestra en la línea \ref{alg:hash-epoch-to-hash-use}
+  en el Algoritmo~\ref{alg:abci-hash1}.
   Solo se asignan épocas a hashes cuando estos consolidan como se ve en la línea \ref{alg:hash-epoch-to-hash}.
 
-  De la definición de \<shouldConsolidateHash>\ref{alg:hash_consolidated} y del hecho de que las firmas se agregan
-  a \texttt{hash\_to\_signatures} solo en la línea \ref{alg:hash-new-sign}, se concluye que
+  De la definición de \<shouldConsolidateHash>\ref{alg:hash_consolidated} presentada
+  en el Algoritmo~\ref{alg:abci-hash2} y del hecho de que las firmas se agregan
+  a \texttt{hash\_to\_signatures} solo en la línea \ref{alg:hash-new-sign} de \<DeliverTx>, se concluye que
   tienen que haber llegado al menos \SPH peticiones \<DeliverTx> para el hash $h$ con firmas de distintos servidores.
   % $v$ en un momento determinado recibió una
   % petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos
@@ -955,6 +959,10 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Se cumple trivialmente por lo mencionado en \ref{subsection:proof-comments}.
 \end{proof}
 
+\section{Conclusión}
+Habiendo demostrado que \vanilla, \compresschain y \hashchain cumplen todas las propiedaes
+de \setchain presentadas en la sección \ref{sec:setchain-properties}, queda formalmente probado
+que las tres soluciones propuestas en este trabajo son implementaciones correctas de \setchain.
 % \begin{proof}
 %   Sea $v$ un servidor correcto y $e \in \THESET$.
 %   ...

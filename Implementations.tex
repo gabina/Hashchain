@@ -433,12 +433,12 @@ podría ser una visión parcial.
 Es por esto que se retorna $\HISTORY $ up to $\EPOCH$ y no directamente el valor de la variable
 $\HISTORY $.
 De otro modo, podría no cumplirse la propiedad \textit{Consistent Gets}
-presentada en la sección ~\ref{subsubsec:setchain-properties}.
+presentada en la sección ~\ref{sec:setchain-properties}.
 La variable $\EPOCH$ retornada indica el máximo número de época que fue agregado de
 manera completa en $\HISTORY $.
 %Es por esto que no sería correcto que $\HISTORY $ incluya elementos
 %pertenecientes a la época actual, puesto que podría no cumplir la propiedad \textit{Consistent Gets}
-%presentada en~\ref{subsubsec:setchain-properties}.
+%presentada en~\ref{sec:setchain-properties}.
 
 %$\HISTORY = history up to epoch - 1$, y $\EPOCH = epoch$
 %[COMPLETAR. EXPLICITAR QUÉ PINTA TIENE ESTO.]
@@ -586,7 +586,7 @@ Después del registro, los métodos exportados del objeto (en este caso, únicam
 En \compresschain, en lugar de agregar directamente elementos enviados por los usuarios a la red de Tendermint,
 primero se recolectan y se comprimen para ser enviados como una única transacción.
 Siguiendo la práctica actual de Ethereum, se utiliza el algoritmo
-\textit{Recursive Length Prefix} (RLP)~\cite{ethereum} para codificar los elementos individualmente
+\textit{Recursive Length Prefix} (RLP)~\cite{wood2014ethereum} para codificar los elementos individualmente
 y el algoritmo de compresión Brotli~\cite{brotli.compressor} para comprimir el lote\footnote{Otros
 algoritmos de codificación y de compresión podrían utilizarse de ser necesario.}.
 
