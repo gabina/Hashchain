@@ -27,12 +27,12 @@
       
             \Function{\<DeliverTx>}{$hash, signature$}\label{alg:hash_deliver_tx}
             		\If {\<isValidSignature>($hash, signature$)}
-            			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}
+            			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}\label{alg:hash-new-sign}
 						\If {not \texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
-							\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}
+							\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}\label{alg:spawn-reverse}
 						\EndIf
             			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
-            				\State \texttt{epoch\_to\_hash[next\_epoch]} $\leftarrow$ $hash$
+            				\State \texttt{epoch\_to\_hash[next\_epoch]} $\leftarrow$ $hash$\label{alg:hash-epoch-to-hash}
             				\State \texttt{next\_epoch} $\leftarrow$ \texttt{next\_epoch} + 1
                	 	\EndIf
                	 \EndIf
@@ -42,9 +42,9 @@
             \Function{\<Query>}{\null}\label{alg:hash_query}
             		\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history})
             		\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
-            			\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}
+            			\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}\label{alg:hash-epoch-to-hash-use}
              		\If {\texttt{hash\_to\_batch}[\texttt{hash}] \textbf{exists}}
-                			\State elements $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hash\_to\_batch}[\texttt{hash}]}
+                			\State \texttt{elements} $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hash\_to\_batch}[\texttt{hash}]}
             				\For{\texttt{e in elements}}
 								\Comment{Agregar solo elementos nuevos y válidos.}
              					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}} \label{line:abci-hashchain-history-if}
@@ -88,8 +88,8 @@
 									\State \texttt{the\_set} \(<- \, \texttt{the\_set} \cup \{\texttt{e}\}\) \label{line:abci-hashchain-the-set}
 								\EndIf
 							\EndFor
-                			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})
-                			\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})
+                			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})\label{alg:hash-sign-hash}
+                			\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})\label{alg:hash-broadcast-hash}
 						%\EndIf   
 				\EndIf             	
                 	\State \textbf{return}

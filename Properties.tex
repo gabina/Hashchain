@@ -114,7 +114,7 @@ De aquí se desprenden las siguientes propiedades.
 %   Sea $v$ un servidor correcto.
 %   Si $t$ forma parte de la mempool de $v$, entonces necesariamente, en el pasado,
 %   \<broadcastTx>($t$) fue invocado en algún servidor correcto y la petición
-%   $\<CheckTx>(t)$ en $v$ retornó \texttt{true}.
+%   $\<CheckTx>(t)$ en $v$ retornó \texttt{True}.
 % \end{property}
 
 \section{Propiedades derivadas}
@@ -142,7 +142,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   recibirá eventualmente la petición \<CheckTx>($t$).
   Por hipótesis se tiene que $e$ es un elemento válido y nuevo, por lo cual, siendo $t = e$
   y considerando la definición de \<CheckTx> en la línea \ref{alg:van_check_tx} del algoritmo
-  \ref{alg:abci-vanilla}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{true}
+  \ref{alg:abci-vanilla}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{True}
   en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
   Luego, por la propiedad \emph{Tendermint-Eventual-Injection}~\ref{tendermint:eventual-injection} sabemos
   que la transacción $t$ formará parte de un bloque.
@@ -194,7 +194,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
 %   Por la propiedad \textbf{Tendermint-Eventual-CheckTx} se tiene que todos los servidores
 %   correctos reciben la petición \<CheckTx>($t$).
 %   Dado que $t$ es una transacción válida, es decir, una transacción para la cual la evaluación
-%   de \<CheckTx>($t$) es \texttt{true}, $t$ será añadida a la mempool de todos los servidores
+%   de \<CheckTx>($t$) es \texttt{True}, $t$ será añadida a la mempool de todos los servidores
 %   correctos.
 % \end{proof}
 
@@ -239,7 +239,7 @@ propiedades derivadas para cada implementación realizada de \setchain.
   recibirá eventualmente la petición \<CheckTx>($t$).
   Por hipótesis se tiene que $e$ es un elemento válido y nuevo, por lo cual, siendo $e$ un elemento de $t$
   y considerando la definición de \<CheckTx> en la línea \ref{alg:brotli_check_tx} del algoritmo
-  \ref{alg:abci-brotli}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{true}
+  \ref{alg:abci-brotli}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{True}
   en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
   Luego, por la propiedad \emph{Tendermint-Eventual-Injection}~\ref{tendermint:eventual-injection} sabemos que la
   transacción $t$ formará parte de un bloque.
@@ -292,76 +292,105 @@ propiedades derivadas para cada implementación realizada de \setchain.
   % \end{proof}
 
 \begin{property}[Tendermint-Haschain-Delivery]\label{tendermint:hashchain-delivery}
-  VER SI LA NECESITO
-  Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
-  $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
-  una petición $v.\<DeliverTx>(t)$, en donde
-  $t$ es una tupla $(h, s)$, siendo
+  % Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
+  % $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
+  % una petición $v.\<DeliverTx>(t)$, en donde.
+
+  Sea $v$ un servidor correcto y $t$ una tupla $(h, s)$ donde
   \begin{itemize}
-    \item $h$ un lote hasheado de elementos, donde uno de esos elementos es $e$,
-    \item y $s$ una firma válida de dicho hash realizada con la clave privada de $v$.
+    \item $h$ es un lote hasheado de elementos, donde uno de esos elementos es válido y nuevo,
+    \item y $s$ es una firma válida de dicho hash realizada con la clave privada de $v$.
   \end{itemize}
+  Si se invoca \<broadcastTx>($t$) sobre $v$, eventualmente se produce una petición $v.\<DeliverTx>(t)$.
  
 \end{property}
 
 \begin{proof}
-  Sea $e$ un elemento válido y $v$ un servidor correcto.
-  Por definción de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
-  $v.\<add>(e)$ se traduce en la llamada \texttt{HashCollector.AddElement($e$)}.
-  Como se puede observar en el algoritmo ~\ref{alg:collector-hash}, $e$ será codificado
-  adecuadamente y añadido a un lote que eventualmente estará listo, se hasheará,
-  se firmará, y se invocará \<broadcastTx>($t$) sobre el servidor $v$, en donde $t$
-  será una tupla conformada por el hash y la firma.
-
-  Por la propiedad \textbf{Tendermint-Eventual-CheckTx}, $v$
+  % Sea $e$ un elemento válido y $v$ un servidor correcto.
+  % Por definción de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
+  % $v.\<add>(e)$ se traduce en la llamada \texttt{HashCollector.AddElement($e$)}.
+  % Como se puede observar en el algoritmo ~\ref{alg:collector-hash}, $e$ será codificado
+  % adecuadamente y añadido a un lote que eventualmente estará listo, se hasheará,
+  % se firmará, y se invocará \<broadcastTx>($t$) sobre el servidor $v$, en donde $t$
+  % será una tupla conformada por el hash y la firma.
+  Supongamos que se invoca \<broadcastTx>($t$) sobre el servidor $v$.
+  Por la propiedad \emph{Tendermint-Eventual-CheckTx}~\ref{tendermint:eventual-checktx}, $v$
   recibirá eventualmente la petición \<CheckTx>($t$).
-  Considerando que la firma es válida (acá se podría justificar con un poco de más detalle),
-  la llamada a \<CheckTx>($t$) retornará \texttt{true}
-  en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
+  Siguiendo la definición de \<CheckTx>~\ref{alg:hash_check_tx}, si la firma es válida (lo es por hipótesis)
+  se abren dos casos: que $v$ conozca el hash o que aún no lo conozca.
+  Si lo conoce, entonces retornará \texttt{True} puesto que es un hash asociado a un lote válido
+  por hipótesis (al menos uno de sus elementos es válido y nuevo).
+  Si no lo conoce, entonces trivialmente retornará \texttt{True}.
+  Por lo tanto, $t$ pasará a formar parte de la mempool de $v$.
 
-  Luego, por la propiedad \textbf{Tendermint-Eventual-Injection} sabemos que la
-  transacción $t$ formará parte de un bloque.
+  % Considerando que la firma es válida por hipótesis,
+  % la llamada a \<CheckTx>($t$) retornará \texttt{True}
+  % en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
+  Luego, por la propiedad \emph{Tendermint-Eventual-Injection}~\ref{tendermint:eventual-injection}
+  sabemos que la transacción $t$ formará parte de un bloque.
   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
   el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
-
-  NOTA: A $e$ le pedimos solo que sea válido?? O que sea válido y nuevo?? Por ahora, únicamente válido.
 \end{proof}
 
 \begin{property}[Tendermint-Haschain-Eventual-Consolidation]\label{tendermint:hashchain-eventual-consolidation}
-  Sea $e$ un elemento válido y $v$ un servidor correcto. Si un cliente invoca
-  $v.\<add>(e)$, eventualmente un hash proveniente de un lote que contiene a $e$ consolidará.
+  Sean $v$ y $w$ dos servidores. Sea $t$ una tupla $(h, s)$ donde
+  \begin{itemize}
+    \item $h$ es un lote hasheado de elementos con al menos un elemento válido y nuevo,
+    \item y $s$ es una firma válida de dicho hash realizada con la clave privada de $v$.
+  \end{itemize}
+  Supongamos que $v$ está dispuesto a revertir el hash al menos a $w$.
+  Luego, si $w$ es un servidor correcto y recibe una petición $\<DeliverTx>(t)$,
+  eventualmente el hash $h$ consolidará.
+  % Sea $e$ un elemento válido y $v$ un servidor correcto. Si un cliente invoca
+  % $v.\<add>(e)$, eventualmente un hash proveniente de un lote que contiene a $e$ consolidará.
 \end{property}
 
 \begin{proof}
-  Sea $e$ un elemento válido y $v$ un servidor correcto.
-  Si un cliente invoca $v.\<add>(e)$, sabemos por la propiedad \textit{Tendermint-Haschain-Delivery} que,
-  eventualmente $v$ recibirá la petición $\<DeliverTx>(t)$, en donde
-  $t$ es una tupla $(h, s)$, siendo
-  \begin{itemize}
-    \item $h$ un lote hasheado de elementos, donde uno de esos elementos es $e$,
-    \item y $s$ una firma válida de dicho hash realizada con la clave privada de $v$.
-  \end{itemize}
-  Por la propiedad \textit{Tendermint-Global-DeliverTx}, sabemos que todos los nodos correctos
-  recibirán eventualmente la misma petición $\<DeliverTx>(t)$.
+  % Sea $e$ un elemento válido y $v$ un servidor correcto.
+  % Si un cliente invoca $v.\<add>(e)$, sabemos por la propiedad \textit{Tendermint-Haschain-Delivery} que,
+  % eventualmente $v$ recibirá la petición $\<DeliverTx>(t)$, en donde
+  % $t$ es una tupla $(h, s)$, siendo
+  % \begin{itemize}
+  %   \item $h$ un lote hasheado de elementos, donde uno de esos elementos es $e$,
+  %   \item y $s$ una firma válida de dicho hash realizada con la clave privada de $v$.
+  % \end{itemize}
+  % Por la propiedad \textit{Tendermint-Global-DeliverTx}, sabemos que todos los nodos correctos
+  % recibirán eventualmente la misma petición $\<DeliverTx>(t)$.
 
-  Sea $w$ un nodo correcto que recibe $\<DeliverTx>(t)$. Como lo indica la definición presentada en el algoritmo,
-  $w$ chequeará que $s$ sea una firma válida (lo cual es) y luego sumará la nueva firma a las firmas para el hash $h$.
-  Seguido de esto, si $w$ no conoce aún el reverso de $h$, entonces lanzará una acción asíncrona para revertirlo.
+  Sea $w$ un nodo correcto que recibe $\<DeliverTx>(t)$. Como lo indica la definición presentada
+  en el Algoritmo~\ref{alg:abci-hash1},
+  $w$ chequeará que $s$ sea una firma válida (lo cual vale por hipótesis) y luego sumará la nueva
+  firma a las firmas para el hash $h$.
+  Seguido de esto, si $w$ no conoce aún el reverso de $h$, entonces lanzará una acción asíncrona
+  para revertirlo
+  (ver línea \ref{alg:spawn-reverse}).
   Si $w$ ya conoce el reverso de $h$ es porque ya invocó al proceso de inversión de hashes previamente.
 
-  Supongamos que $w$ no conoce el reverso de $h$. Como se puede ver en la definición de \<reverse>,
-  $w$ se conectará con su propio \hcollector para obtener el lote asociado
-  a $h$. Con seguridad obtendrá el reverso puesto que su \hcollector se comunicará con el \hcollector de $v$ (que es correcto
-  por hipótesis y conoce el reverso de $h$) porque $s$ es una firma asociada a $v$. EL \hcollector de $v$ ejecutará \<Reverse>
-  del algoritmo ~\ref{alg:collector-hash}, obteniendo el lote desde su base de datos y devolviéndolo.
+  Supongamos que $w$ no conoce el reverso de $h$.
+  Como se puede ver en la definición de \<reverse>~\ref{alg:hash_revert},
+  $w$ se conectará con su propio \hcollector (mediante la invocación
+  \<Reverse> del algoritmo ~\ref{alg:collector-hash}) para obtener el lote asociado a $h$.
+  Con seguridad obtendrá el reverso puesto que su \hcollector se comunicará con el \hcollector de $v$ (que
+  por hipótesis está dispuesto a revertir $h$) porque $s$ es una firma asociada a $v$.
+  Por su parte, el \hcollector de $v$ ejecutará \<Reverse>,
+  obteniendo el lote desde su base de datos y devolviéndolo.
 
-  Siguiendo la definición de \<DeliverTx> en $w$, una vez que obtiene el lote asociado a $h$, firmará $h$ con su propia clave privada
-  y lo difundirá como una nueva transacción,
-  lo cual hará que eventualmente llegue una nueva petición $\<DeliverTx>(t')$, donde $t' = (h, s')$, siendo $s'$ la firma generada
-  con la clave privada de $w$.
+  Siguiendo la definición de \<reverse> en $w$, como se muestra en las líneas \ref{alg:hash-sign-hash}
+  y \ref{alg:hash-broadcast-hash}, una vez que obtiene el lote asociado a $h$,
+  firmará $h$ con su propia clave privada y lo difundirá como
+  una nueva transacción invocando \<broadcastTx>($t'$), donde $t' = (h, s')$, siendo $s'$ la firma
+  generada con la clave privada de $w$.
+  Por la propiedad \emph{Tendermint-Haschain-Delivery}~\ref{tendermint:hashchain-delivery},
+  eventualmente llegará una nueva petición $\<DeliverTx>(t')$.
+  Luego, por la propiedad \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery},
+  todos los servidores correctos
+  recibirán $\<DeliverTx>(t')$, agregando una nueva firma para el hash $h$,
+  como se muestra en la línea \ref{alg:hash-new-sign}.
 
-  Dado que este proceso se repetirá para todo servidor correcto, y considerando que \SPH es menor o igual a la cantidad de nodos
-  correctos, con certeza $h$ obtendrá las \SPH firmas y, por lo tanto, consolidará.
+  Dado que este proceso se repetirá para todo servidor correcto, y considerando que
+  \SPH es menor o igual a la cantidad de nodos
+  correctos, con certeza $h$ obtendrá las \SPH firmas (puesto que cada servidor colaborará
+  con su firma) y, por lo tanto, consolidará.
 \end{proof}
 
 \section{Pruebas de correctitud}
@@ -516,7 +545,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Por construcción, esto necesariamente debe haber pasado en la línea
   \ref{line:abci-vanilla-history} en el Algoritmo~\ref{alg:abci-vanilla},
   con lo cual se concluye que la condición del \texttt{if} de
-  la línea ~\ref{line:abci-vanilla-if} evaluó a \texttt{true} ($\star$), ya que de otro modo
+  la línea ~\ref{line:abci-vanilla-if} evaluó a \texttt{True} ($\star$), ya que de otro modo
   el elemento no hubiese sido añadido.
   %
 
@@ -681,7 +710,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Por construcción, esto necesariamente debe haber pasado en la línea
   \ref{line:abci-compresschain-history} en el Algoritmo~\ref{alg:abci-brotli},
   con lo cual se concluye que la condición del \texttt{if} de
-  la línea ~\ref{line:abci-compresschain-if} evaluó a \texttt{true} ($\star$),
+  la línea ~\ref{line:abci-compresschain-if} evaluó a \texttt{True} ($\star$),
   ya que de otro modo el elemento no hubiese sido añadido.
   %
 
@@ -760,8 +789,9 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   la época $i$.
 
   Dado que la variable \texttt{hash\_to\_batch} solo se modifica en la línea \ref{line:abci-hashchain-hash-to-batch} como
-  parte de \<reverse>, se concluye que dicho código tiene que haber sido ejecutado previamente, lo cual implica también que
-  $e$ fue añadido a \THESET con anterioridad.
+  parte de \<reverse>~\ref{alg:hash_revert},
+  se concluye que dicho código tiene que haber sido ejecutado previamente, lo cual implica también que
+  $e$ fue añadido a $\THESET$ con anterioridad.
   Por lo tanto, se tiene $e \in \THESET$, concluyendo que $\HISTORY(i) \subseteq \THESET$ para todo $i \leq \EPOCH$.
   % Esto es trivialmente correcto debido a que la
   % construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
@@ -785,14 +815,16 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   y una firma válida para el mismo. A su vez, la correspondencia entre el hash y el lote
   será añadido a una base de datos local.
 
-  Por la propiedad \textit{Tendermint-Eventual-CheckTx}, $v$
+  Por la propiedad \emph{Tendermint-Eventual-CheckTx}~\ref{tendermint:eventual-checktx}, $v$
   recibirá eventualmente la petición \<CheckTx>($t$).
-  Considerando que la firma $s$ es válida por hipótesis, luego se abren dos casos:
+  Consideremos la definición de la línea \ref{alg:hash_check_tx} en el Algoritmo~\ref{alg:abci-hash1}.
+  Dado que la firma $s$ es válida por hipótesis, se abren dos casos:
   que el lote asociado a $h$ ya sea conocido o no.
 
   Si \texttt{hash\_to\_batch[h]} ya existe, entonces con certeza previamente
   fue recibido el mismo hash, revertido, y añadido a \texttt{hash\_to\_batch}.
-  Esto únicamente se hace como parte de \<reverse>, en donde, como se puede ver en la línea
+  Esto únicamente se hace como parte de \<reverse>~\ref{alg:hash_revert},
+  en donde, como se puede ver en la línea
   \ref{line:abci-hashchain-the-set}, $e$ tuvo que haber sido añadido a \THESET,
   puesto que es un elemento válido por hipótesis.
 
@@ -800,8 +832,8 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   a \<reverse>.
   De este modo, se comunicará con su propio \hcollector para revertir el hash.
   Con seguridad, el \hcollector tendrá el lote asociado a dicho hash en su base de datos local
-  y lo retornará, de manera que el elemento $e$ (parte del lote) será añadido a \THESET
-  de acuerdo a la línea \ref{line:abci-hashchain-the-set}.
+  y lo retornará, de manera que el elemento $e$ (parte del lote) será añadido a $\THESET$
+  de acuerdo a la línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}.
 
   Por lo tanto, todas las invocaciones a $v.\<get>$ eventualmente tendrán al elemento $e$
   como parte de \THESET.
@@ -817,8 +849,8 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
   Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
-  ejecutó \<reverse>, revirtió $h$ correctamente y, como consecuencia,
-  añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set}).
+  ejecutó \<reverse>~\ref{alg:hash_revert}, revirtió $h$ correctamente y, como consecuencia,
+  añadió a $e$ a \THESET (ver línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}).
 
   La función \<reverse> puede ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
   de una petición \<DeliverTx>.
@@ -826,8 +858,8 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   de su definición, inmediatamente después de lanzar una llamada asíncrona a \<reverse>, la petición retornó
   \texttt{True}.
   Como consecuencia de esto, la transacción en cuestión (llamémosla $t = (h,s)$) fue añadida a la mempool de $v$ y,
-  por el lema \textit{Tendermint-Eventual-Injection} sabemos que eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
-  Aún más, por el lema todos los servidores correctos recibirán $\<DeliverTx>(t)$.
+  por el lema \emph{Tendermint-Eventual-Injection}~\ref{tendermint:eventual-injection} sabemos que eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
+  Aún más, por el lema \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery} todos los servidores correctos recibirán $\<DeliverTx>(t)$.
 
   Por lo tanto, podemos concluir que todos los servidores correctos y, en particular $w$, recibirán la petición $\<DeliverTx>(t)$.
   Como consecuencia de esta ejecutarán \<reverse> (si es que ya no lo hicieron) añadiendo a $e$ a \THESET. 
@@ -839,21 +871,25 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$, entonces por construcción de
-  $\THESET$, necesariamente $v$ en algún momento ejecutó \<reverse> para un hash $h$, donde el lote asociado a $h$
+  Sea $v$ un servidor correcto y $e \in U$. Si $e \in v.\THESET$ y $e$ no es un elemento nuevo, luego
+  $e \in \HISTORY$ y la propiedad vale trivialmente. Suponemos que $e$ no es nuevo.
+  Si $e \in v.\THESET$, entonces por construcción de
+  $\THESET$, necesariamente $e$ es válido y $v$ en algún momento ejecutó \<reverse>~\ref{alg:hash_revert} para un
+  hash $h$, donde el lote asociado a $h$
   contenía $e$ como elemento.
-  La función \<reverse> puede ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
+  La función \<reverse> pudo ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
   de una petición \<DeliverTx>.
 
   Si proviene de la ejecución de \<CheckTx>, entonces como se muestra en la línea \ref{line:spawn-reverse-checktx}
   de su definición, inmediatamente después de lanzar una llamada asíncrona a \<reverse>, la petición retornó
   \texttt{True}.
   Como consecuencia de esto, la transacción en cuestión (llamémosla $t = (h,s)$) fue añadida a la mempool de $v$ y,
-  por el lema \textit{Tendermint-Eventual-Injection} sabemos que eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
+  por el lema \emph{Tendermint-Eventual-Injection}~\ref{tendermint:eventual-injection} sabemos que eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
 
   Por lo tanto, podemos concluir que eventualmente $v$ recibirá una petición \<DeliverTx>($t$).
-  Debido a esto, todos los servidores correctos recibirán eventualmente una petición \<DeliverTx>($t$),
-  el hash $h$ asociado a dicha transacción consolidarará y, finalmente, $v$ añadirá a $e$ a \HISTORY 
+  Luego, considerando que el servidor que generó la firma $s$ estuvo dispuesto a revertir $h$ a $v$,
+  por la propiedad \emph{Tendermint-Haschain-Eventual-Consolidation}\ref{tendermint:hashchain-eventual-consolidation}
+  podemos concluir que el hash $h$ consolidará y, finalmente, $v$ añadirá a $e$ a $\HISTORY$ 
   como se muestra en la línea \ref{line:abci-hashchain-history}.
 \end{proof}
 
@@ -867,7 +903,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   %
 
   Esto es trivialmente correcto debido a que un elemento $e$ se agrega a \HISTORY[j]
-  únicamente si no pertenece a \HISTORY[j'] con $j' \in {0, 1, ..., j -1}$, como se puede
+  únicamente si no pertenece a $\HISTORY[j']$ con $j' \in \{0, 1, ..., j -1\}$, como se puede
   ver en la cláusula \texttt{if} de la línea \ref{line:abci-hashchain-history-if}.
   %
 \end{proof}
@@ -880,7 +916,35 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
   Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
-  ...
+  %Se seguirá un razonamiento similar al presentado en la demostración del Lema ~\ref{proof:get-global}.
+  Sea $e$ un elemento $\in v.\HISTORY(i)$. 
+  Por construcción de $\HISTORY$, necesariamente $e$ es válido y pertenece al lote asociado a un hash $h$ que
+  ya consolidó.
+  Notemos que para añadir un nuevo elemento a $\HISTORY$, el hash en cuestión debe tener una época asignada
+  (a través de la variable \texttt{epoch\_to\_hash}) como se muestra en la línea \ref{alg:hash-epoch-to-hash-use}.
+  Solo se asignan épocas a hashes cuando estos consolidan como se ve en la línea \ref{alg:hash-epoch-to-hash}.
+
+  De la definición de \<shouldConsolidateHash>\ref{alg:hash_consolidated} y del hecho de que las firmas se agregan
+  a \texttt{hash\_to\_signatures} solo en la línea \ref{alg:hash-new-sign}, se concluye que
+  tienen que haber llegado al menos \SPH peticiones \<DeliverTx> para el hash $h$ con firmas de distintos servidores.
+  % $v$ en un momento determinado recibió una
+  % petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos
+  % elementos es $e$. Como consecuencia de esta petición,
+  % $e$ fue estampado con el número de época $i$.
+  % Esto implica que el servidor decidió dicha transacción, puesto que la petición \<DeliverTx> se
+  % envía una vez que las transacciones fueron decididas y ordenadas.
+  % Luego, por la propiedad de \textit{Tendermint-Agreement}, todos los nodos correctos y, en particular $w$,
+  % deciden la misma transacción asociada al elemento $e$ (en el mismo orden que $v$).
+  Por la propiedad \emph{Tendermint-Global-DeliverTx}~\ref{tendermint:global-delivery} podemos asegurar que todos
+  los servidores correctos, y en particular $w$, reciben las mismas peticiones \<DeliverTx>
+  y en el mismo orden en que lo hace $v$.
+  A su vez, podemos asegurar que todos los nodos correctos pueden revertir $h$ puesto que $v$ es un servidor
+  correcto que conoce el lote asociado y revertirá el hash a quien se lo pida.
+  De este modo, el hash $h$ consolida en todos los servidores
+  durante la construcción de la época $i$, añadiendo a $e$ a $w.\HISTORY(i)$, como se muestra en la línea
+  \ref{line:abci-hashchain-history} en el Algoritmo~\ref{alg:abci-hash1}.
+  El mismo razonamiento se puede hacer para un elemento $e \in w.\HISTORY(i)$.
+  Luego, $v.\HISTORY(i)=w.\HISTORY(i)$.
 \end{proof}
 
 \begin{lemma}
