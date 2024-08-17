@@ -47,7 +47,7 @@ Allí se presentó como un método para eliminar terceras partes confiables en s
 de pago electrónico.
 %
 
-Las versiones más modernas de blockchains incorporan contratos inteligentes~\cite{szabo96smart,ethereum},
+Las versiones más modernas de blockchains incorporan contratos inteligentes~\cite{szabo96smart,wood2014ethereum},
 los cuales son programas de estado inmutable alojados en la blockchain. Dichos
 programas describen la funcionalidad de las transacciones, incluyendo el intercambio
 de criptomonedas.
@@ -101,7 +101,7 @@ Por otro lado, un ejemplo de problema de escalabilidad vertical en este contexto
 que requiere almacenar un nodo en la blockchain para guardar transacciones desde el bloque más reciente
 hasta el bloque \emph{génesis} (inicial).
 
-En este trabajo nos enfocaremos en la escalabilidad de blockchains desde el punto de vista de su \emph{rendmiento}, medido
+En este trabajo nos enfocaremos en la escalabilidad de blockchains desde el punto de vista de su \emph{rendimiento}, medido
 en términos del número de transacciones añadidas por segundo.
 %
 Algunos números representativos de hoy en día ilustran el estado actual de situación.
@@ -150,44 +150,53 @@ A continuación se exploran distintas propuestas, intentando abarcar una gama de
 
 \subsection{Desarrollo de algoritmos más rápidos}
 
-En los sistemas blockchains existen múltiples parámaetros que se tienen en cuenta
+En los sistemas blockchains existen múltiples parámetros que se tienen en cuenta
 a la hora de querer calcular o mejorar su rendimiento.
 %
-En contextos de blockchains que utilizan \emph{proof-of-work}\footnote{La noción de \emph{proof-of-work} (POW)
-refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
-que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
-Los POWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
-Su traducción al español de conoce como \emph{prueba de trabajo}.},
-como Bitcoin, el \emph{ratio de bloque}
-se define como el número de bloques minados por segundo.
-%
-El \emph{tamaño de bloque} se define como el número de bytes en un bloque.
-%
-Toma tiempo transmitir un bloque sobre la red de pares.
-%
-El \emph{tiempo de propagación de bloque} se define como el tiempo necesario para que un minero
-reciba un nuevo bloque.
-%
-Dado que un bloque es recibido por diferentes mineros en diferentes momentos, usualmente se utiliza
-la \emph{distribución del tiempo de propagación de bloques}.
-%
-Si se mina un bloque conflictivo mientras otro bloque se propaga en la red, ocurre una bifurcación
-(o \emph{fork}) en la red.
-%
-Los mineros resuelven las bifurcaciones en la blockchain eligiendo la cadena que contiene la mayor
-cantidad de bloques.
-%
-Los bloques no incluidos en la cadena más larga se descartan.
-%
-El \emph{ratio de bifurcación} se define como el número de bloques descartados por segundo.
-
-Para mejorar el rendimiento de la blockchain no se puede simplemente incrementar el tamaño del bloque
-o minar bloques con mayor frecuencia.
-%
-Hay un triple compromiso entre el tamaño del bloque, el ratio de bloques y el ratio de bifurcación.
-
 FastChain~\cite{fastchain} es un enfoque para mejorar la escalabilidad de los sistemas blockchains
-a través de la red de pares.
+(originalmente diseñado para aquellos que utilizan \emph{proof-of-work}\footnote{La noción de
+\emph{proof-of-work} (PoW) refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
+que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
+Los PoWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
+Su traducción al español de conoce como \emph{prueba de trabajo}.})
+que se basa en reducir el \emph{tiempo de propagación de los bloques}.
+%
+El algoritmo propuesto por FastChain trabaja sobre la red de pares de la blockchain.
+
+% En contextos de blockchains que utilizan \emph{proof-of-work}\footnote{La noción de \emph{proof-of-work} (PoW)
+% refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
+% que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
+% Los PoWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
+% Su traducción al español de conoce como \emph{prueba de trabajo}.},
+% como Bitcoin, el \emph{ratio de bloque}
+% se define como el número de bloques minados por segundo.
+% %
+% El \emph{tamaño de bloque} se define como el número de bytes en un bloque.
+% %
+% Toma tiempo transmitir un bloque sobre la red de pares.
+% %
+% El \emph{tiempo de propagación de bloque} se define como el tiempo necesario para que un minero
+% reciba un nuevo bloque.
+% %
+% Dado que un bloque es recibido por diferentes mineros en diferentes momentos, usualmente se utiliza
+% la \emph{distribución del tiempo de propagación de bloques}.
+% %
+% Si se mina un bloque conflictivo mientras otro bloque se propaga en la red, ocurre una bifurcación
+% (o \emph{fork}) en la red.
+% %
+% Los mineros resuelven las bifurcaciones en la blockchain eligiendo la cadena que contiene la mayor
+% cantidad de bloques.
+% %
+% Los bloques no incluidos en la cadena más larga se descartan.
+% %
+% El \emph{ratio de bifurcación} se define como el número de bloques descartados por segundo.
+
+% Para mejorar el rendimiento de la blockchain no se puede simplemente incrementar el tamaño del bloque
+% o minar bloques con mayor frecuencia.
+% %
+% Hay un triple compromiso entre el tamaño del bloque, el ratio de bloques y el ratio de bifurcación.
+
+
 %
 En la Figura \ref{fig:fastchain} se muestra un ejemplo motivador para la lógica detrás de FastChain.
 %
@@ -240,11 +249,11 @@ están ociosos.
 %
 FastChain propone un algoritmo de selección del mejor vecino para reducir el tiempo de propagación de los bloques.
 %
-De esta forma, los mineros se desconectan de los vecinos con ancho de banda limitado y
+De esta forma, los nodos se desconectan de los vecinos con ancho de banda limitado y
 favorecen a los nodos con mayor ancho de banda.
 %
-Esta política de selección de vecinos escala el sistema blockchain,
-reduciendo el tiempo de propagación de bloque sin incrementar el ratio de bifurcación.
+%Esta política de selección de vecinos escala el sistema blockchain,
+%reduciendo el tiempo de propagación de bloque sin incrementar el ratio de bifurcación.
 %
 
 
@@ -289,7 +298,7 @@ El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchain
 trabajan con modelos \emph{proof-of-stake}\footnote{El concepto de \emph{proof-of-stake} (traducido al español
 como \emph{prueba de participación}) surge como oposición a los esquemas de prueba de trabajo.
 En estos tipos de protocolos, en lugar de probarse que se realizó un esfuerzo computacional lo suficientemente
-cosoto, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna cryptomoneda~\cite{King2012PPCoinPC}.}.
+costoso, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna cryptomoneda~\cite{King2012PPCoinPC}.}.
 %
 Sin embargo, blockchains con modelos de consenso \emph{proof-of-work}, como Bitcoin o Ethereum,
 se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
