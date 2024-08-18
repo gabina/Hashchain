@@ -31,10 +31,10 @@ Llamamos \(V\) $\subseteq$ \(U\) al subconjunto de elementos válidos.
 Luego, una \setchain se define como una estructura de datos distribuida en donde cada nodo servidor
 (correcto) mantiene:
 \begin{itemize}
-  \item un conjunto $\THESET \subseteq U$ de elementos agregados;
+  \item un conjunto $\THESET \subseteq V$ de elementos agregados;
   \item un número natural $\EPOCH \in \mathds{N}$;
-  \item una función $\HISTORY : [1..\EPOCH] \rightarrow \mathcal{P}(U)$\footnote{$\mathcal{P}(U)$ denota el conjunto potencia
-  de $U$.} que describe los conjuntos de elementos que fueron estampados con un número de época.
+  \item una función $\HISTORY : [1..\EPOCH] \rightarrow \mathcal{P}(V)$\footnote{$\mathcal{P}(V)$ denota el conjunto potencia
+  de $V$.} que describe los conjuntos de elementos que fueron estampados con un número de época.
 \end{itemize}
 
 Si bien $\HISTORY $ está definido formalmente como una función, también se utilizará notación de conjuntos sobre dicho símbolo.
@@ -64,9 +64,18 @@ de $\THESET$, $\EPOCH$ y $\HISTORY$ que dicho servidor mantiene. De este modo:
 En un servidor $v$, el conjunto $v.\THESET $ contiene el conocimiento de $v$ sobre los elementos que fueron \emph{añadidos},
 incluyendo aquellos que aún no fueron estampados con un número de época.
 %
-Con \emph{elementos añadidos} nos referimos a elementos para los cuales algún cliente invocó previamente \<add>.
+Con \emph{elementos añadidos} nos referimos a elementos válidos para los cuales algún cliente invocó previamente \<add>.
 %
-Por otro lado, $v.\HISTORY $ contiene solo aquellos elementos que ya han sido estampados con un número de época.
+Por otro lado, $v.\HISTORY $ contiene solo aquellos elementos (válidos) que ya han sido estampados con un número de época.
+
+En principio, los clientes pueden intentar agregar elementos tanto válidos como inválidos.
+%
+Sin embargo, los servidores pueden chequear la validez de los elementos y descartar aquellos que sean inválidos.
+%
+Por lo tanto, en las siguientes secciones se hace referencia exclusivamente a elementos válidos.
+% por ahi podes decir algo como que aunque, en principio, los clientes pueden agregar elementos tanto elementos validos
+% como invalidos los servidores chequean la validez de los elementos y descartan los invalidos,
+% asi q cuando explicas el flujo de elementos te estas referiendo solamente a elementos validos.
 
 \subsection{Incrementos de época}  
 Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
@@ -133,7 +142,7 @@ donde:
 \[\ v.\EPOCH = 3. \]
 
 
-En la Figura ~\ref{subfig:setchain-api-1} y la Figura ~\ref{subfig:setchain-api-1} se presentan los resultados de un cliente
+En la Figura ~\ref{subfig:setchain-api-1} y la Figura ~\ref{subfig:setchain-api-2} se presentan los resultados de un cliente
 invocando $v$.\<add>(a) y $v$.\<add>(b), respectivamente.
 %
 Luego de añadir ambos elementos, se tiene:
