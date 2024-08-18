@@ -38,8 +38,10 @@
                 \State \texttt{collector} = \texttt{BuildCollector(public\_key)}
                 \State \texttt{batch} = \texttt{collector}.\Call{\<Reverse>}{$h$, $s$}
                 \Comment{Obtener el lote mediante otro collector.}
-                \State \texttt{DATA\_BASE}.Set($h$, \texttt{batch})
-                \Comment{Añadir la nueva entrada a la base de datos local.}
+                \If {\<Hash>(\texttt{batch}) = $h$}
+                  \State \texttt{DATA\_BASE}.Set($h$, \texttt{batch})
+                  \Comment{Añadir la nueva entrada a la base de datos local.}
+                \EndIf   
               \EndIf
               \State \textbf{return} \texttt{batch}
             \EndFunction

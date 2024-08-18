@@ -7,7 +7,7 @@
       \label{alg:abci-vanilla}%
       \small
       \begin{algorithmic}[1]
-            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{-1}, \texttt{next\_epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}
+            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{next\_epoch} $\leftarrow$ \textbf{1}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}
 
             \Function{\<CheckTx>}{$transaction$}\label{alg:van_check_tx}
                 \State \textbf{return} \Call{\<isValidTransaction>}{$transaction$}

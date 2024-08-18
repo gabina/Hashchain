@@ -7,11 +7,13 @@
       \label{alg:abci-hash1}%
       \small
       \begin{algorithmic}[1]
-            \State \textbf{Init:} \texttt{next\_epoch} $\leftarrow$ \textbf{0}, \texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\}, \texttt{hash\_to\_signatures} $\leftarrow$ \{\}, \texttt{epoch\_to\_hash} $\leftarrow$ \{\}, \texttt{hash\_to\_batch} $\leftarrow$ \{\}
+            \State \textbf{Init:} \texttt{epoch} $\leftarrow$ \textbf{0}, \texttt{next\_epoch} $\leftarrow$ \textbf{1},
+			\texttt{history} $\leftarrow$ \{\}, \texttt{the\_set} $\leftarrow$ \{\},
+			\\ \texttt{hash\_to\_signatures} $\leftarrow$ \{\}, \texttt{epoch\_to\_hash} $\leftarrow$ \{\}, \texttt{hash\_to\_batch} $\leftarrow$ \{\}
 
             \Function{\<CheckTx>}{$hash, signature$}\label{alg:hash_check_tx}
 				\If {\<isValidSignature>($hash, signature$)}
-            			\If {\texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
+            			\If {$hash$ \texttt{in hash\_to\_batch}}
             				\State \textbf{return} \Call{\<isValidBatch>}{\texttt{hash\_to\_batch}[$hash$]}
             			\EndIf
 
@@ -28,7 +30,7 @@
             \Function{\<DeliverTx>}{$hash, signature$}\label{alg:hash_deliver_tx}
             		\If {\<isValidSignature>($hash, signature$)}
             			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}\label{alg:hash-new-sign}
-						\If {not \texttt{hash\_to\_batch}[$hash$] \textbf{exists}}
+						\If {not ($hash$ \texttt{in hash\_to\_batch})}
 							\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}\label{alg:spawn-reverse}
 						\EndIf
             			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
@@ -40,30 +42,34 @@
             \EndFunction
             
             \Function{\<Query>}{\null}\label{alg:hash_query}
-            		\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history})
-            		\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
-            			\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}\label{alg:hash-epoch-to-hash-use}
-             		\If {\texttt{hash\_to\_batch}[\texttt{hash}] \textbf{exists}}
-                			\State \texttt{elements} $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hash\_to\_batch}[\texttt{hash}]}
-            				\For{\texttt{e in elements}}
-								\Comment{Agregar solo elementos nuevos y válidos.}
-             					\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}} \label{line:abci-hashchain-history-if}
-									\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\) \label{line:abci-hashchain-history}
-									%\State \texttt{history[i]}.AddElement(e)
-                    	 		\EndIf
-                    	 	\EndFor
-                    	    \State \texttt{epoch\_hash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
-            				%\Comment{Hash epoch (elements and number).}
-                			\State \texttt{epoch\_proof} $\leftarrow$  \texttt{Sign(\texttt{epoch\_hash}, PRIVATE\_KEY)}
-               			\State \Call{\<add>}{\texttt{epoch\_proof}}
-               		 \Else
-						\State \texttt{epoch} \(<- \, \texttt{i - 1}\)
-						\Comment{Guardar el número de la última época completa.}
-               		 	\State \textbf{break}
-                    	\EndIf
-                	\EndFor
-            		\State \textbf{return} (\texttt{the\_set}, \texttt{history}, \texttt{epoch}) 
-            	\EndFunction
+            		\State \Call{\<updateHistory>}{}
+            		\State \textbf{return} (\texttt{the\_set}, \texttt{history}, \texttt{epoch})
+            \EndFunction
+
+			\Function{\<updateHistory>}{\null}
+				\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history}) + 1
+				\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
+					\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}\label{alg:hash-epoch-to-hash-use}
+				\If {\texttt{hash in hash\_to\_batch}}
+						\State \texttt{elements} $\leftarrow$ \Call{\<getElementsFromBatch>}{\texttt{hash\_to\_batch}[\texttt{hash}]}
+						\For{\texttt{e in elements}}
+							\Comment{Agregar solo elementos nuevos y válidos.}
+							\If {\<isValidElement>(\texttt{e}) and not \texttt{e} in \texttt{history}} \label{line:abci-hashchain-history-if}
+								\State  \texttt{history[i]} \(<- \, \texttt{history}[\texttt{i}] \cup \{\texttt{e}\}\) \label{line:abci-hashchain-history}
+								%\State \texttt{history[i]}.AddElement(e)
+							\EndIf
+						\EndFor
+						\State \texttt{epoch\_hash} $\leftarrow$ \<Hash>(\texttt{history[i]}, \texttt{i})
+						%\Comment{Hash epoch (elements and number).}
+						\State \texttt{epoch\_proof} $\leftarrow$  \texttt{Sign(\texttt{epoch\_hash}, PRIVATE\_KEY)}
+					\State \Call{\<add>}{\texttt{epoch\_proof}}
+					\Else
+					\State \texttt{epoch} \(<- \, \texttt{i - 1}\)
+					\Comment{Guardar el número de la última época completa.}
+						\State \textbf{break}
+					\EndIf
+				\EndFor
+			\EndFunction
 
         \end{algorithmic}
       \end{algorithm}
@@ -80,7 +86,7 @@
       \begin{algorithmic}[1]
             	\Function{\<reverse>}{$hash, signature$}\label{alg:hash_revert}
                 \State \texttt{original\_batch} $\leftarrow$ \texttt{my\_collector}.\Call{\<Reverse>}{$hash, signature$}
-                \If {Hash(\texttt{original\_batch}) = $hash$}
+                \If {\<Hash>(\texttt{original\_batch}) = $hash$}
 					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch} \label{line:abci-hashchain-hash-to-batch}
                 		%\If {\Call{\<isValidBatch>}{\texttt{original\_batch}}}
 							\For{\texttt{e in \Call{\<getElementsFromBatch>}{original\_batch}}}

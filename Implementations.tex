@@ -62,15 +62,23 @@ En esta sección, dicho predicado se referencia con la función \<isValidElement
 %
 De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ para los cuales
 $\<isValidElement>(e)$ retorne verdadero.
+%
+En términos de lo presentado en el capítulo \ref{chapter:setchain}, podemos pensar que
+$V = \{e \in U: \<isValidElement>(e)\}$.
 
 %
 A continuación se presentan diferentes definiciones de métodos
 necesarios para que la aplicación corriendo sobre Tendermint implemente \setchain.
 Esto involucra, por un lado, los métodos presentados como parte de la API de
 \setchain y, por el otro, los perteniences a la interfaz de aplicación de
-blockchain ~(ver sección ~\ref{sec:tendermint}). Si bien el objetivo del capítulo es
+blockchain ~(ver sección ~\ref{sec:tendermint}).
+Si bien el objetivo del capítulo es
 presentar las soluciones a nivel conceptual, detalles de implementación son dados a lo largo
 de las secciones cuando se considera oportuno.
+
+La sección de prueba de membrecía de elementos (sección \ref{subsubsec:membership})
+se ubica dentro de la sección de \vanilla únicamente por simplicidad, ya que las ideas allí
+expuestas aplican de manera similar para todas las soluciones presentadas en este capítulo. 
 
 \section{Primera implementación: \vanilla}\label{sec:vanilla}
 
@@ -179,7 +187,7 @@ fue estampado, entonces, al agregar un nueva entrada a la base de datos, las cla
 valores, el número de época al que dicho elemento pertenece.
 %
 Por otro lado, si se quisiera dar mayor eficiencia a determinar todos los elementos pertenecientes a una época dada,
-los valores podrían ser números de épocas, y las claves los elementos en ella.
+las claves podrían ser números de épocas, y los valores los elementos en ella.
 %
 Incluso podría utilizarse un sistema híbrido, de modo de hacer eficiente diversas búsquedas.
 
@@ -209,7 +217,7 @@ Análogamente, para conocer el estado actual de la \setchain, no alcanza con inv
 servidor, puesto que podría ser bizantino y, por tanto, dar información incorrecta.
 %
 El cliente debería contactar $2f+1$ servidores (suponiendo que existen $f$ servidores bizantinos
-que pueden negarse a responder) y esperar a que $f+1$ de ellos coincidan en la respuesta
+que pueden negarse a responder o hacerlo incorrectamente) y esperar a que $f+1$ de ellos coincidan en la respuesta
 (si $f+1$ servidores están de acuerdo en que un elemento pertenece a la \setchain,
 efectivamente debe pertenecer).
 
@@ -218,15 +226,16 @@ En este trabajo se utilizará la extensión a Setchain presentada como
 criptográficas. El mecanismo se introduce a continuación.
 
 Los nodos correctos firman criptográficamente un hash del conjunto de elementos
-pertenecientes a una época e insertan este hash como un elemento en la \setchain.
+pertenecientes a una época junto con el número de dicha época, e insertan este
+hash como un elemento en la \setchain.
 %
 A esos hashes los llamamos \textit{elementos de prueba de época}.
 %
-Las pruebas de época en principio contienen: el número de época al cual pertenece
-la prueba, la clave pública del validador que firma\footnote{Podría optarse por utilizar simplemente
+Las pruebas de época en principio contienen: la clave pública del validador que
+firma\footnote{Podría optarse por utilizar simplemente
 un identificador del validador, dado que las claves públicas son conocidas y podrían
-inferirse a partir del indentificador.} y la firma de los elementos 
-de la época dada (ordenados de una forma específica y conocida).
+inferirse a partir del identificador.} y la firma de los elementos 
+de la época dada (ordenados de una forma específica y conocida) junto con el número de época al que pertenecen.
 %
 De esta manera, los clientes solo ejecutan una única petición $v.\<add>(e)$ a un
 determinado servidor $v$, esperando que sea correcto. 
@@ -237,29 +246,17 @@ pruebas para dicha época. De este modo, se garantiza
 que al menos un servidor correcto la firmó.
 %
 
-Los clientes pueden verificar si las pruebas de época son válidas generando el hash de elementos
-en la época dada y verificando, a través de la clave pública, si la firma de la prueba es válida
-para el hash obtenido. Este proceso se corresponde con la verificación de firmas vista en la
+Los clientes pueden verificar si las pruebas de época son válidas generando el hash con el número
+de época y los elementos que pertenecen a ella, y verificando, a través de la clave pública, si la firma de la
+prueba es válida para el hash obtenido.
+Este proceso se corresponde con la verificación de firmas vista en la
 sección~\ref{subsec:signatures}.
-
-\begin{figure}
-  \centering
-  \subfloat[\<add>(e)]{\includegraphics[width = 1.5in]{figures/epoch-proof-0.png}\label{subfig:epoch-proof-a}}
-  \hspace{0.5in}
-  \subfloat[Época $n$]{\includegraphics[width = 1.5in]{figures/epoch-proof-1.png}\label{subfig:epoch-proof-b}}\\
-  \vspace{0.25in}
-  \subfloat[Pruebas de época]{\includegraphics[width = 1.5in]{figures/epoch-proof-2.png}\label{subfig:epoch-proof-c}}
-  \hspace{0.5in}
-  \subfloat[\<get>]{\includegraphics[width = 1.5in]{figures/epoch-proof-3.png}\label{subfig:epoch-proof-d}}
-  \caption{Mecanismo de pruebas de época.}
-  \label{fig:epoch-proof}
-\end{figure}
 
 %
 Las claves públicas de los validadores necesitan ser públicamente conocidas para los usuarios.
 %
 Si un elemento $e$ pertenece a una época que tiene suficientes pruebas, los clientes pueden
-concluír que la época es correcta y que $e$ fue éxitosamente insertado en la \setchain.
+concluir que la época es correcta y que $e$ fue éxitosamente insertado en la \setchain.
 %
 En caso de comunicarse con nodos correctos, solo se requieren una llamada a \<add> y
 una llamada a \<get> para estar seguros de que el elemento fue añadido a la \setchain.
@@ -276,13 +273,28 @@ Los servidores deciden colaborativamente los elementos pertenecientes a la époc
 En la Figura \ref{subfig:epoch-proof-b} se puede ver que $e$ pertenece a dicha época.
 %
 En la Figura \ref{subfig:epoch-proof-c} se representa que todos los servidores correctos
-inyectan un elemento de prueba de época que contiene: el número de época,
+inyectan un elemento de prueba de época que contiene:
 la clave pública perteneciente a cada nodo (señalizada con una llave),
-y la firma del hash de los elementos de la época $n$ (señalizada con un candado).
+y la firma (señalizada con un candado) del hash de una tupla formada por el número de época ($n$)
+y los elementos que pertenecen a ella.
 %
 Luego de esperar cierto tiempo, el cliente invoca \<get> en un servidor cualquiera y,
 si obtiene suficientes pruebas de época (en este caso, 3) para la época $n$, entonces
-puede estar seguro que el elemento $e$ fue efectivamente agregado a la \setchain.
+puede estar seguro que el elemento $e$ fue efectivamente agregado a la \setchain y que
+pertenece a la época $n$.
+
+\begin{figure}[!h]
+  \centering
+  \subfloat[\<add>(e)]{\includegraphics[width = 1.5in]{figures/epoch-proof-0.png}\label{subfig:epoch-proof-a}}
+  \hspace{0.5in}
+  \subfloat[Época $n$]{\includegraphics[width = 1.5in]{figures/epoch-proof-1.png}\label{subfig:epoch-proof-b}}\\
+  \vspace{0.25in}
+  \subfloat[Pruebas de época]{\includegraphics[width = 1.5in]{figures/epoch-proof-2.png}\label{subfig:epoch-proof-c}}
+  \hspace{0.5in}
+  \subfloat[\<get>]{\includegraphics[width = 1.5in]{figures/epoch-proof-3.png}\label{subfig:epoch-proof-d}}
+  \caption{Mecanismo de pruebas de época.}
+  \label{fig:epoch-proof}
+\end{figure}
 
 
 Las épocas ahora contienen dos tipos de elementos: elementos regulares enviados por
@@ -298,7 +310,9 @@ La validez de los elementos regulares se chequea a través de la ya mencionada f
 %
 Sin embargo, un elemento de prueba de época necesita ser validado verificando la firma.
 %
-
+Para mantener la simplicidad, consideraremos a partir de ahora una versión extendida de la función
+\<isValidElement> que es capaz de diferenciar entre elementos regulares y elementos de prueba de época,
+y aplicar la validación correspondiente para cada uno.
 
 \subsubsection{Detalles de implementación}
 %Estas pruebas de época pueden implementarse utilizando \textit{Ed25519}~\cite{ed25519}
@@ -635,7 +649,7 @@ Más aún, para recuperar elementos dentro de las transacciones se necesita prim
 el lote y, una vez que se tiene el lote original, debe RLP-decodificarse para así obtener los elementos
 originales enviados por los clientes.
 %
-Aquellos elementos son los que deben ser agregados a la \setchain. La función \texttt{getElementsFromTransaction()}
+Aquellos elementos son los que deben ser agregados a la \setchain. La función \texttt{getElementsFromBatch}
 muestra este comportamiento.
 
 En la definición de Compresschain, las transacciones de Tendermint contienen, en principio, más de un elemento.
@@ -702,7 +716,7 @@ hecho sobre elementos individuales.
 \section{Tercera implementación: Hashchain}\label{sec:hashchain}
 %
 Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
-funciones hash en lugar de compresión en Brotli.
+funciones hash en lugar de usar un algoritmo de compresión.
 %
 Mientras que el poder de compresión de las funciones hash puede ser enorme, dado que estas funciones
 mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son irreversibles.
@@ -834,8 +848,9 @@ cómo se resuelve el proceso de inversión.
 En la Figura ~\ref{subfig:hash-flow-d} se muestra el último paso posible de esta comunicación: la aplicación
 anuncia a la red sobre el conocimiento de un nuevo hash. Esto ocurre solo cuando la aplicación
 efectivamente toma conocimiento de un nuevo hash, ya que anunciar más de una vez que se conoce un
-determinado hash generaría tráfico innecesario en la red. Por otro lado, solo se firma el hash si al
-menos un elemento en el hash es válido, como se explicará con más detalle en la siguiente sección.
+determinado hash generaría tráfico innecesario en la red.
+Por otro lado, solo se firma el hash si al
+menos un elemento en el hash es válido y nuevo, como se explicará con más detalle en la siguiente sección.
 %
 En principio, los pares de claves públicas/privadas que sirven para autenticarse
 funcionan a nivel nodo: aplicación y \hcollector comparten una misma clave.
@@ -853,7 +868,7 @@ su propio \hcollector.
 %
 A su vez, es también mediante HTTP RPC que un \hcollector a quien su respectiva aplicación
 le solicitó revertir un hash, se comunica con el \hcollector correspondiente, en función de la clave
-pública asociada a este (recordar que los hashes a revertir están acompañados de una firma, de la cual
+pública asociada a este hash (recordar que los hashes a revertir están acompañados de una firma, de la cual
 es posible recuperar la clave pública de quien afirma conocer el hash).
 
 La implementación del \hcollector involucra una base de datos persistente capaz de almacenar
@@ -919,6 +934,7 @@ nodos. A dichos hashes los llamamos \textit{hashes consolidados}.
 El número \SPH se define de manera tal que se garantiza que si un hash
 consolidó entonces al menos un nodo correcto conoce el lote original del cual proviene.
 %
+Siendo $f$ la cota superior de servidores bizantinos, pordemos considerar \SPH $= f + 1$.
 Los elementos de hashes consolidados son los candidatos a pertenecer a la \setchain.
 %
 Existen casos en los que algunos de dichos elementos pueden no ser añadidos a la \setchain,
@@ -975,8 +991,12 @@ En esta implementación las épocas están definidas por todos los elementos en 
 (es decir, un hash), similar
 a lo presentado para \compresschain.
 %
-En otras palabras, los elementos que provienen del mismo hash consolidado pertenecen a la
-misma época.
+En otras palabras, los elementos que provienen del mismo hash consolidado, en principio,
+pertenecen a la misma época.
+%
+Excepción a esto son los elementos de un hash que no son válidos (puesto que no serán
+estampados con un número de época) o los que no son nuevos, es decir, ya fueron estampados
+con un número de época distinto.
 
 %
 %Now we have to be more careful when adding elements to the setchain, elements
@@ -992,7 +1012,8 @@ misma época.
 Se presentan dos alternativas para asignar un número de época a un hash consolidado.
 %
 La primera se llama \textit{Consolidación de época actual} (CEC), que significa que 
-una vez que un hash consolida, todos sus elementos subyacentes son añadidos a la época actual
+una vez que un hash consolida, todos sus elementos subyacentes nuevos y válidos son
+añadidos a la época actual
 (es decir, a la época en la cual la firma número \SPH es vista).
 %
 La segunda estrategia, \textit{Consolidación de época de primera vista} (FSEC), asigna la época
@@ -1015,7 +1036,7 @@ con una tupla $(h, s)$, donde $h$ es un hash y $s$ es una firma de dicho hash ge
 clave privada de un validador que afirma conocer los elementos de ese hash.
 %
 En la figura, el hash $j$ es el primer hash en el bloque $m$, y el hash $k$ es el hash que primero consolida
-(es decir, el primero en obtener su tercera firma -denotada como $Firma_{k}2$).
+(es decir, el primero en obtener su tercera firma, denotada como $Firma_{k}2$).
 %
 Por un lado, la estrategia de consolidación de época actual asigna la época tan pronto como
 el hash consolida, estampando los elementos en el hash $k$ con época $a$ primero y luego
@@ -1036,7 +1057,8 @@ con la época $a$ y los elementos del hash $k$, con la época $a+1$.
 \end{figure}
 
 La variante de consolidación de época de primera vista le otorga a los hashes un período
-de gracia en el cual pueden, o bien consolidarse, o bien ser descartados.
+de gracia (medido en número de transacciones ocurridas) en el cual pueden, o bien
+consolidarse, o bien ser descartados.
 %
 Dicho período de gracia es necesario; examinemos por qué.
 % The grace period is necessary, let
@@ -1058,11 +1080,11 @@ después de $j$) no podría consolidar, dado que sus elementos subyacentes no po
 estampados con una época $F$ \textgreater \ $E$, si la época $E$ no fue definida aún.
 %
 En la Figura~\ref{fig:grace_period} se muestra un ejemplo de lo mencionado. Los hashes
-$k$ y $l$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o sea rechazada.
+$k$ e $i$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o sea rechazada.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.28]{figures/grace-period-example.png}
+  \includegraphics[scale=0.25]{figures/grace-period-example.png}
   \caption{Escenario que requiere período de gracia bajo FSEC.}
   \label{fig:grace_period}
 \end{figure}
@@ -1071,7 +1093,13 @@ $k$ y $l$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o
 Se concluye entonces que un período de gracia es necesario para garantizar la evolución
 exitosa de la \hashchain. 
 %
-Vale la pena notar que el aspecto crucial en la consolidación de FSEC radica en la ocurrencia
+Este período de gracia debe ser medido en términos de transacciones, de modo de que existan garantías
+de que todos los nodos correctos estarán de acuerdo en aceptar o rechazar un hash.
+%
+No es posible medir este período de gracia en tiempo (por ejemplo, segundos), siendo que no hay garantías en
+cuanto al momento exacto en que cada nodo recibe las transacciones.
+%
+Vale la pena notar también que el aspecto crucial en la consolidación de FSEC radica en la ocurrencia
 de las \SPH firmas dentro de una ventana equivalente a la duración
 del período de gracia.
 %
@@ -1119,8 +1147,8 @@ Finalmente, en relación a la definición de la ABCI, se muestra una posible imp
 \hashchain utilizando la estrategia de consolidación de época actual en el Algoritmo ~\ref{alg:abci-hash1}
 y ~\ref{alg:abci-hash2}.
 
-Es importante notar que en el algoritmo el método \<Query> inicia la construcción de \<history>, además de
-la difusión de pruebas de época.
+Es importante notar que en el algoritmo el método \<Query>, a través de la llamada a \<updateHistory>,
+inicia la construcción de \<history> y la difusión de pruebas de época, 
 %
 Aunque este enfoque es empleado por su claridad, un nodo que recibe consultas
 no muy frecuentemente podría experimentar retrasos en la generación de pruebas de época.
@@ -1145,12 +1173,14 @@ y firmarlo, por lo que con seguridad sus elementos tendrán un número de época
 
 % Make this appears after all the algorithms.
 
+\newpage
+
 \subsection{FSEC vs CEC}
 En esta sección se comparan las estrategias FSEC y CEC a partir de la idea de ataques de \textit{front-running}.
 En el contexto de las blockchains, un ataque de front-running~\cite{frontrunning} refiere a una situación en donde
 un actor malicioso explota conocimiento sobre transacciones pendientes para obtener una ventaja
 desleal. Debido a que las transacciones pendientes son públicas, un usuario malicioso puede
-observar las transacciones que le llegan a una víctima, construir una nueva transacción y luego
+observar las transacciones que genera una víctima, construir una nueva transacción y luego
 encontrar una forma de ubicarla antes que la transacción de la víctima. En la red Ethereum, esta
 \textquotedblleft forma\textquotedblright\ de colocar una transacción antes de otra es usualmente
 llevada a cabo mediante pagos: o bien pagando impuestos de transacción (\textit{transacction fees}) más altos
@@ -1190,7 +1220,8 @@ Para lograrlo, ignora la transacción, pero difunde su propia transacción firma
 esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
 %
 
-Bajo el comportamiento FSEC, $h_k$ fue visto por primera vez antes, por lo que si logra las
+Bajo el comportamiento FSEC, $h_k$ fue visto por primera vez en un bloque anterior,
+por lo que si logra las
 \SPH firmas dentro del período de gracia, consolidará y los elementos
 en el hash serán estampados con una época menor a la de $t_1$.
 %
