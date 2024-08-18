@@ -11,7 +11,7 @@ contribuciones de este trabajo.
 La computación distribuida nació a fines de la década de 1970 cuando investigadores y profesionales
 comenzaron a tener en cuenta las características intrínsecas de los sistemas distribuidos físicamente.
 El campo luego emergió como un área de investigación especializada distinta al de redes, al de sistemas
-operativos, y al de computación paralela.~\cite{raynal.dist.systems}
+operativos, y al de computación paralela~\cite{raynal.dist.systems}.
 
 La computación distribuida surge cuando se tiene que resolver un problema en términos de entidades
 distribuidas (usualmente llamadas procesos, nodos, actores, agentes, pares, etc) en donde cada
@@ -31,7 +31,7 @@ entrada asociada $e_i$.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.25]{figures/distributed-systems.png}
+  \includegraphics[scale=0.18]{figures/distributed-systems.png}
   \caption{Estructura básica de la computación distribuida}
   \label{fig:distributed-systems}
 \end{figure}
@@ -112,10 +112,10 @@ de los generales son leales~\cite{byzantineproblem}.
 %
 
 Con esta analogía de los generales bizantinos se instauraron nuevos conceptos que hoy son ampliamente utilizados.
-La habilidad de tolerar máquinas que fallan de formas arbritarias, incluyendo aquellas maliciosas,
+La habilidad de tolerar máquinas que fallan de formas arbitrarias, incluyendo aquellas maliciosas,
 es conocida como \emph{tolerancia a fallas bizantinas}.
 A su vez, se inició el estudio de los algoritmos de consenso tolerantes a fallas
-bizantinas (\textit{Bizantyne fault-tolerant algoritms}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
+bizantinas (\textit{Byzantine fault-tolerant algorithms}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
 Si bien la teoría de
 BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
 debido al amplio éxito de tecnologías blockchains como Bitcoin~\cite{nakamoto06bitcoin} y Ethereum~\cite{wood2014ethereum}.
@@ -130,7 +130,7 @@ Las firmas digitales son una de las primitivas más poderosas de la criptografí
 Son similares a las firmas de puño y letra, en el sentido de que apuntan a cumplir las mismas propiedades.
 Sin embargo, al ser firmas criptográficas, presentan garantías:
 \begin{itemize}
-  \item La firma solo puede ser utilizada por su dueño para firmar mensajes arbritarios.
+  \item La firma solo puede ser utilizada por su dueño para firmar mensajes arbitrarios.
   \item Cualquiera puede verificar la firma de un mensaje.
 \end{itemize}
  
@@ -189,7 +189,7 @@ o la ejecución de transacciones.
 La innovación clave en Bitcoin fue el uso de un sistema de cómputo distribuido que lleva
 a cabo una elección global de las nuevas transacciones, permitiendo
 a la red descentralizada llegar a un consenso sobre el estado de las mismas. Estas transacciones
-se guardan empaquetadas como bloques en una bitácora distribuida pública conocida como blockchain.~\cite{mastering.bitcoin}
+se guardan empaquetadas como bloques en una bitácora distribuida pública conocida como blockchain~\cite{mastering.bitcoin}.
 %
 Se dice que estas transacciones se encuentran totalmente ordenadas porque es posible determinar para
 dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
@@ -237,7 +237,7 @@ Cuando una transacción gasta algunos de estos UTXOs, desaparecen y aparecen nue
 disponibles para gastar para el usuario destino de la transacción.
 %
 
-De este modo, para saber cuántos BTCs tiene una cuenta, se deben contar todos los UTXOs que fueron
+De este modo, para saber cuántos BTCs tiene una cuenta, se deben contar todos los UTXOs que están
 asignados a dicha clave pública.
 %
 En otras palabras, se debe contar todo el dinero que fue enviado a dicha clave pública y aún no
@@ -456,7 +456,7 @@ módulos de la blockchain.
 Éstos son los módulos que se presentan en la capa inmediata superior, el
 Tendermint Core: mempool, consenso, evidencia, sincronización rápida, y sincronización de estado.
 %
-Para el presente trabajo, de la capa Tendermint Core, solo serán pertinentes los módulos de mempool y de consenso
+Para el presente trabajo, de la capa Tendermint Core, solo serán pertinentes los módulos de mempool y de consenso.
 %
 En la capa inmediata superior se encuentra la ya mencionada interfaz de aplicación, que es quien se encarga de comunicarse
 con la aplicación en sí.
@@ -469,7 +469,7 @@ módulos de mempool o consenso.
 Los lápices presentes tanto en el cliente como en la capa de aplicación indican que esos son los módulos creados
 por la programadora.
 %
-Tendermint funciona como una caja negra que resuelve consenso para la creación de aplicaciones arbritarias.
+Tendermint funciona como una caja negra que resuelve consenso para la creación de aplicaciones arbitrarias.
 %
 
 \subsubsection{Tendermint Core}
@@ -605,7 +605,7 @@ Cada proceso computa independientemente y a su propia velocidad, y los aspectos 
 permanecen ocultos para el resto. Los retrasos en la transferencia de mensajes son aribitrarios pero finitos
 y también permanecen desconocidos para los procesos.
 
-Los procesos pueden fallar arbritariamente, pero el número de servidores que fallan (bizantinos) está
+Los procesos pueden fallar arbitrariamente, pero el número de servidores que fallan (bizantinos) está
 limitado por \textit{f}, y el número de servidores total, \textit{n}, es al menos $3f + 1$.
 Se asumen \textit{canales confiables} entre procesos no bizantinos (correctos), por lo tanto ningún
 mensaje se pierde, se duplica o se modifica.
