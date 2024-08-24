@@ -46,7 +46,7 @@
             		\State \textbf{return} (\texttt{the\_set}, \texttt{history}, \texttt{epoch})
             \EndFunction
 
-			\Function{\<updateHistory>}{\null}
+			\Function{\<updateHistory>}{\null}\label{alg:hash_update_history}
 				\State \texttt{lastEpochInHistory} $\leftarrow$ max(\texttt{history}) + 1
 				\For{\texttt{i in (\texttt{lastEpochInHistory, next\_epoch})}}
 					\State \texttt{hash} $\leftarrow$  \texttt{epoch\_to\_hash[i]}\label{alg:hash-epoch-to-hash-use}

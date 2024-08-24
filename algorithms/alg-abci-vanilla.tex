@@ -27,7 +27,7 @@
             		\Comment{Calcular el hash de la época.}
                 \State \texttt{epochProof} $\leftarrow$  \texttt{Sign(\texttt{hash}, PRIVATE\_KEY})
                 \State \Call{\<add>}{\texttt{epochProof}}
-                \State \(\<epoch>  <- \, \texttt{next\_epoch}\)
+                \State \(\<epoch>  <- \, \texttt{next\_epoch}\)\label{line:epoch-increment}
                 \State \texttt{next\_epoch} \( \, <- \texttt{next\_epoch} + 1\)
                 \Comment{Cada bloque de Tendermint define una época.}
                 \State \textbf{return}
