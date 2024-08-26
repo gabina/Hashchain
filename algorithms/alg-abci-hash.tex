@@ -19,7 +19,7 @@
 
 						\Comment{Si el nodo no tiene el lote original, lanzar una rutina asíncrona que solicita el lote.}
             		
-                		\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}\label{line:spawn-reverse-checktx}
+                		\State \textbf{spawns} \Call{\<tryReverse>}{$hash, signature$}\label{line:spawn-reverse-checktx}
                 		\State \textbf{return True}
 						\Comment{En caso de ausencia de información, retornar True.}
                 	\Else
@@ -31,7 +31,7 @@
             		\If {\<isValidSignature>($hash, signature$)}
             			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}\label{alg:hash-new-sign}
 						\If {not ($hash$ \texttt{in hash\_to\_batch})}
-							\State \textbf{spawns} \Call{\<reverse>}{$hash, signature$}\label{alg:spawn-reverse}
+							\State \textbf{spawns} \Call{\<tryReverse>}{$hash, signature$}\label{alg:spawn-reverse}
 						\EndIf
             			\If {\Call{\<shouldConsolidateHash>}{$hash$}}
             				\State \texttt{epoch\_to\_hash[next\_epoch]} $\leftarrow$ $hash$\label{alg:hash-epoch-to-hash}
@@ -84,7 +84,7 @@
       \label{alg:abci-hash2}%
       \small
       \begin{algorithmic}[1]
-            	\Function{\<reverse>}{$hash, signature$}\label{alg:hash_revert}
+            	\Function{\<tryReverse>}{$hash, signature$}\label{alg:hash_revert}
                 \State \texttt{original\_batch} $\leftarrow$ \texttt{my\_collector}.\Call{\<Reverse>}{$hash, signature$}
                 \If {\<Hash>(\texttt{original\_batch}) = $hash$}
 					\State \texttt{hash\_to\_batch}[$hash$]  $\leftarrow$ \texttt{original\_batch} \label{line:abci-hashchain-hash-to-batch}
@@ -95,7 +95,10 @@
 								\EndIf
 							\EndFor
                 			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})\label{alg:hash-sign-hash}
-                			\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})\label{alg:hash-broadcast-hash}
+							\If {\texttt{my\_signature} $\neq signature$}
+								\Comment{Difundir la firma únicamente si es nueva.}
+                				\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})\label{alg:hash-broadcast-hash}
+							\EndIf
 						%\EndIf   
 				\EndIf             	
                 	\State \textbf{return}
