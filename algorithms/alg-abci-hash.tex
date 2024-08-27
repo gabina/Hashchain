@@ -28,7 +28,7 @@
             		\EndFunction
       
             \Function{\<DeliverTx>}{$hash, signature$}\label{alg:hash_deliver_tx}
-            		\If {\<isValidSignature>($hash, signature$)}
+            		\If {\<isValidSignature>($hash, signature$)}\label{line:hash-check-sign}
             			\State \texttt{hash\_to\_signatures}[$hash$] $\leftarrow$ \texttt{hash\_to\_signatures}[$hash$] $\cup$  \{$signature$\}\label{alg:hash-new-sign}
 						\If {not ($hash$ \texttt{in hash\_to\_batch})}
 							\State \textbf{spawns} \Call{\<tryReverse>}{$hash, signature$}\label{alg:spawn-reverse}
