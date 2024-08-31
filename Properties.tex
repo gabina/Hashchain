@@ -183,14 +183,16 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \begin{proof}
   Sea $e \in $ \(V\) y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
   Como $e \in $ \(V\), sabemos que $e$ es válido ($\bigstar$).
-  Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
-  Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
+  %Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
+  %Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
   Por definción de \<add> en el algoritmo \ref{alg:api-vanilla}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \<broadcastTx>($t$) sobre el servidor $v$,
   donde $t = e$. Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx},
   $v$ recibirá eventualmente la petición \<CheckTx>($t$).
-  Por $\bigstar$ se tiene que $e$ es un elemento válido y por $\clubsuit$, que $e \notin \HISTORY$,
-  por lo cual, siendo $t = e$
+  Por $\bigstar$ se tiene que $e$ es un elemento válido.
+  Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
+  Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
+  Por lo cual, siendo $t = e$
   y considerando la definición de \<CheckTx> en la línea \ref{alg:van_check_tx} del algoritmo
   \ref{alg:abci-vanilla}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{True}
   en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
@@ -414,8 +416,8 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \begin{proof}
   Sea $e \in $ \(V\) y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
   Como $e \in $ \(V\), sabemos que $e$ es válido ($\bigstar$).
-  Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
-  Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
+  % Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
+  % Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
   Por definción de \<add> en el algoritmo \ref{alg:api-brotli}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \texttt{CompressCollector.AddElement($e$)}.
   Como se puede observar en el algoritmo ~\ref{alg:collector-brotli}, dado que $e$ es válido,
@@ -427,8 +429,10 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   considerado listo.} y se invocará \<broadcastTx>($t$) sobre el servidor $v$.
   Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
   recibirá eventualmente la petición \<CheckTx>($t$).
-  Por $\bigstar$ se tiene que $e$ es un elemento válido y por $\clubsuit$, que $e \notin \HISTORY$,
-  por lo cual, siendo $e$ un elemento de $t$
+  Por $\bigstar$ se tiene que $e$ es un elemento válido.
+  Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
+  Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
+  Por lo cual, siendo $e$ un elemento de $t$
   y considerando la definición de \<CheckTx> en la línea \ref{alg:brotli_check_tx} del algoritmo
   \ref{alg:abci-brotli}, se deduce que la llamada a \<CheckTx>($t$) retornará \texttt{True}
   en $v$, por lo cual $t$ pasará a formar parte de la mempool de $v$.
