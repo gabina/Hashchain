@@ -95,7 +95,7 @@
 								\EndIf
 							\EndFor
                 			\State \texttt{my\_signature} $\leftarrow$ \<Sign>($hash$, \texttt{PRIVATE\_KEY})\label{alg:hash-sign-hash}
-							\If {\texttt{my\_signature} $\neq signature$}
+							\If {\texttt{my\_signature} $\neq signature$}\label{alg:hash-if-broadcast-hash}
 								\Comment{Difundir la firma únicamente si es nueva.}
                 				\State \texttt{Tendermint.Broadcast}($hash$, \texttt{my\_signature})\label{alg:hash-broadcast-hash}
 							\EndIf

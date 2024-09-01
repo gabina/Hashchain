@@ -638,7 +638,7 @@ tienen el mismo hash asociado, es decir, no se considera la posibilidad de colis
 Con el objetivo de hacer las demostraciones más sencillas, se definen y demuestran las siguientes
 propiedades derivadas.
 
-\begin{property}[Haschain-Consolidation]\label{tendermint:hashchain-consolidation}
+\begin{property}[Haschain-Global-Consolidation]\label{tendermint:hashchain-global-consolidation}
   Si un hash $h$ consolida en un servidor correcto, eventualmente consolidará en todos
   los servidores correctos.
 \end{property}
@@ -656,15 +656,19 @@ propiedades derivadas.
   Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
   podemos asegurar que la misma cadena de peticiones llegará a todos los servidores correctos.
   De este modo, todos los servidores correctos recibirán \SPH firmas válidas y distitnas para $h$,
-  de modo que dicho hash consolidará.
+  de modo que dicho hash consolidará en todos los servidores correctos.
 \end{proof}
 
-\begin{property}[Haschain-Consolidation]\label{tendermint:hashchain-consolidation}
+\begin{property}[Haschain-Local-Consolidation]\label{tendermint:hashchain-local-consolidation}
   Si un hash $h$ consolida en un servidor correcto $v$, eventualmente todos los elementos
   asociados a $h$ son añadidos a $v.\HISTORY$.
 \end{property}
   
 \begin{proof}
+  A continuación se proporciona una descripción general de la demostración. Una demostración
+  por inducción en el número de época se podría realizar siguiendo una estructura similar a la
+  presentada en la demostración del lema \ref{lemma:hashchain-consistent-gets}.
+  
   Sea $v$ un servidor correcto.
   Sea $h$ un hash que consolida en $v$.
   Por lo tanto, \<shouldConsolidateHash>($h$) retornó \texttt{True}, es decir, se recolectaron
@@ -674,16 +678,16 @@ propiedades derivadas.
   cuando $v$ procese la petición \<DeliverTx> asociada a $h$ y a la firma de $w$ (si es que $v$
   aún no tenía el lote asociado a $h$). 
   De este modo, se asegura que $v$ tiene los elementos asociados a $h$ y, por lo tanto, podrá añadirlos
-  a \HISTORY cuando se procese \<updateHistory>.
+  a $\HISTORY$ cuando se procese \<updateHistory>.
   El mismo razonamiento se puede utilizar para las épocas anteriores.
   
-  NOTA: habría que usar inducción en el nro de época.
+  % NOTA: habría que usar inducción en el nro de época.
 \end{proof}
 
 \begin{property}[Haschain-Broadcast-Consolidation]\label{tendermint:hashchain-broadcast-consolidation}
-Sea $v$ un servidor correcto. Sea $e$ un elemento válido, tal que $e \in l$, y $h$, el hash asociado al lote $l$.
-Si se invoca \<broadcastTx>($h, s$) en $v$, donde $s$ es la firma de $h$ con la clave privada de $v$,
-entonces eventualmente $e \in v.\HISTORY$.
+  Sea $v$ un servidor correcto. Sea $e$ un elemento válido tal que $e \in l$, y sea $h$ el hash asociado al lote $l$.
+  Si se invoca \<broadcastTx>($h, s$) en $v$, donde $s$ es la firma de $h$ con la clave privada de $v$,
+  entonces eventualmente $e \in v.\HISTORY$.
 \end{property}
 
 \begin{proof}
@@ -706,130 +710,33 @@ entonces eventualmente $e \in v.\HISTORY$.
   de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
   Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
   podemos asegurar que la misma cadena de peticiones llegará a todos los servidores correctos.
-  Como parte de la ejecución de \<DeliverTx>($t$), si aún no tienen el lote $l$ asociado,
-  los servidores correctos intentarán revertir $h$ comunicándose con el \hcollector
+  Sea $w$ un servidor correcto cualquiera.
+  Como parte de la ejecución de \<DeliverTx>($t$) en $w$, si aún no tiene
+  el lote $l$ asociado, $w$ intentará revertir $h$ comunicándose con el \hcollector
   de $v$, quien, con seguridad, devolverá el lote asociado a $h$.
-  Así, como parte de \<tryReverse> todos los servidores correctos firmarán $h$ con
+  Así, como parte de \<tryReverse>, $w$ firmará $h$ con
   su propia clave privada.
-  Siguiendo un razonamiento idéntico al ya explicado, podemos concluir que se recibirán peticiones
+  Esto ocurrirá para todos los servidores correctos.
+  Siguiendo un razonamiento idéntico al ya explicado, podemos concluir que $v$ recibirá peticiones
   \<DeliverTx> para todas las transacciones del tipo $(h, s')$, donde $s'$ es una firma
-  válida para $h$ generada con la clave privada de un servidor correcto, haciendo que el hash
-  consolide en $v$ y, por tanto, todos sus elementos sean añadidos a $v.\HISTORY$ (incluyendo $e$).
-  La única excepción a esto se dará en el caso en que \<CheckTx>($h, s'$) retorne \texttt{False},
-  significando que $e in w.\HISTORY$ para algún servidor $w$ correcto.
-  En ese caso, un hash $h'$ que contiene a $e$ consolidó en $w$ y, por la propiedad
-  \ref{tendermint:hashchain-consolidation}, eventualmente consolidará en $v$, añadiendo a
+  válida para $h$ generada con la clave privada de un servidor correcto, siempre que $w$.\<CheckTx>($h, s'$)
+  retorne \texttt{True} en todo servidor correcto $w$.
+  De este modo, el hash consolidará en $v$ y, por la propiedad \ref{tendermint:hashchain-local-consolidation}
+  \textit{Haschain-Local-Consolidation}, todos sus elementos serán añadidos a $v.\HISTORY$ (incluyendo a $e$).
+  La única excepción a esto se dará en el caso en que $w$.\<CheckTx>($h, s'$) retorne \texttt{False}
+  para algún servidor correcto $w$,
+  significando que $e \in w.\HISTORY$.
+  En ese caso, un hash $h'$ que contiene a $e$ consolidó en $w$ (puesto que solo se agregan elementos a $\HISTORY$
+  cuando un hash consolida).
+  Por la propiedad \ref{tendermint:hashchain-global-consolidation} \textit{Haschain-Global-Consolidation},
+  eventualmente ese mismo hash consolidará en $v$.
+  A su vez, por la propiedad \ref{tendermint:hashchain-local-consolidation} \textit{Haschain-Local-Consolidation} se añadirá
   $e$ a $v.\HISTORY$.
 \end{proof}
 
-% \begin{property}[Haschain-Delivery]\label{tendermint:hashchain-delivery}
-%   % Sea $e$ un elemento válido y $v$ un servidor correcto. Luego de cada invocación
-%   % $v.\<add>(e)$ por parte de un cliente, eventualmente se produce
-%   % una petición $v.\<DeliverTx>(t)$, en donde.
-
-%   Sea $v$ un servidor correcto y $t$ una tupla $(h, s)$ donde
-%   \begin{itemize}
-%     \item $h$ es un lote hasheado de elementos, donde uno de esos elementos es válido,
-%     \item y $s$ es una firma válida de dicho hash realizada con la clave privada de $v$.
-%   \end{itemize}
-%   Si $v$ invoca \<broadcastTx>($t$), eventualmente todos los servidores
-%   correctos conocen el lote asoaciado a $h$.%se produce una petición $v.\<DeliverTx>(t)$.
- 
-% \end{property}
-
-% \begin{proof}
-%   Supongamos que $v$ invoca \<broadcastTx>($t$).
-%   Siempre que un servidor correcto invoca \<broadcastTx> para un hash firmado con su propia clave privada,
-%   es porque su propio \hcollector persistió en su base de datos el lote asociado a dicho hash previamente.
-%   Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
-%   recibirá eventualmente la petición \<CheckTx>($t$).
-%   Siguiendo la definición de \<CheckTx>~\ref{alg:hash_check_tx}, si la firma es válida ($s$ lo es por hipótesis)
-%   se abren dos casos: que $v$ conozca el hash o que aún no lo conozca.
-  
-%   Si $v$ no tiene el lote asociado al hash $h$, entonces trivialmente retornará \texttt{True}.
-%   Por lo tanto, $t$ pasará a formar parte de la mempool de $v$.
-%   Luego, por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection}
-%   sabemos que la transacción $t$ formará parte de un bloque.
-%   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-%   el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$), como parte de una cadena
-%   de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
-%   Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
-%   podemos asegurar que la misma cadena de peticiones llegará a todos los servidores correctos.
-%   Como parte de la ejecución de \<DeliverTx>($t$), intentarán revertir $h$ comunicándose con el \hcollector
-%   de $v$, quien, con seguridad, devolverá el lote asociado a $h$.
-
-
-%   Por otro lado, si $v$ tiene el lote asociado a $h$, entonces es porque necesariamente previamente lo revirtió,
-%   mediante la ejecución de \<tryReverse>. Sin embargo, 
-%   , entonces retornará \texttt{True} puesto que es un hash asociado a un lote válido
-%   por hipótesis (al menos uno de sus elementos es válido y nuevo).
-  
-% \end{proof}
-
-% \begin{property}[Haschain-Eventual-Consolidation]\label{tendermint:hashchain-eventual-consolidation}
-%   Sean $v$ y $w$ dos servidores. Sea $t$ una tupla $(h, s)$ donde
-%   \begin{itemize}
-%     \item $h$ es un lote hasheado de elementos con al menos un elemento válido y nuevo,
-%     \item y $s$ es una firma válida de dicho hash realizada con la clave privada de $v$.
-%   \end{itemize}
-%   Supongamos que $v$ está dispuesto a revertir el hash al menos a $w$.
-%   Luego, si $w$ es un servidor correcto y recibe una petición $\<DeliverTx>(t)$,
-%   eventualmente el hash $h$ consolidará.
-%   % Sea $e$ un elemento válido y $v$ un servidor correcto. Si un cliente invoca
-%   % $v.\<add>(e)$, eventualmente un hash proveniente de un lote que contiene a $e$ consolidará.
-% \end{property}
-
-% \begin{proof}
-%   % Sea $e$ un elemento válido y $v$ un servidor correcto.
-%   % Si un cliente invoca $v.\<add>(e)$, sabemos por la propiedad \textit{Haschain-Delivery} que,
-%   % eventualmente $v$ recibirá la petición $\<DeliverTx>(t)$, en donde
-%   % $t$ es una tupla $(h, s)$, siendo
-%   % \begin{itemize}
-%   %   \item $h$ un lote hasheado de elementos, donde uno de esos elementos es $e$,
-%   %   \item y $s$ una firma válida de dicho hash realizada con la clave privada de $v$.
-%   % \end{itemize}
-%   % Por la propiedad \textit{Tendermint-Global-Requests}, sabemos que todos los nodos correctos
-%   % recibirán eventualmente la misma petición $\<DeliverTx>(t)$.
-
-%   Sea $w$ un nodo correcto que recibe $\<DeliverTx>(t)$. Como lo indica la definición presentada
-%   en el Algoritmo~\ref{alg:abci-hash1},
-%   $w$ chequeará que $s$ sea una firma válida (lo cual vale por hipótesis) y luego sumará la nueva
-%   firma a las firmas para el hash $h$.
-%   Seguido de esto, si $w$ no conoce aún el reverso de $h$, entonces lanzará una acción asíncrona
-%   para revertirlo
-%   (ver línea \ref{alg:spawn-reverse}).
-%   Si $w$ ya conoce el reverso de $h$ es porque ya invocó al proceso de inversión de hashes previamente.
-
-%   Supongamos que $w$ no conoce el reverso de $h$.
-%   Como se puede ver en la definición de \<tryReverse>~\ref{alg:hash_revert},
-%   $w$ se conectará con su propio \hcollector (mediante la invocación
-%   \<Reverse> del algoritmo ~\ref{alg:collector-hash}) para obtener el lote asociado a $h$.
-%   Con seguridad obtendrá el reverso puesto que su \hcollector se comunicará con el \hcollector de $v$ (que
-%   por hipótesis está dispuesto a revertir $h$) porque $s$ es una firma asociada a $v$.
-%   Por su parte, el \hcollector de $v$ ejecutará \<Reverse>,
-%   obteniendo el lote desde su base de datos y devolviéndolo.
-
-%   Siguiendo la definición de \<tryReverse> en $w$, como se muestra en las líneas \ref{alg:hash-sign-hash}
-%   y \ref{alg:hash-broadcast-hash}, una vez que obtiene el lote asociado a $h$,
-%   firmará $h$ con su propia clave privada y lo difundirá como
-%   una nueva transacción invocando \<broadcastTx>($t'$), donde $t' = (h, s')$, siendo $s'$ la firma
-%   generada con la clave privada de $w$.
-%   Por la propiedad \emph{Haschain-Delivery}~\ref{tendermint:hashchain-delivery},
-%   eventualmente llegará una nueva petición $\<DeliverTx>(t')$.
-%   Luego, por la propiedad \emph{Tendermint-Global-Requests}~\ref{tendermint:global-delivery},
-%   todos los servidores correctos
-%   recibirán $\<DeliverTx>(t')$, agregando una nueva firma para el hash $h$,
-%   como se muestra en la línea \ref{alg:hash-new-sign}.
-
-%   Dado que este proceso se repetirá para todo servidor correcto, y considerando que
-%   \SPH es menor o igual a la cantidad de nodos
-%   correctos, con certeza $h$ obtendrá las \SPH firmas (puesto que cada servidor colaborará
-%   con su firma) y, por lo tanto, consolidará.
-% \end{proof}
-
 \subsubsection{Lemas}
 
-\begin{lemma}
+\begin{lemma}\label{lemma:hashchain-consistent-set}
   La implementación \hashchain cumple la propiedad~\ref{api:consistent-set} \textit{Consistent Sets} de \setchain.
   %que establece que las épocas solo contienen elementos que provienen del conjunto de solo crecimiento.
 \end{lemma}
@@ -851,9 +758,6 @@ entonces eventualmente $e \in v.\HISTORY$.
   se concluye que dicho código tiene que haber sido ejecutado previamente, lo cual implica también que
   $e$ fue añadido a $\THESET$ con anterioridad.
   Por lo tanto, se tiene $e \in \THESET$, concluyendo que $\HISTORY(i) \subseteq \THESET$ para todo $i \leq \EPOCH$.
-  % Esto es trivialmente correcto debido a que la
-  % construcción de $\THESET$ y de $\HISTORY$ se hacen a partir de los mismos elementos (ver definición de
-  % \<tryReverse> y \<Query> en el Algoritmo~\ref{alg:abci-hash1} y ~\ref{alg:abci-hash2}).
 \end{proof}
 
 \begin{lemma}
@@ -910,52 +814,25 @@ entonces eventualmente $e \in v.\HISTORY$.
 \end{lemma}
 
 \begin{proof}
-  % Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
-  % Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
-  % Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
-  % ejecutó \<tryReverse>($h, s$)~\ref{alg:hash_revert}, donde $h$ es el hash asociado a un lote $l$ que contiene a $e$
-  % y $s$ es una firma válida para ese hash.
-  % De este modo, revirtió $h$ correctamente y, como consecuencia,
-  % añadió a $e$ a $\THESET$ (ver línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}).
-
-  % A su vez, como parte de \<tryReverse>, $v$ difundió $h$ con su propia firma $s'$ (a menos que $s$ ya fuera la firma de $v$,
-  % en cuyo caso ya lo había difundido previamente).
-  % En cualquier caso, podemos asegurar que se invocó 
-  % \<broadcastTx>($h, s'$) en $v$.
-  % Siempre que un servidor correcto invoca \<broadcastTx> para un hash firmado con su propia clave privada,
-  % es porque su propio \hcollector persistió en su base de datos el lote asociado a dicho hash previamente.
-  % Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
-  % recibirá eventualmente la petición \<CheckTx>($h, s'$).
-  % Siguiendo la definición de \<CheckTx>~\ref{alg:hash_check_tx}, si la firma es válida ($s'$ lo es puesto que
-  % $v$ es correcto) se abren dos casos: que $v$ conozca el hash o que aún no lo conozca.
-  % Si $v$ no tiene el lote $l$ asociado al hash $h$, entonces trivialmente retornará \texttt{True}.
-  % Si $v$ tiene el lote $l$ asociado al hash $h$, entonces si $l$ pasa \<isValidBatch>, retornará \texttt{True}.
-  % Por el contrario, si $l$ no pasa \<isValidBatch>, siendo que $e \in l$ y $e$ es válido, necesariamente tenemos
-  % que $e \in v.\HISTORY$. En tal caso, por la propiedad 
-  % Por lo tanto, $t$ pasará a formar parte de la mempool de $v$.
-  % Luego, por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection}
-  % sabemos que la transacción $t$ formará parte de un bloque.
-  % Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  % el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$), como parte de una cadena
-  % de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
-  % Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
-  % podemos asegurar que la misma cadena de peticiones llegará a todos los servidores correctos.
-  % Como parte de la ejecución de \<DeliverTx>($t$), intentarán revertir $h$ comunicándose con el \hcollector
-  % de $v$, quien, con seguridad, devolverá el lote asociado a $h$.
-
-  % La función \<tryReverse> puede ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
-  % de una petición \<DeliverTx>.
-  % Si proviene de la ejecución de \<CheckTx>, entonces como se muestra en la línea \ref{line:spawn-reverse-checktx}
-  % de su definición, inmediatamente después de lanzar una llamada asíncrona a \<tryReverse>, la petición retornó
-  % \texttt{True}.
-  % Como consecuencia de esto, la transacción en cuestión (que llamamos $t = (h,s)$) fue añadida a la mempool de $v$ y,
-  % por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection} sabemos que eventualmente
-  % $v$ recibirá una petición $\<DeliverTx>(t)$.
-  % Aún más, por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests} todos los servidores
-  % correctos recibirán $\<DeliverTx>(t)$.
-
-  % Por lo tanto, podemos concluir que todos los servidores correctos y, en particular $w$, recibirán la petición $\<DeliverTx>(t)$.
-  % Como consecuencia de esta ejecutarán \<tryReverse> (si es que ya no lo hicieron) añadiendo a $e$ a \THESET. 
+  Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
+  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
+  ejecutó \<tryReverse>($h, s$)~\ref{alg:hash_revert}, donde $h$ es el hash asociado a un lote que contiene a $e$
+  y $s$ es una firma válida para ese hash.
+  De este modo, revirtió $h$ correctamente y, como consecuencia,
+  añadió a $e$ a $\THESET$ (ver línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}).
+  A su vez, como parte de \<tryReverse>, $v$ difundió $h$ con su propia firma $s'$ (a menos que $s$ ya fuera la firma de $v$,
+  en cuyo caso ya lo había difundido previamente).
+  Esto se observa en las líneas \ref{alg:hash-if-broadcast-hash} y \ref{alg:hash-broadcast-hash}.
+  En cualquier caso, podemos asegurar que se invocó \<broadcastTx>($h, s'$) en $v$.
+  Por la propiedad \ref{tendermint:hashchain-broadcast-consolidation} \textit{Haschain-Broadcast-Consolidation},
+  sabemos que eventualmente $e \in v.\HISTORY$.
+  Esto significa que un hash $h'$ (no se puede asegurar que $h'=h$) asociado a un lote que contiene a $e$ consolidó en $v$.
+  Por la propiedad \ref{tendermint:hashchain-global-consolidation} \textit{Haschain-Global-Consolidation},
+  sabemos que $h'$ consolidará en todos los servidores correctos y, en particular, en $w$.
+  Luego, gracias a la propiedad \ref{tendermint:hashchain-local-consolidation} \textit{Haschain-Local-Consolidation}
+  podemos asegurar que $e \in w.\HISTORY$.
+  Finalmente, por el lema \ref{lemma:hashchain-consistent-set} ya demostrado, tenemos que $e \in w.\THESET$.
 \end{proof}
 
 \begin{lemma}
@@ -968,53 +845,13 @@ entonces eventualmente $e \in v.\HISTORY$.
   la propiedad vale trivialmente. Suponemos que $e \notin \HISTORY$.
   Si $e \in v.\THESET$, entonces por construcción de
   $\THESET$, necesariamente $e$ es válido y $v$ en algún momento ejecutó \<tryReverse>~\ref{alg:hash_revert} para un
-  hash $h$, donde el lote $l$ asociado a $h$ contenía a $e$ como elemento.
+  hash $h$, donde el lote asociado a $h$ contenía a $e$ como elemento.
   Como parte de \<tryReverse>, $v$ difundió $h$ con su propia firma $s'$ (a menos que $s$ ya fuera la firma de $v$,
   en cuyo caso ya lo había difundido previamente).
   En cualquier caso, podemos asegurar que se invocó 
   \<broadcastTx>($h, s'$) en $v$.
-  Luego, por la propiedad \ref{tendermint:hashchain-broadcast-consolidation}, podemos asegurar que eventualmente
-  $e \in v.\HISTORY$.
-  %Siempre que un servidor correcto invoca \<broadcastTx> para un hash firmado con su propia clave privada,
-  %es porque su propio \hcollector persistió en su base de datos el lote asociado a dicho hash previamente.
-  % Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
-  % recibirá eventualmente la petición \<CheckTx>($h, s'$).
-  % Siguiendo la definición de \<CheckTx>~\ref{alg:hash_check_tx}, si la firma es válida ($s'$ lo es puesto que
-  % $v$ es correcto) se abren dos casos: que $v$ conozca el hash o que aún no lo conozca.
-  % Si $v$ no tiene el lote $l$ asociado al hash $h$, entonces trivialmente retornará \texttt{True}.
-  % Si $v$ tiene el lote $l$ asociado al hash $h$, entonces si $l$ pasa \<isValidBatch>, retornará \texttt{True}.
-  % Por el contrario, si $l$ no pasa \<isValidBatch>, siendo que $e \in l$ y $e$ es válido, necesariamente tenemos
-  % que $e \in v.\HISTORY$. En tal caso, la propiedad queda demostrada.
-
-  % Suponemos entonces que $v$.\<CheckTx>($h, s'$) retorna \texttt{True}.
-  % Por lo tanto, $t$ pasará a formar parte de la mempool de $v$.
-  % Luego, por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection}
-  % sabemos que la transacción $t$ formará parte de un bloque.
-  % Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  % el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$), como parte de una cadena
-  % de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
-  % Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
-  % podemos asegurar que la misma cadena de peticiones llegará a todos los servidores correctos.
-  % Como parte de la ejecución de \<DeliverTx>($t$), si aún no tienen el lote $l$ asociado,
-  % intentarán revertir $h$ comunicándose con el \hcollector
-  % de $v$, quien, con seguridad, devolverá el lote asociado a $h$.
-  % Así, como parte de \<tryReverse> todos los servidores correctos firmarán $h$ con su propia clave privada,
-
-  % La función \<tryReverse> pudo ser invocada como consecuencia de una petición \<CheckTx> o como consecuencia
-  % de una petición \<DeliverTx>.
-
-  % Si proviene de la ejecución de \<CheckTx>, entonces como se muestra en la línea \ref{line:spawn-reverse-checktx}
-  % de su definición, inmediatamente después de lanzar una llamada asíncrona a \<tryReverse>, la petición retornó
-  % \texttt{True}.
-  % Como consecuencia de esto, la transacción en cuestión (llamémosla $t = (h,s)$) fue añadida a la mempool de $v$ y,
-  % por el lema~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection} sabemos que
-  % eventualmente $v$ recibirá una petición $\<DeliverTx>(t)$.
-
-  % Por lo tanto, podemos concluir que eventualmente $v$ recibirá una petición \<DeliverTx>($t$).
-  % Luego, considerando que el servidor que generó la firma $s$ estuvo dispuesto a revertir $h$ a $v$,
-  % por la propiedad \emph{Haschain-Eventual-Consolidation}\ref{tendermint:hashchain-eventual-consolidation}
-  % podemos concluir que el hash $h$ consolidará y, finalmente, $v$ añadirá a $e$ a $\HISTORY$ 
-  % como se muestra en la línea \ref{line:abci-hashchain-history} en el Algoritmo~\ref{alg:abci-hash1}.
+  Luego, por la propiedad \ref{tendermint:hashchain-broadcast-consolidation} \textit{Haschain-Broadcast-Consolidation}
+  podemos asegurar que eventualmente $e \in v.\HISTORY$.
 \end{proof}
 
 \begin{lemma}
@@ -1033,36 +870,62 @@ entonces eventualmente $e \in v.\HISTORY$.
   %
 \end{proof}
 
-\begin{lemma}
+\begin{lemma}\label{lemma:hashchain-consistent-gets}
   La implementación \hashchain cumple la propiedad \textit{Consistent Gets}~\ref{api:consistent-gets} de \setchain.
 \end{lemma}
 
 \begin{proof}
-  % Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
-  % Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
+  Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
+  Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
-  % Sea $e$ un elemento $\in v.\HISTORY(i)$. 
-  % Por construcción de $\HISTORY$, necesariamente $e$ es válido y pertenece al lote asociado a un hash $h$ que
-  % ya consolidó.
-  % Notemos que para añadir un nuevo elemento a $\HISTORY$, el hash en cuestión debe tener una época asignada
-  % (a través de la variable \texttt{epoch\_to\_hash}) como se muestra en la línea \ref{alg:hash-epoch-to-hash-use}
-  % en el Algoritmo~\ref{alg:abci-hash1}.
-  % Solo se asignan épocas a hashes cuando estos consolidan como se ve en la línea \ref{alg:hash-epoch-to-hash}.
+  Se demostrará $v.\HISTORY(i)=w.\HISTORY(i)$ por inducción fuerte en el número de época.
 
-  % De la definición de \<shouldConsolidateHash>\ref{alg:hash_consolidated} presentada
-  % en el Algoritmo~\ref{alg:abci-hash2} y del hecho de que las firmas se agregan
-  % a \texttt{hash\_to\_signatures} solo en la línea \ref{alg:hash-new-sign} de \<DeliverTx>, se concluye que
-  % tienen que haber llegado al menos \SPH peticiones \<DeliverTx> para el hash $h$ con firmas de distintos servidores.
-  % Por la propiedad \emph{Tendermint-Global-Requests}~\ref{tendermint:global-delivery} podemos asegurar que todos
-  % los servidores correctos, y en particular $w$, reciben las mismas peticiones \<DeliverTx>
-  % y en el mismo orden en que lo hace $v$.
-  % A su vez, podemos asegurar que todos los nodos correctos pueden revertir $h$ puesto que $v$ es un servidor
-  % correcto que conoce el lote asociado y revertirá el hash a quien se lo pida.
-  % De este modo, el hash $h$ consolida en todos los servidores
-  % durante la construcción de la época $i$, añadiendo a $e$ a $w.\HISTORY(i)$, como se muestra en la línea
-  % \ref{line:abci-hashchain-history} en el Algoritmo~\ref{alg:abci-hash1}.
-  % El mismo razonamiento se puede hacer para un elemento $e \in w.\HISTORY(i)$.
-  % Luego, $v.\HISTORY(i)=w.\HISTORY(i)$.
+  \textbf{Caso base}. 
+  Sea un elemento $e$ $\in v.\HISTORY(1)$.
+  Por construcción de $\HISTORY$, necesariamente $e$ es válido y $v$ recibió al menos \SPH
+  peticiones \<DeliverTx>($h, s$), donde $h$ es un hash asociado a un lote que contiene a $e$,
+  y $s$ es una firma válida de $h$ (generada con la clave priavada de un servidor).
+  Esto produjo que \texttt{hash\_to\_signature[$h$]} acumulara firmas como se muestra en la línea
+  \ref{alg:hash-new-sign} de la definición de \<DeliverTx>, y que eventualmente
+  \<shouldConsolidateHash>($h$) retorne \texttt{True}, asignándole el número de época 1 al hash $h$
+  (ver línea \ref{alg:hash-epoch-to-hash} en el Algoritmo~\ref{alg:abci-hash1}).
+  Luego, en la posterior ejecución de \<updateHistory>, $e$ es añadido a $v.\HISTORY(1)$
+  como se muestra en la línea \ref{line:abci-hashchain-history} (necesariamente $h$ fue revertido
+  correctamente en algún momento anterior).
+  Naturalmente, estas peticiones \<DeliverTx>($h, s$) arriban a $v$ como parte de cadenas de
+  peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
+  Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests} podemos
+  asegurar que todos los servidores correctos,
+  y en particular $w$, reciben las cadenas de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit
+  en el mismo orden en que lo hace $v$.
+  Por lo tanto, de forma análoga, $h$ consolidará en $w$.
+  A su vez, dado que $\SPH \geq f + 1$, podemos asegurar que al menos un servidor correcto firmó $h$.
+  Con seguridad, dicho servidor correcto conoce el hash y, por lo tanto, garantiza que lo revertirá
+  cuando $w$ procese su petición.
+  De esta forma, con certeza se añadirá a $e$ a $w.\HISTORY(1)$.
+  Así queda demostrado $v.\HISTORY(1) \subseteq w.\HISTORY(1)$.
+  El mismo razonamiento se puede seguir para demostrar $w.\HISTORY(1) \subseteq v.\HISTORY(1)$.
+  Luego, queda demostrada la propiedad para el caso base: $v.\HISTORY(1)=w.\HISTORY(1)$.
+  
+  \textbf{Caso inductivo}.
+  Sea un elemento $e \in v.\HISTORY(n+1)$. Análogamente a lo mencionado anteriormente,
+  a $v$ llegaron cadenas de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit
+  que provocaron que un hash $h$ (asociado a un lote $l$ tal que $e \in l$) consolidara,
+  haciendo que $e$ fuera añadido a $v.\HISTORY(n+1)$.
+  Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
+  podemos asegurar que las mismas cadenas de peticiones llegaron a $w$.
+  A su vez, siguiendo el razonamiento explicado en el caso base, podemos asegurar que $w$ es capaz
+  de revertir el hash $h$ y obtener el lote $l$.
+  Por la hipótesis inductiva fuerte, sabemos que
+  $v.\HISTORY(j)=w.\HISTORY(j), \forall j \leq n$.
+  Por lo tanto, podemos asegurar que, una vez que $h$ consolida en $w$, cuando se procesa
+  \<updateHistory> para la época $n+1$, la cláusula \texttt{if} de la línea \ref{line:abci-hashchain-history-if}
+  retorna \texttt{True}, puesto que
+  $e \notin w.\HISTORY(j) \forall j \leq n$.
+  De este modo, $e$ es añadido a $w.\HISTORY(n+1)$.
+  Así queda demostrado $v.\HISTORY(n+1) \subseteq w.\HISTORY(n+1)$.
+  El mismo razonamiento se puede seguir para demostrar $w.\HISTORY(n+1) \subseteq v.\HISTORY(n+1)$.
+  Luego, queda demostrada la propiedad para el caso inductivo: $v.\HISTORY(n+1)=w.\HISTORY(n+1)$.
 \end{proof}
 
 \begin{lemma}
@@ -1077,110 +940,3 @@ entonces eventualmente $e \in v.\HISTORY$.
 Habiendo demostrado que \vanilla, \compresschain y \hashchain cumplen todas las propiedaes
 de \setchain presentadas en la sección \ref{sec:setchain-properties}, queda formalmente probado
 que las tres soluciones propuestas en este trabajo son implementaciones correctas de \setchain.
-% \begin{proof}
-%   Sea $v$ un servidor correcto y $e \in \THESET$.
-%   ...
-%   ¿un servidor maligno no podría invocat Tendermint.Broadcast(h,s)?
-% \end{proof}
-
-% \subsection{Otras cosas}
-% \begin{property}[Safety]\label{tendermint:safety}
-%   Si hay menos de 1/3 del poder de voto en manos bizantinas y al menos un validador correcto
-%   decide el bloque $B$, entonces ningún validador correcto decidirá un bloque distinto a $B$.
-% \end{property}
-
-% \begin{property}[Liveness]\label{tendermint:liveness}
-%   Si hay menos de 1/3 de poder de voto en manos bizantinas, luego el procolo de Tendermint
-%   no se bloquea (es decir, no hay \textit{deadlock}).
-% \end{property}
-
-% En el contexto de Tendermint, denotamos con \textit{n} el poder de voto total de los procesos
-% en el sistema, y asumimos una cota superior \textit{f} en el poder de voto total proveniente de
-% los procesos bizantinos.
-% %
-% El algoritmo de consenso de Tendermint asume que $n > 3f$, es decir, requiere que el poder de voto
-% en manos de procesos bizantinos sea menor a 1/3 del poder de voto total.
-% Por simplicidad, en ocasiones se considera $n = 3f + 1$.
-
-% Tendermint resuelve el problema de la replicación de máquinas de estados ejecutando instancias de
-% consenso secuencialmente para acordar cada bloque de transacciones que serán luego ejecutadas por el
-% servicio siendo replicado.
-% Se considera una variante del problema de consenso bizantino llamado \textit{Validity Predicate-based Byzantine consensus}
-% que es motivado por los sistemas de blockchain~\cite{Crain2017LeaderRandomizationSignaturefreeBC}.
-% El problema es definido por propiedades de acuerdo, terminación, y validés.
-
-% Esta variante del problema de consenso bizantino tiene un predicado específico a la aplicación
-% denotado \textit{valid()} que indica si un valor es válido. En el contexto de sistemas de blockchain, por ejemplo,
-% un valor no es válido si no contiene un hash apropiado del último bloque añadido a la blockchain.
-
-% \begin{property}[Agreement]\label{tendermint:agreement1}
-%   Dos procesos correctos nunca deciden valores distintos.
-% \end{property}
-
-% \begin{property}[Termination]\label{tendermint:termination1}
-%     Todos los procesos correctos deciden eventualmente un valor.
-% \end{property}
-
-% \begin{property}[Validity]\label{tendermint:validity}
-%     Un valor decidido es válido. Es decir, satisface el predicado predefinido
-%     denotado con \textit{valid}.
-% \end{property}
-% %
-
-% Las propiedades ~\ref{tendermint:safety} y ~\ref{tendermint:liveness} son demostradas en ~\cite{Kwon2014TendermintC}.
-% Las propiedades ~\ref{tendermint:agreement1}, ~\ref{tendermint:termination1} y ~\ref{tendermint:validity}
-% son demostradas en ~\cite{Buchman.2018.Tendermint}.
-
-% En esta sección se introducen las propiedades que deben cumplir las implementaciones
-% correctas de \setchain.
-% La especificación dada asume que los clientes interactúan con servidores correctos,
-% aunque en realidad los clientes no pueden estar seguros de que el servidor que están
-% contactando no sea bizantino.
-% Como ya fue mencionado anteriormente, las propiedades siempren razonan sobre los servidores
-% correctos, dado que los servidores bizantinos no proveen ninguna garantía.
-% %
-
-% Empezamos requiriendo que en \setchain toda operación \<add> y \<get> ejecutada sobre un servidor
-% correcto eventualmente termine.
-% Se dice que un elemento $e$ está en la época $i$ en el historial $H$ (retornado por una invocación
-% a \<get>) si $e \in H(i)$.
-% Se dice que un elemento $i$ está en $H$ is existe una época $i$ tal que $e \in H(i)$.
-
-% % ? Esta es la property que Marga indicó que falta en el preliminar de Setchain
-% La primera propiedad establece que las épocas solo contienen elementos que provienen del conjunto
-% de solo crecimiento.
-
-% % 1. Cada elemento válido agregado en un servidor correcto eventualmente es retor-
-% % nado en todas las futuras invocaciones a get hechas sobre servidores correctos.
-% La segunda propiedad declara que todo elemento añadido a un servidor correcto es eventualmente
-% retornado en todas las llamadas a \<get> futuras.
-
-% % ?
-% La siguiente propiedad establece que los elementos presentes es un servidor correcto son propagados
-% a todos los servidores correctos.
-
-% Se asume en el resto de este trabajo que en cualquier punto de tiempo hay un instante futuro en el
-% cual una nueva época será generada. Esto es un supuesto razonable en cual escenario práctico.
-
-% % 2. Todos los elementos válidos agregados en un servidor correcto deben eventual-
-% % mente ser estampados con un número de época en todos los servidores correctos.
-% La siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
-% con un número de época.
-
-% % ?
-% La siguiente propiedad establece que un elemento puede estar en a lo sumo una época,
-% y que ningún elemento puede estar en dos épocas diferentes incluso si los conjuntos historiales se
-% obtienen de invocaciones \<get> a distintos servidores (ambos correctos).
-
-% % 4. Dos servidores correctos cualesquieras están de acuerdo en el contenido de todas
-% % las épocas que hayan sido computadas
-% La siguiente propiedad establece que los servidores están de acuerdo en el contenido
-% de las épocas.
-
-% % 5. Cada elemento que se estampa con una época proviene del resultado de un cliente
-% % añadiendo el elemento.
-% Finalmente, se requiere que todo elemento in el historia provenga del resultado de un cliente
-% añadiendo un elemento.
-
-
-% Faltarían las siguientes propiedades
