@@ -201,8 +201,10 @@ correcto o con un nodo bizantino.
 %Client processes do not know if they are contacting a Byzantine or correct
 %process.
 %
-Para asegurar que un elemento será añadido a la \setchain, el cliente necesitaría
-interactuar con suficientes servidores, de modo de garantizar que al menos uno de ellos
+Hay en principio dos métodos para asegurar que un elemento será añadido a la \setchain.
+
+La estrategia más sencilla es garantizando que el cliente
+interactúe con suficientes servidores, de modo de asegurarse que al menos uno de ellos
 sea correcto.
 %
 % An extension to Setchain presented an optimistic client with the following
@@ -221,9 +223,10 @@ que pueden negarse a responder o hacerlo incorrectamente) y esperar a que $f+1$ 
 (si $f+1$ servidores están de acuerdo en que un elemento pertenece a la \setchain,
 efectivamente debe pertenecer).
 
-En este trabajo se utilizará la extensión a Setchain presentada como
+Por otro lado, una estrategia alternativa es la presentada como
 \textit{cliente optimista}~\cite{Capretto.2022.Setchain}, que usa un sistema de firmas
-criptográficas. El mecanismo se introduce a continuación.
+criptográficas. Este es el método que utilizaremos en este trabajo.
+El mecanismo se introduce a continuación.
 
 Los nodos correctos firman criptográficamente un hash del conjunto de elementos
 pertenecientes a una época junto con el número de dicha época, e insertan este
