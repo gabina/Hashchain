@@ -47,7 +47,7 @@ Se presentan dos propiedades fundamentales de Tendermint, debidamente demostrada
 \end{property}
 
 \begin{property}[Tendermint-Termination]\label{tendermint:termination}
-    Todos los procesos correctos deciden eventualmente un valor.
+    Todos los procesos correctos deciden finalmente un valor.
 \end{property}
 
 A continuación se presenta una propiedad que se desprende de las propiedades anteriores
@@ -97,7 +97,7 @@ De aquí se desprenden las siguientes propiedades.
 
 \begin{property}[Tendermint-Eventual-Injection]\label{tendermint:eventual-injection}
   Sea $t$ una transacción en la mempool de un servidor correcto.
-  Eventualmente, $t$ formará parte de un bloque.
+  En algún momento $t$ formará parte de un bloque.
 \end{property}
 
 % No la necesito si add-before-get se cumple trivialmente
@@ -177,7 +177,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \begin{lemma}
   La implementación \vanilla cumple la propiedad ~\ref{api:history->theset-local} \textit{Add-Get-Local} de \setchain,
   que declara que todo elemento válido añadido a un
-  servidor correcto $v$ es eventualmente retornado en todas las llamadas futuras a $v$.\<get>.
+  servidor correcto $v$ es con el tiempo retornado en todas las llamadas futuras a $v$.\<get>.
 \end{lemma}
 
 \begin{proof}
@@ -188,7 +188,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Por definción de \<add> en el algoritmo \ref{alg:api-vanilla}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \<broadcastTx>($t$) sobre el servidor $v$,
   donde $t = e$. Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx},
-  $v$ recibirá eventualmente la petición \<CheckTx>($t$).
+  $v$ recibirá con el tiempo la petición \<CheckTx>($t$).
   Por $\bigstar$ se tiene que $e$ es un elemento válido.
   Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
   Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
@@ -199,7 +199,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Luego, por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection} sabemos
   que la transacción $t$ formará parte de un bloque.
   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$),
+  el servidor $v$ tarde o temprano recibirá una petición \<DeliverTx>($t$),
   en donde $t = e$.
   Como se puede observar
   en la condición \texttt{if} de la línea~\ref{line:abci-vanilla-if} y en la definición de
@@ -221,7 +221,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 
 \begin{proof}
   Sean $v$ y $w$ dos servidores correctos y $e \in $ \(U\), tal que  $e \in v.\THESET$.
-  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Debemos probar que con el tiempo se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento recibió una
   petición \<DeliverTx>($t$), donde $t = e$, y $e$ es válido.
   Si un servidor correcto recibe una petición \<DeliverTx>($t$), necesariamente lo hace como parte de una cadena de
@@ -235,7 +235,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   En este último caso,
   $e$ será añadido a
   $w.\THESET$, como se muestra en la línea~\ref{line:abci-vanilla-set} en el Algoritmo~\ref{alg:abci-vanilla}.
-  Por lo tanto, eventualmente se cumplirá $e \in w.\THESET$.
+  Por lo tanto, se cumplirá $e \in w.\THESET$.
 
   % Si un servidor correcto recibe una petición \<DeliverTx>($t$), por la propiedad
   % \textbf{Tendermint-Global-Requests}
@@ -255,7 +255,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 
 \begin{lemma}
   La implementación \vanilla cumple la propiedad~\ref{api:theset->history} \textit{Eventual-Get}
-  de \setchain, que establece que todos los elementos añadidos son eventualmente estampados
+  de \setchain, que establece que todos los elementos añadidos en algún momento son estampados
   con un número de época.
 \end{lemma}
 
@@ -265,11 +265,11 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   petición \<DeliverTx>($t$), donde $t = e$, y $e$ es válido.
   Como se puede ver en las líneas ~\ref{line:abci-vanilla-set} y ~\ref{line:abci-vanilla-history} en
   el Algoritmo~\ref{alg:abci-vanilla}, inmediatamente después de agregar un elemento a $v.\THESET$,
-  el elemento se agrega a $v.\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será eventualmente
+  el elemento se agrega a $v.\HISTORY$. Por lo tanto, con seguridad, el elemento $e$ será en algún momento
   agregado a $v.\HISTORY$.
   Si un servidor correcto recibe una petición \<DeliverTx>($t$), necesariamente lo hace como parte de una cadena de
   peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
-  De aquí se desprende entonces que eventualmente $v$ recibirá una petición \EndBlock que, como se muestra
+  De aquí se desprende entonces que $v$ recibirá una petición \EndBlock que, como se muestra
   en la línea \ref{line:epoch-increment}, incrementa el número de época, provocando que, a partir de ese momento, todas las invocaciones
   a \<get> incluyan la nueva época que contiene a $e$ como parte de ella.
 
@@ -421,14 +421,14 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Por definción de \<add> en el algoritmo \ref{alg:api-brotli}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \texttt{CompressCollector.AddElement($e$)}.
   Como se puede observar en el algoritmo ~\ref{alg:collector-brotli}, dado que $e$ es válido,
-  será codificado adecuadamente y añadido a un lote $t$ que eventualmente estará listo\footnote{Como
+  será codificado adecuadamente y añadido a un lote $t$ que con el tiempo estará listo\footnote{Como
   se mencionó en la sección ~\ref{subsec:compresschain-algorithms},
   un lote se considera listo para ser enviado una vez que, o bien alcanza un tamaño
   máximo, o bien una cantidad razonable de tiempo transacurrió desde que el primer
-  elemento llegó. Por este motivo podemos asegurar que todo lote eventualmente será
+  elemento llegó. Por este motivo podemos asegurar que todo lote en algún momento será
   considerado listo.} y se invocará \<broadcastTx>($t$) sobre el servidor $v$.
   Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
-  recibirá eventualmente la petición \<CheckTx>($t$).
+  recibirá con el tiempo la petición \<CheckTx>($t$).
   Por $\bigstar$ se tiene que $e$ es un elemento válido.
   Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
   Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
@@ -439,7 +439,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Luego, por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection} sabemos que la
   transacción $t$ formará parte de un bloque.
   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$).
+  el servidor $v$ a la larga recibirá una petición \<DeliverTx>($t$).
   Como se puede observar
   en la condición \texttt{if} de la línea ~\ref{line:abci-compresschain-if} en el Algoritmo~\ref{alg:abci-brotli},
   se analizan dos aspectos: que $e$ sea válido
@@ -458,7 +458,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 
 \begin{proof}
   Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
-  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Debemos probar que se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $e$ es válido y
   $v$ en algún momento recibió una
   petición \<DeliverTx>($t$), donde $t$ es un lote comprimido de elementos, y uno de esos elementos
@@ -475,7 +475,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   $e$ será añadido a
   $w.\THESET$, como se muestra en la línea
   \ref{line:abci-compresschain-the-set} en el Algoritmo~\ref{alg:abci-brotli}.
-  Por lo tanto, se cumplirá eventualmente $e \in w.\THESET$.
+  Por lo tanto, se cumplirá $e \in w.\THESET$.
 \end{proof}
 
 \begin{lemma}
@@ -491,7 +491,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Como se puede ver en la definición de \<DeliverTx> y en las líneas \ref{line:abci-compresschain-the-set}
   y \ref{line:abci-compresschain-history} de \texttt{newEpoch} en
   el Algoritmo~\ref{alg:abci-brotli}, inmediatamente después de agregar un elemento a $\THESET$,
-  el elemento se agrega a $\HISTORY$. Eventualmente la iteración sobre los elementos del lote termina y,
+  el elemento se agrega a $\HISTORY$. En algún momento la iteración sobre los elementos del lote termina y,
   como se muestra en la línea \ref{line:abci-compresschain-epoch-increment} se incrementa $\EPOCH$.
   Por lo tanto, con seguridad, el elemento $e$ será
   agregado a $v.\HISTORY$ y se producirá el incremento de $v.\EPOCH$, estampando a $e$ con un número de época.
@@ -639,7 +639,7 @@ Con el objetivo de hacer las demostraciones más sencillas, se definen y demuest
 propiedades derivadas.
 
 \begin{property}[Haschain-Global-Consolidation]\label{tendermint:hashchain-global-consolidation}
-  Si un hash $h$ consolida en un servidor correcto, eventualmente consolidará en todos
+  Si un hash $h$ consolida en un servidor correcto, a la larga consolidará en todos
   los servidores correctos.
 \end{property}
   
@@ -660,7 +660,7 @@ propiedades derivadas.
 \end{proof}
 
 \begin{property}[Haschain-Local-Consolidation]\label{tendermint:hashchain-local-consolidation}
-  Si un hash $h$ consolida en un servidor correcto $v$, eventualmente todos los elementos
+  Si un hash $h$ consolida en un servidor correcto $v$, tarde o temprano todos los elementos
   asociados a $h$ son añadidos a $v.\HISTORY$.
 \end{property}
   
@@ -687,13 +687,13 @@ propiedades derivadas.
 \begin{property}[Haschain-Broadcast-Consolidation]\label{tendermint:hashchain-broadcast-consolidation}
   Sea $v$ un servidor correcto. Sea $e$ un elemento válido tal que $e \in l$, y sea $h$ el hash asociado al lote $l$.
   Si se invoca \<broadcastTx>($h, s$) en $v$, donde $s$ es la firma de $h$ con la clave privada de $v$,
-  entonces eventualmente $e \in v.\HISTORY$.
+  entonces tarde o temprano $e \in v.\HISTORY$.
 \end{property}
 
 \begin{proof}
   Supongamos que se invoca \<broadcastTx>($h, s$) en $v$.
   Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
-  recibirá eventualmente la petición \<CheckTx>($h, s$).
+  recibirá la petición \<CheckTx>($h, s$).
   Siguiendo la definición de \<CheckTx>~\ref{alg:hash_check_tx}, si la firma es válida ($s$ lo es puesto que
   $v$ es correcto) se abren dos casos: que $v$ conozca el hash o que aún no lo conozca.
   Si $v$ no tiene el lote $l$ asociado al hash $h$, entonces trivialmente retornará \texttt{True}.
@@ -706,7 +706,7 @@ propiedades derivadas.
   Luego, por la propiedad~\ref{tendermint:eventual-injection} \emph{Tendermint-Eventual-Injection}
   sabemos que la transacción $t$ formará parte de un bloque.
   Por definición de \<DeliverTx>, dado que $t$ es una transacción parte de un bloque,
-  el servidor $v$ eventualmente recibirá una petición \<DeliverTx>($t$) como parte de una cadena
+  el servidor $v$ recibirá una petición \<DeliverTx>($t$) como parte de una cadena
   de peticiones \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit.
   Por la propiedad~\ref{tendermint:global-delivery} \emph{Tendermint-Global-Requests}
   podemos asegurar que la misma cadena de peticiones llegará a todos los servidores correctos.
@@ -729,7 +729,7 @@ propiedades derivadas.
   En ese caso, un hash $h'$ que contiene a $e$ consolidó en $w$ (puesto que solo se agregan elementos a $\HISTORY$
   cuando un hash consolida).
   Por la propiedad \ref{tendermint:hashchain-global-consolidation} \textit{Haschain-Global-Consolidation},
-  eventualmente ese mismo hash consolidará en $v$.
+  con el tiempo ese mismo hash consolidará en $v$.
   A su vez, por la propiedad \ref{tendermint:hashchain-local-consolidation} \textit{Haschain-Local-Consolidation} se añadirá
   $e$ a $v.\HISTORY$.
 \end{proof}
@@ -771,14 +771,14 @@ propiedades derivadas.
   Por definción de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \texttt{HashCollector.AddElement($e$)}.
   Como se puede observar en el algoritmo ~\ref{alg:collector-hash}, $e$ será codificado
-  adecuadamente y añadido a un lote $l$ que eventualmente estará listo, se hasheará,
+  adecuadamente y añadido a un lote $l$ que a la larga estará listo, se hasheará,
   se firmará, y se invocará \<broadcastTx>($t$) sobre el servidor $v$, en donde $t = (h, s)$
   será una tupla conformada por el hash del lote que contiene a $e$
   y una firma válida para el mismo ($\bigstar$). A su vez, la correspondencia entre el hash y el lote
   será añadido a una base de datos local.
 
   Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
-  recibirá eventualmente la petición \<CheckTx>($t$).
+  recibirá la petición \<CheckTx>($t$).
   Consideremos la definición de la línea \ref{alg:hash_check_tx} en el Algoritmo~\ref{alg:abci-hash1}.
   Dado que la firma $s$ es válida por $\bigstar$, se abren dos casos:
   que el lote asociado a $h$ ya sea conocido o no.
@@ -803,7 +803,7 @@ propiedades derivadas.
   elemento $e$ (parte del lote) será añadido a $\THESET$
   de acuerdo a la línea \ref{line:abci-hashchain-the-set} en el Algoritmo~\ref{alg:abci-hash2}.
 
-  Por lo tanto, todas las invocaciones a $v.\<get>$ eventualmente tendrán al elemento $e$
+  Por lo tanto, todas las invocaciones a $v.\<get>$ con el tiempo tendrán al elemento $e$
   como parte de \THESET.
 \end{proof}
 
@@ -815,7 +815,7 @@ propiedades derivadas.
 
 \begin{proof}
   Sean $v$ y $w$ dos servidores correctos y $e \in U$, tal que  $e \in v.\THESET$.
-  Debemos probar que eventualmente se cumplirá $e \in w.\THESET$.
+  Debemos probar que se cumplirá $e \in w.\THESET$.
   Si $e \in v.\THESET$, entonces, por construcción de $\THESET$, necesariamente $v$ en algún momento
   ejecutó \<tryReverse>($h, s$)~\ref{alg:hash_revert}, donde $h$ es el hash asociado a un lote que contiene a $e$
   y $s$ es una firma válida para ese hash.
@@ -826,7 +826,7 @@ propiedades derivadas.
   Esto se observa en las líneas \ref{alg:hash-if-broadcast-hash} y \ref{alg:hash-broadcast-hash}.
   En cualquier caso, podemos asegurar que se invocó \<broadcastTx>($h, s'$) en $v$.
   Por la propiedad \ref{tendermint:hashchain-broadcast-consolidation} \textit{Haschain-Broadcast-Consolidation},
-  sabemos que eventualmente $e \in v.\HISTORY$.
+  sabemos que a la larga $e \in v.\HISTORY$.
   Esto significa que un hash $h'$ (no se puede asegurar que $h'=h$) asociado a un lote que contiene a $e$ consolidó en $v$.
   Por la propiedad \ref{tendermint:hashchain-global-consolidation} \textit{Haschain-Global-Consolidation},
   sabemos que $h'$ consolidará en todos los servidores correctos y, en particular, en $w$.
@@ -851,7 +851,7 @@ propiedades derivadas.
   En cualquier caso, podemos asegurar que se invocó 
   \<broadcastTx>($h, s'$) en $v$.
   Luego, por la propiedad \ref{tendermint:hashchain-broadcast-consolidation} \textit{Haschain-Broadcast-Consolidation}
-  podemos asegurar que eventualmente $e \in v.\HISTORY$.
+  podemos asegurar que tarde o temprano $e \in v.\HISTORY$.
 \end{proof}
 
 \begin{lemma}
@@ -886,7 +886,7 @@ propiedades derivadas.
   peticiones \<DeliverTx>($h, s$), donde $h$ es un hash asociado a un lote que contiene a $e$,
   y $s$ es una firma válida de $h$ (generada con la clave priavada de un servidor).
   Esto produjo que \texttt{hash\_to\_signature[$h$]} acumulara firmas como se muestra en la línea
-  \ref{alg:hash-new-sign} de la definición de \<DeliverTx>, y que eventualmente
+  \ref{alg:hash-new-sign} de la definición de \<DeliverTx>, y que en algún momento
   \<shouldConsolidateHash>($h$) retorne \texttt{True}, asignándole el número de época 1 al hash $h$
   (ver línea \ref{alg:hash-epoch-to-hash} en el Algoritmo~\ref{alg:abci-hash1}).
   Luego, en la posterior ejecución de \<updateHistory>, $e$ es añadido a $v.\HISTORY(1)$

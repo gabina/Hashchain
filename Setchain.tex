@@ -190,14 +190,14 @@ de solo crecimiento.
   Para cada $i\leq h, H(i) \subseteq S$.
 \end{property}
 %
-La segunda propiedad declara que todo elemento añadido a un servidor correcto $v$ es eventualmente
+La segunda propiedad declara que todo elemento añadido a un servidor correcto $v$ con el tiempo es
 retornado en todas las llamadas futuras a $v$.\<get>.
 %
 \begin{property}[Add-Get-Local]\label{api:history->theset-local}
   %Sea $e$ un elemento válido y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   Sea $e \in V$ y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   %
-  Eventualmente todas las invocaciones $(S,H,h)=v.\<get>()$ 
+  Con el tiempo todas las invocaciones $(S,H,h)=v.\<get>()$ 
   satisfacen $e\in S$.
 \end{property}
 La siguiente propiedad establece que los elementos presentes en un servidor correcto son propagados
@@ -207,7 +207,7 @@ a todos los servidores correctos.
   Sean $v$ y $w$ dos servidores correctos,
   ${(S,H,h)=v.\<get>()}$ y $e \in U$.
   %
-  Si $e \in S$, eventualmente todas las invocaciones
+  Si $e \in S$, tarde o temprano todas las invocaciones
   $(S',H',h')=w.\<get>()$ satisfacen que $e \in S'$.
 \end{property}
 %
@@ -215,13 +215,13 @@ a todos los servidores correctos.
 Como ya se mencionó anteriormente, a lo largo de este trabajo se asume que en cualquier momento
 existe un instante futuro en el cual ocurre el próximo incremento de época.
 Esta suposición es razonable ya que puede ser garantizada usando \textit{timeouts} en cualquier escenario práctico.
-Luego, la siguiente propiedad establece que todos los elementos añadidos son eventualmente estampados
+Luego, la siguiente propiedad establece que todos los elementos añadidos son finalmente estampados
 con un número de época.
 %
 \begin{property}[Eventual-Get]\label{api:theset->history}
   Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$ y $e \in U$.
   % 
-  Si $e \in S$, eventualmente todas las invocaciones
+  Si $e \in S$, con el tiempo todas las invocaciones
   $(S',H',h')=v.\<get>()$ satisfacen que $e \in H'$.
 \end{property}
 

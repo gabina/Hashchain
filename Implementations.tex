@@ -35,7 +35,7 @@ Nótese que el cliente siempre se comunica con un nodo particular de la red de s
   Cuando una transacción es enviada, se chequea si dicha transacción
   es válida contra la aplicación (mediante la llamada a \<CheckTx>), y en caso
   afirmativo, se añade
-  a la mempool, se difunde a los otros nodos y eventualmente se incluye en
+  a la mempool, se difunde a los otros nodos y en algún momento se incluye en
   un bloque.
   \item \<abciquery> se utiliza para consultar el estado de la
   aplicación.
@@ -64,7 +64,7 @@ De este modo, llamaremos \textit{elementos válidos} a aquellos elementos $e$ pa
 $\<isValidElement>(e)$ retorne verdadero.
 %
 En términos de lo presentado en el capítulo \ref{chapter:setchain}, podemos pensar que
-$V = \{e \in U: \<isValidElement>(e)\}$.
+el conjunto de elementos válidos $V$ es $\{e \in U: \<isValidElement>(e)\}$.
 
 %
 A continuación se presentan diferentes definiciones de métodos
@@ -76,7 +76,7 @@ Si bien el objetivo del capítulo es
 presentar las soluciones a nivel conceptual, detalles de implementación son dados a lo largo
 de las secciones cuando se considera oportuno.
 
-La sección de prueba de membrecía de elementos (sección \ref{subsubsec:membership})
+La sección de prueba de membresía de elementos (sección \ref{subsubsec:membership})
 se ubica dentro de la sección de \vanilla únicamente por simplicidad, ya que las ideas allí
 expuestas aplican de manera similar para todas las soluciones presentadas en este capítulo. 
 
@@ -91,7 +91,7 @@ traduce en una nueva transacción de Tendermint en la red,
 que representa a ese y solo a ese elemento a añadir a la \setchain.
 %
 Que $e$ sea finalmente añadido a la \setchain dependerá de si la transacción asociada
-al mismo se incluye en un bloque que, a su vez, eventualmente se agrega a la blockchain
+al mismo se incluye en un bloque que, a su vez, en algún momento se agrega a la blockchain
 subyacente de Tendermint.
 
 Otro aspecto fundamental de esta solución es que cada bloque de Tendermint
@@ -191,7 +191,7 @@ las claves podrían ser números de épocas, y los valores los elementos en ella
 %
 Incluso podría utilizarse un sistema híbrido, de modo de hacer eficiente diversas búsquedas.
 
-\subsection{Prueba de membrecía de elementos}\label{subsubsec:membership}
+\subsection{Prueba de membresía de elementos}\label{subsubsec:membership}
 %
 Como se mencionó antes, cuando un proceso cliente utiliza la API de \setchain
 para añadir un elemento o para recuperar el estado actual de la \setchain,
@@ -361,7 +361,7 @@ verificar que la firma dada fue, de hecho, generada por un validador conocido.
 %
 
 % Chequear si esto es siempre así:
-%Este mecanismo de membrecías de elementos a épocas está implementado en la definición de
+%Este mecanismo de membresías de elementos a épocas está implementado en la definición de
 %\<EndBlock>.
 
 \subsection{Algoritmos}
@@ -536,8 +536,8 @@ Una vez que el lote fue comprimido, el flujo es el mismo que el explicado en la 
 que representa al elemento $e$ (y a otros) se chequea contra \CheckTx para determinar si debe ser insertada
 en la mempool o descartada.
 %
-Si llega a la mempool, se espera que luego de un tiempo sea añadida a un bloque de Tendermint y que, eventualmente,
-mediante el algoritmo de consenso, este bloque se considere \textit{commited by the network}.
+Si llega a la mempool, se espera que luego de un tiempo sea añadida a un bloque de Tendermint y que,
+tarde o temprano, mediante el algoritmo de consenso, este bloque se considere \textit{commited by the network}.
 %
 Una vez que el bloque fue decidido en el consenso, entonces el Tendermint Core enviará
 la secuencia correspondiente de pedidos a la aplicación.
@@ -953,7 +953,7 @@ con su propia firma.
 %
 Al difundir el hash y su firma, el nodo anuncia a la red que conoce el lote detrás de ese hash.
 %
-De esta forma, los lotes válidos eventualmente consolidarán, significando que sus elementos
+De esta forma, los lotes válidos con el tiempo consolidarán, significando que sus elementos
 serán añadidos a la \setchain.
 
 Para que el algoritmo mencionado funcione, se necesita mantener un registro de cuántas firmas tiene un hash,
@@ -1160,7 +1160,7 @@ periódicamente mediante planificación, independientemente de la petición de c
 A diferencia de lo visto para \<Query> en \vanilla y \compresschain, en este caso, la diferencia entre $\THESET $ y $\HISTORY $
 no radica en las épocas a medio construir, puesto que el proceso de construcción de épocas es atómico.
 En este contexto, en $\THESET $ se encuentran todos los elementos que el nodo firma y difunde, aún antes de ser estampados con un
-número de época. Notemos que esto es correcto puesto que eventualmente todos los nodos correctos van a recibir el lote correspondiente
+número de época. Notemos que esto es correcto puesto que a la larga todos los nodos correctos van a recibir el lote correspondiente
 y firmarlo, por lo que con seguridad sus elementos tendrán un número de época asignado en el futuro.
 
 

@@ -506,7 +506,8 @@ entre el cliente y el Tendermint Core.
 Simplificadamente, el cliente interactúa con el sistema mediante RPC al enviar transacciones
 que (en caso de ser válidas) son añadidas al módulo de mempool,
 y en general recibe respuestas generadas por el módulo de consenso.
-Las transacciones enviadas por clientes que llegan al módulo de mempool se difunden a todos los nodos, y eventualmente son recibidas
+Las transacciones enviadas por clientes que llegan al módulo de mempool se difunden a todos los nodos,
+y en algún momento son recibidas
 por el nodo validador responsable de proponer el siguiente bloque como parte del algoritmo de consenso.
 El módulo de consenso de este nodo es el responsable de recuperar la lista de transacciones pendientes
 para construir el bloque que será propuesto como siguiente. 
