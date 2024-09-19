@@ -38,7 +38,7 @@ y solo pueden agregarse cuando los participantes logran un \textit{quorum}. En
 contraste con un sistema centralizado, las bitácoras distribuidas no requieren
 un administrador central y, en consecuencia, no tienen un punto de falla central.
 Un caso particular de bitácora distribuida, en donde los registros se empaquetan
-en forma de bloques, es la \textit{blockchain}.
+en forma de bloques, es la \textit{cadena de bloques} o \textit{blockchain}.
 
 Las blockchains tomaron
 popularidad con la implementación de Bitcoin~\cite{nakamoto06bitcoin},
@@ -47,7 +47,8 @@ Allí se presentó como un método para eliminar terceras partes confiables en s
 de pago electrónico.
 %
 
-Las versiones más modernas de blockchains incorporan contratos inteligentes~\cite{szabo96smart,wood2014ethereum},
+Las versiones más modernas de blockchains incorporan contratos inteligentes o
+\textit{smart contracts}~\cite{szabo96smart,wood2014ethereum},
 los cuales son programas de estado inmutable alojados en la blockchain. Dichos
 programas describen la funcionalidad de las transacciones, incluyendo el intercambio
 de criptomonedas.
@@ -292,7 +293,7 @@ propiedades de seguridad de las mismas.
 Una arquitectura novedosa de redes de blockchains es Cosmos~\cite{cosmos}, que conecta diversas
 blockchains independientes, llamadas \emph{zonas}.
 %
-Las zonas funcionan con Tendermint Core~\cite{Buchman.2018.Tendermint}, un motor de consenso consistente de alto rendimiento.
+Las zonas funcionan con Tendermint Core~\cite{Buchman.2018.Tendermint}, un motor de consenso de alto rendimiento.
 %
 El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchains públicas que
 trabajan con modelos \emph{proof-of-stake}\footnote{El concepto de \emph{proof-of-stake} (traducido al español
@@ -459,14 +460,14 @@ mostrando la necesidad de un protocolo de formación de particiones.
 Los enfoques para incrementar el número de transacciones por segundo en las blockchains pueden
 ser categorizados según la \emph{capa} que involucran.
 %
-Las técnicas de capa 0 son aquellas que trabajan sobre la instraestructura de la red.
+Las técnicas de capa 0 (\textit{layer 0}) son aquellas que trabajan sobre la instraestructura de la red.
 %
 Por ejemplo, apostando a decrementar la latencia de la misma.
 % 
-La capa 1 es la que cuenta con más propuestas en la literatura, abarcando todas aquellas que
+La capa 1 (\textit{layer 1}) es la que cuenta con más propuestas en la literatura, abarcando todas aquellas que
 mejoran los algoritmos de consenso.
 %
-Por último, la capa 2, también conocida como \emph{off-chain} (fuera de la cadena),
+Por último, la capa 2 (\textit{layer 2}), también conocida como \emph{off-chain} (fuera de la cadena),
 incluye aquellos protocolos que funcionan con una interacción mínima con la
 blockchain\cite{Jourenko2019SoKAT}.
 
@@ -507,7 +508,7 @@ Una descripción más detallada del funcionamiento de \setchain y sus propiedade
 en el capítulo \ref{chapter:setchain}.
 
 \section{Contribuciones}
-En este trabajo se realiza una modesta contribución al estudio de la escalabilidad en blockchain mediante 
+En este trabajo se realiza una contribución al estudio de la escalabilidad en blockchain mediante 
 una familia de implementaciones robustas de \setchain.
 %
 Si bien distintos algoritmos bizantinos distribuidos que implementaban \setchain fueron
@@ -521,9 +522,10 @@ añadir nuevas transacciones a los servidores constantemente.
 
 Las implementaciones prototípicas previas de \setchain\footnote{Presentadas en ~\cite{Capretto.2022.Setchain}.} fueron construidas
 a partir de distintos
-componentes básicos: \emph{Bizantine Reliable Broadcast}~\cite{DBLP:journals/iandc/Bracha87, raynal.dist.systems},
-\emph{Byzantine Atomic Broadcast}~\cite{Defago2004BAB},
-\emph{Byzantine Distributed Grow-only Sets}~\cite{Cholvi2021BDSO-arxiv} y \emph{Set Byzantine Consensus}~\cite{redbelly}.
+componentes básicos: difusión confiable bizantina o \emph{Bizantine Reliable Broadcast}~\cite{DBLP:journals/iandc/Bracha87, raynal.dist.systems},
+difusión atómica bizantina o \emph{Byzantine Atomic Broadcast}~\cite{Defago2004BAB},
+conjuntos distribuidos que solo crecen bizantinos o \emph{Byzantine Distributed Grow-only Sets}~\cite{Cholvi2021BDSO-arxiv} y
+consenso bizantino de conjunto o \emph{Set Byzantine Consensus}~\cite{redbelly}.
 %
 En este trabajo se toma un enfoque diferente, haciendo hincapié en la construcción de implementaciones
 que cumplan con la especificación de \setchain pero que al mismo tiempo sean compatibles con los requerimientos
@@ -536,7 +538,7 @@ la plataforma de aplicación de blockchain \textit{Tendermint}~\cite{Buchman.201
 % Fuente: TENDERMINT: BYZANTINE FAULT TOLERANCE IN THE AGE OF BLOCKCHAINS
 % https://docs.tendermint.com/v0.34/introduction/what-is-tendermint.html
 
-Tendermint es una plataforma novedoza y popular para la
+Tendermint es una plataforma novedosa y popular para la
 replicación segura y consistente de aplicaciones en distintas máquinas.
 %
 \textit{Segura} en este contexto significa que Tendermint funciona incluso si a lo sumo

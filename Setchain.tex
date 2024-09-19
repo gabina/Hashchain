@@ -81,18 +81,21 @@ Por lo tanto, en las siguientes secciones se hace referencia exclusivamente a el
 Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
 deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
 %
-Es decir, se inicia un proceso en el cual se recolectan todos los elementos en el conjunto $\THESET$
-mantenido por cada servidor, y se decide cuáles son estampados con la época actual, para dar paso a la siguiente época.
+Es decir, se inicia un proceso en el cual se recolectan aquellos elementos, aún no estampados
+con un número de época, pertenecientes al conjunto $\THESET$
+mantenido por cada servidor. Luego se decide cuáles de ellos son estampados con la época actual,
+para dar paso a la siguiente época.
 %
 Estos eventos se llaman \textit{incrementos de época}.
 
-
+En la interfaz original de \setchain los nodos servidores también proveen una operación $\<epocinc>(h)$,
+donde debe cumplirse $h = \EPOCH + 1$, que puede invocarse por parte de un servidor para forzar
+un incremento de época.
+%
 En este trabajo se asume que las barreras de sincronización se lanzan periódicamente y, por lo tanto, que
 siempre existe un instante futuro en el cual un nuevo incremento de época ocurre.
 %
-Sin embargo, en la interfaz original de \setchain, los nodos servidores también proveen una operación para
-que los clientes puedan forzar un incremento de época, $\<epocinc>(h)$, donde
-debe cumplirse $h = \EPOCH + 1$.
+Por este motivo no se hará uso de la operación \<epocinc> en el presente informe.
 
 \subsection{Flujo de trabajo}  
 
@@ -184,7 +187,7 @@ de solo crecimiento.
 \begin{property}[Consistent Sets]\label{api:consistent-set}
   Sea $(S,H,h)=v.\<get>()$ el resultado de una invocación a un servidor correcto $v$.
   %
-  Luego, para cada $i\leq h, H(i) \subseteq S$.
+  Para cada $i\leq h, H(i) \subseteq S$.
 \end{property}
 %
 La segunda propiedad declara que todo elemento añadido a un servidor correcto $v$ es eventualmente
@@ -194,7 +197,7 @@ retornado en todas las llamadas futuras a $v$.\<get>.
   %Sea $e$ un elemento válido y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   Sea $e \in V$ y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   %
-  Luego, eventualmente todas las invocaciones $(S,H,h)=v.\<get>()$ 
+  Eventualmente todas las invocaciones $(S,H,h)=v.\<get>()$ 
   satisfacen $e\in S$.
 \end{property}
 La siguiente propiedad establece que los elementos presentes en un servidor correcto son propagados
@@ -204,7 +207,7 @@ a todos los servidores correctos.
   Sean $v$ y $w$ dos servidores correctos,
   ${(S,H,h)=v.\<get>()}$ y $e \in U$.
   %
-  Si $e \in S$, luego eventualmente todas las invocaciones
+  Si $e \in S$, eventualmente todas las invocaciones
   $(S',H',h')=w.\<get>()$ satisfacen que $e \in S'$.
 \end{property}
 %
@@ -218,7 +221,7 @@ con un número de época.
 \begin{property}[Eventual-Get]\label{api:theset->history}
   Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$ y $e \in U$.
   % 
-  Si $e \in S$, luego eventualmente todas las invocaciones
+  Si $e \in S$, eventualmente todas las invocaciones
   $(S',H',h')=v.\<get>()$ satisfacen que $e \in H'$.
 \end{property}
 
@@ -241,7 +244,7 @@ La siguiente propiedad establece que un elemento puede estar en a lo sumo una é
   $(S,H,h)=v.\<get>()$, e
   ${i,i'\leq{}h}$ con ${i\neq i'}$.
   %
-  Luego, $H(i)\cap{}H(i')=\emptyset$.
+  Se cumple $H(i)\cap{}H(i')=\emptyset$.
 \end{property}
 %
 
@@ -250,7 +253,7 @@ de las épocas.
 %
 \begin{property}[Consistent Gets]\label{api:consistent-gets}
   Sean $v$ y $w$ servidores correctos, $(S,H,h)=v.\<get>()$ y
-  $(S',H',h')=w.\<get>()$, y sea $i\leq \min(h,h')$. Luego
+  $(S',H',h')=w.\<get>()$, y sea $i\leq$ min$(h,h')$. Se cumple
   $H(i)=H'(i)$.
 \end{property}
 
@@ -276,7 +279,7 @@ añadiendo un elemento.
   Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$
   y $e \in S$.
   %
-  Luego, hubo una operación $w.\<add>(e)$ en el pasado en algún servidor $w$.
+  Hubo una operación $w.\<add>(e)$ en el pasado en algún servidor $w$.
 \end{property}
 
 Las propiedades~\ref{api:consistent-set}, \ref{api:local_unique_stamp},

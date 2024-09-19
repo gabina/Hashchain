@@ -326,7 +326,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
 \end{lemma}
 
 \begin{proof}
-  Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
+  Sean $v$ y $w$ dos servidores correctos, e $i\leq$ min$(v.\EPOCH, w.\EPOCH)$.
   Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
   Se demostrará $v.\HISTORY(i)=w.\HISTORY(i)$ por inducción fuerte en el número de época.
@@ -557,7 +557,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   % El mismo razonamiento se puede hacer para un elemento $e \in w.\HISTORY(i)$.
   % Luego, $v.\HISTORY(i)=w.\HISTORY(i)$.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
+  Sean $v$ y $w$ dos servidores correctos, e $i\leq$ min$(v.\EPOCH, w.\EPOCH)$.
   Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
   Se demostrará $v.\HISTORY(i)=w.\HISTORY(i)$ por inducción fuerte en el número de época.
@@ -875,7 +875,7 @@ propiedades derivadas.
 \end{lemma}
 
 \begin{proof}
-  Sean $v$ y $w$ dos servidores correctos, e $i\leq \min(v.\EPOCH, w.\EPOCH)$.
+  Sean $v$ y $w$ dos servidores correctos, e $i\leq$ min$(v.\EPOCH, w.\EPOCH)$.
   Queremos probar que $v.\HISTORY(i)=w.\HISTORY(i)$.
 
   Se demostrará $v.\HISTORY(i)=w.\HISTORY(i)$ por inducción fuerte en el número de época.

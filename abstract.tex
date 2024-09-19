@@ -20,14 +20,18 @@
   datos concurrente que implementa conjuntos distribuidos que solo crecen
   (\textit{distributed grown-only sets}).
   %
-  \setchain provee barreras o puntos de sincronización
-  (llamados épocas), que dotan a la estructura de un orden parcial.
+  \setchain provee barreras o puntos de sincronización,
+  llamados épocas (\textit{epochs} en inglés), que dotan a la estructura de un orden parcial.
   Esto implica que las épocas en sí presentan un orden entre ellas,
   pero que entre los elementos pertenecientes a una misma época no
   se puede establecer un orden.
-
+  %
   De esta forma, relaja el requerimiento de orden total buscando lograr mayor
   rendimiento y escalabilidad.
+  
+  % Otro aspecto importante de las \setchains es que la validez de los elementos de cada
+  % época se puede establecer independientemente de los otros elementos.
+
   %
   Las \setchains se pueden usar para aquellas aplicaciones, como los registros digitales,
   en donde los elementos en la blockchain no necesitan estar ordenados, excepto a través
@@ -104,12 +108,11 @@
   El capítulo \ref{chapter:evaluation} detalla cómo fue llevada a cabo la evaluación empírica de las
   nuevas implementaciones y se presentan los resultados obtenidos.
   %
-  En el capítulo \ref{chapter:conclusions} se discuten las conclusiones de este trabajo.
-  %
-  El capítulo \ref{chapter:future-work} comenta trabajos futuros que se derivan de esta tesina.
+  En el capítulo \ref{chapter:conclusions} se discuten las conclusiones de este trabajo y 
+  se comentan posibles pasos futuros que se derivan de esta tesina.
   %
   Finalmente, el capítulo \ref{chapter:glossary} consta de un breve glosario con algunos conceptos
-  utilizados en inglés a lo largo del trabajo, que no cuentan con traducciones al español.
+  utilizados en inglés a lo largo del trabajo, que no cuentan con traducciones adecuadas al español.
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"

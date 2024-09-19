@@ -101,7 +101,7 @@ dan información conflictiva a diferentes partes del sistema.
 La situación puede ser expresada abstractamente
 en términos de un grupo de generales de la armada bizantina que acampan con sus tropas alrededor de una
 ciudad enemiga.
-Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en una plan
+Comunicándose solo a través de mensajeros, los generales deben ponerse de acuerdo en un plan
 de batalla común.
 Sin embargo, uno o más de ellos pueden ser traidores, quienes tratarán de confundir a los
 otros.
@@ -130,8 +130,8 @@ Las firmas digitales son una de las primitivas más poderosas de la criptografí
 Son similares a las firmas de puño y letra, en el sentido de que apuntan a cumplir las mismas propiedades.
 Sin embargo, al ser firmas criptográficas, presentan garantías:
 \begin{itemize}
-  \item La firma solo puede ser utilizada por su dueño para firmar mensajes arbitrarios.
-  \item Cualquiera puede verificar la firma de un mensaje.
+  \item La firma solo puede ser \textit{utilizada} por su dueño.
+  \item Cualquiera puede \textit{verificar} una firma.
 \end{itemize}
  
 Los \textit{esquemas de firmas digitales} pertenecen al dominio de lo que se conoce como \textit{criptografía asimétrica}
@@ -144,7 +144,7 @@ En líneas generales esto se puede expresar mediante la existencia de dos claves
 y una clave privada (que debe mantenerse secreta). Estas claves se encuentras conectadas entre sí y tienen roles complementarios.
 
 
-Un esquema de firmas típicamente consiste de algoritmos diferentes:
+Un esquema de firmas típicamente consiste en algoritmos diferentes:
 \begin{itemize}
   \item Un algoritmo de generación de pares de claves que un firmante usa para crear una nueva clave privada y una pública.
   \item Un algoritmo para firmar que toma una clave privada y un mensaje, y produce una firma del mismo.
@@ -167,8 +167,8 @@ En la Figura ~\ref{fig:digital-signatures} se recapitulan estos tres algoritmos.
 \end{figure}
 
 
-Las firmas son utilizadas para autenticar el \textit{origen} de un mensaje (el mensaje fue generado por el dueño de la clave privada
-asociada a la firma), así como también la \textit{integridad} del mismo (ya que si el mensaje fuese cambiado, la firma sería invalidada).
+Las firmas son utilizadas para autenticar el \textit{origen} de cierta información (que haya sido generada por el dueño de la clave privada
+asociada a la firma), así como también la \textit{integridad} de la misma (ya que si la pieza de información fuese modificada, la firma sería invalidada).
 
 %
 
@@ -308,7 +308,7 @@ Ahora surgen algunas preguntas. ¿Quién está a cargo de elegir y ordenar las t
  Esta propuesta contiene una lista de transacciones llamada \textit{bloque}.
  %
  Sin embargo, dado que la participación en Bitcoin es abierta a cualquiera, la propuesta de nuevos
- bloques debe ser restringida de alguna forma, de modo que solo una persona haga una propuesta
+ bloques debe ser restringida de alguna forma, de modo que un único servidor haga una propuesta
  para el siguiente bloque.
  %
 
@@ -317,7 +317,7 @@ un problema lo suficientemente difícil.
 %
 Este mecanismo se conoce como prueba de trabajo (\textit{PoW}, por sus siglas en inglés).
 %
-En el caso de Bitcoin, el rompecabezas a resolver consisten en que el hash del bloque a proponer
+En el caso de Bitcoin, el rompecabezas a resolver consiste en que el hash del bloque a proponer
 tenga una representación binaria que comience con un número dado de ceros.
 
 %
@@ -340,9 +340,9 @@ La Figura \ref{fig:blockchain} muestra una versión simplificada de una blockcha
 Cada bloque tiene una sección de datos en donde
 se agrupan y alojan una o más transacciones nuevas. Copias de cada transacción se hashean, los hashes luego
 se emparejan, se hashean, se emparejan de nuevo, y se hashean hasta que queda un único hash: la raíz de un
-\textit{merkle tree}~\cite{merkle.tree}. 
+\textit{Merkle tree}~\cite{merkle.tree}. 
 En la Figura \ref{fig:merkle-tree} se muestra un ejemplo de este tipo de árboles.
-La raíz del merkle tree se aloja en el encabezado del bloque.
+La raíz del Merkle tree se aloja en el encabezado del bloque.
 
 \begin{figure}[h]
   \centering
@@ -429,7 +429,7 @@ activamente en otros módulos del sistema.
 
 \subsection{Arquitectura de capas de Tendermint}\label{subsec:layers}
 % %
-Tendermint consiste de dos componentes técnicos principales: un motor de consenso de blockchain, y una interfaz
+Tendermint consiste en dos componentes técnicos principales: un motor de consenso de blockchain, y una interfaz
 de aplicación genérica.
 %
 El motor de consenso, llamado \textit{Tendermint Core}, asegura que las mismas transacciones sean registradas en cada
@@ -602,7 +602,7 @@ como un tipo de datos distribuido con ciertas propiedades.
 
 La comunicación entre procesos se realiza mediante el paso de mensajes.
 Cada proceso computa independientemente y a su propia velocidad, y los aspectos internos de cada proceso
-permanecen ocultos para el resto. Los retrasos en la transferencia de mensajes son aribitrarios pero finitos
+permanecen ocultos para el resto. Los retrasos en la transferencia de mensajes son arbitrarios pero finitos
 y también permanecen desconocidos para los procesos.
 
 Los procesos pueden fallar arbitrariamente, pero el número de servidores que fallan (bizantinos) está
