@@ -82,7 +82,10 @@ expuestas aplican de manera similar para todas las soluciones presentadas en est
 
 \section{Primera implementación: \vanilla}\label{sec:vanilla}
 
-\vanilla se presenta como la solución más sencilla a la API de \setchain
+\vanilla\footnote{En ciencias de la computación el término \textit{vanilla}
+describe software o hardware que se utiliza en su forma original, es decir, que no se ha
+modificado con fines específicos. Es por este motivo que a la primera implementación de \setchain
+le llamamos así, puesto que utiliza Tendermint en su forma natural.} se presenta como la solución más sencilla a la API de \setchain
 utilizando Tendermint.
 %
 La característica principal que le otorga sencillez a esta solución es que
@@ -377,9 +380,9 @@ la implementación de la versión \vanilla.
 En el Algoritmo~\ref{alg:api-vanilla} se muestra la solución más sencilla a la API
 de \setchain.
 %
-Los clientes agregan elementos invocando indirectamente a
+Los clientes agregan elementos invocando \<add>, cuya implementación llama a
 \texttt{Tendermint.Broadcast}, mientras que pueden consultar el estado actual de
-la \setchain invocando también de forma indirecta a \texttt{Tendermint.Query}.
+la \setchain mediante \<get>, quien invoca a \texttt{Tendermint.Query}.
 %
 
 Para dar una implementación completa de \setchain utilizando Tendermint, además se
@@ -429,7 +432,7 @@ Tendermint envía peticiones \EndBlock una única vez por bloque, luego de haber
 enviado todas las transacciones dentro del mismo.
 %
 En este algoritmo, la finalización de un bloque desencadena un incremento de época
-y, por lo tanto, cada bloque de Tendermint define una época distitna en la \setchain,
+y, por lo tanto, cada bloque de Tendermint define una época distinta en la \setchain,
 la cual contiene como elementos a las transacciones de dicho bloque.
 %
 La finalización de un bloque también origina la creación de un elemento de prueba de época
@@ -671,7 +674,7 @@ que un \collector correcto genere lotes de elementos válidos (puesto que cheque
 antes de agregarlos), no puede asegurarse que sean nuevos.
 A su vez, un \collector bizantino también podría incoporar elementos inválidos en un lote.
 %
-Por lo tanto, las transacciones se considern válidas si al menos uno de sus elementos es válido y nuevo.
+Por lo tanto, las transacciones se consideran válidas si al menos uno de sus elementos es válido y nuevo.
 % La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos
 % a un nodo no debería privar a los elementos válidos enviados al mismo nodo de
 % ser añadidos a la \setchain.
@@ -711,14 +714,14 @@ a una nueva época de la \setchain.
 
 %
 El uso de un algoritmo de compresión previo a la inyección de una nueva transacción es una apuesta para mejorar
-el rendimiento, medido en cantidad de elementos por segundos, que pueden ser añadidos a la \setchain.
+el rendimiento, medido en cantidad de elementos por segundo, que pueden ser añadidos a la \setchain.
 Este enfoque trabaja bajo la hipótesis de que hacer consenso sobre elementos agrupados de forma
 eficiente interpretados como unidad representa una mejora en comparación con el consenso usual,
 hecho sobre elementos individuales.
 
 \section{Tercera implementación: Hashchain}\label{sec:hashchain}
 %
-Hashchain se alínea con el concepto introducido en Compresschain; sin embargo, usa
+Hashchain se alinea con el concepto introducido en Compresschain; sin embargo, usa
 funciones hash en lugar de usar un algoritmo de compresión.
 %
 Mientras que el poder de compresión de las funciones hash puede ser enorme, dado que estas funciones
@@ -842,7 +845,7 @@ Esto se representa en la Figura ~\ref{subfig:hash-flow-b}.
 
 Por el contrario, en la Figura ~\ref{subfig:hash-flow-c} se muestra el caso en que el \hcollector no posee el lote original,
 por lo que debe pedírselo al \hcollector correspondiente. Gracias a la firma, es posible determinar
-quién es el \hcollector que enuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
+quién es el \hcollector que anuncia tener el lote. Una vez que obtiene el inverso, lo almacena para
 futuras peticiones y lo pasa a la aplicación. De esta forma, es transparente para la aplicación
 cómo se resuelve el proceso de inversión.
 
@@ -909,20 +912,20 @@ y conocidos más tarde.
 La naturaleza optimista de Hashchain tiene consecuencia notables.
 %
 Como el comportamiento por defecto de  \<CheckTx> es retornar \texttt{True},
-se pueden tener transacciones en la blockchain sin conocer los elementos de éstas
+se pueden tener transacciones en Tendermint sin conocer los elementos de éstas
 (solo conociendo los hashes).
 %
-Aún más, una transacción puede terminar siendo parte de la blockchain sin que nadie
+Aún más, una transacción puede terminar siendo parte de la blockchain de Tendermint sin que nadie
 la haya chequeado previamente, pero pasando el chequeo por el comportamiento optimista.
 %
 De hecho, este es probablemente el caso para la primera vez que un nuevo hash aparece
-en la blockchain, ya que fue consensuado sin que los nodos hayan chequeado realmente los elementos
+en Tendermint, ya que fue consensuado sin que los nodos hayan chequeado realmente los elementos
 del lote.
 %
 %Therefore, we need a way to extract the elements inside the transactions and
 %provide the user a uniform view, that of a Setchain.
 Por lo tanto, necesitamos definir un criterio para determinar cuándo es seguro
-que los elementos en un hash que está en la blockchain sean parte de la \setchain.
+que los elementos en un hash que está en la blockchain de Tendermint sean parte de la \setchain.
 
 % the HashChain living in
 % Tendermint, and the \setchain we want to build.
@@ -937,7 +940,7 @@ nodos. A dichos hashes los llamamos \textit{hashes consolidados}.
 El número \SPH se define de manera tal que se garantiza que si un hash
 consolidó entonces al menos un nodo correcto conoce el lote original del cual proviene.
 %
-Siendo $f$ la cota superior de servidores bizantinos, pordemos considerar \SPH $= f + 1$.
+Siendo $f$ la cota superior de servidores bizantinos, podemos considerar \SPH $= f + 1$.
 Los elementos de hashes consolidados son los candidatos a pertenecer a la \setchain.
 %
 Existen casos en los que algunos de dichos elementos pueden no ser añadidos a la \setchain,
@@ -1001,6 +1004,20 @@ Excepción a esto son los elementos de un hash que no son válidos (puesto que n
 estampados con un número de época) o los que no son nuevos, es decir, ya fueron estampados
 con un número de época distinto.
 
+A diferencia de \compresschain, en donde hubiese sido sencillo implementar las épocas como
+un bloque de Tendermint completo (como se hizo para \vanilla), en \hashchain dicha implemtanción
+no sería trivial, debido a que es posible que algunos lotes (transacciones de Tendermint)
+nunca consoliden.
+%
+Es decir, si se definiera una época como la unión de todos los lotes en un bloque de Tendermint,
+la época no podría considerarse completa hasta que todos los lotes en el bloque consoliden.
+%
+Por lo tanto, un bloque con un lote que nunca consolida, evitaría la conformación de la época,
+evitando que elementos en condiciones de ser añadidos a la \setchain sean en efecto añadidos.
+%
+Esta dificultad no está presente en \compresschain, puesto que todos los lotes son trivialmente
+posibles de descomprimir.
+
 %
 %Now we have to be more careful when adding elements to the setchain, elements
 %may appear several times depending on how nodes form batches and
@@ -1012,7 +1029,7 @@ con un número de época distinto.
 
 %
 
-Se presentan dos alternativas para asignar un número de época a un hash consolidado.
+En este trabajo se presentan dos alternativas para asignar un número de época a un hash consolidado.
 %
 La primera se llama \textit{Consolidación de época actual} (CEC), que significa que 
 una vez que un hash consolida, todos sus elementos subyacentes nuevos y válidos son
@@ -1093,7 +1110,7 @@ $k$ e $i$ (e incluso $o$ y $q$) no pueden consolidarse hasta que $j$ consolide o
 \end{figure}
 
 %
-Se concluye entonces que un período de gracia es necesario para garantizar la evolución
+Se concluye entonces que, bajo la estrategia FSEC, un período de gracia es necesario para garantizar la evolución
 exitosa de la \hashchain. 
 %
 Este período de gracia debe ser medido en términos de transacciones, de modo de que existan garantías
@@ -1167,16 +1184,16 @@ número de época. Notemos que esto es correcto puesto que a la larga todos los 
 y firmarlo, por lo que con seguridad sus elementos tendrán un número de época asignado en el futuro.
 
 
+\input{algorithms/alg-api-hash}
+
+
 \input{algorithms/alg-collector-hash}
 
-\input{algorithms/alg-api-hash}
 
 \input{algorithms/alg-abci-hash}
 
 
 % Make this appears after all the algorithms.
-
-\newpage
 
 \subsection{FSEC vs CEC}
 En esta sección se comparan las estrategias FSEC y CEC a partir de la idea de ataques de \textit{front-running}.
@@ -1186,7 +1203,7 @@ desleal. Debido a que las transacciones pendientes son públicas, un usuario mal
 observar las transacciones que genera una víctima, construir una nueva transacción y luego
 encontrar una forma de ubicarla antes que la transacción de la víctima. En la red Ethereum, esta
 \textquotedblleft forma\textquotedblright\ de colocar una transacción antes de otra es usualmente
-llevada a cabo mediante pagos: o bien pagando impuestos de transacción (\textit{transacction fees}) más altos
+llevada a cabo mediante pagos: o bien pagando impuestos de transacción (\textit{transaction fees}) más altos
 que la víctima, o haciendo pagos directos a ciertos validadores.
 %
 
@@ -1220,13 +1237,14 @@ interesante se da en el escenario alternativo: cuando las transacciones finalmen
 
 Supongamos que $v$ ve una transacción $t_0 = (h_k, s_{k}0)$ y quiere ejecutar un ataque de front-running.
 Para lograrlo, ignora la transacción, pero difunde su propia transacción firmada $t_1 = (h_l, s_{l}0)$,
-esperando que $t_1$ finalmente sea estampada con una época menor que $t_0$.
+esperando que los elementos en ella sean finalmente estampados con un número de época menor que el número de época
+con que se estampa a los elementos en $t_0$.
 %
 
 Bajo el comportamiento FSEC, $h_k$ fue visto por primera vez en un bloque anterior,
 por lo que si logra las
 \SPH firmas dentro del período de gracia, consolidará y los elementos
-en el hash serán estampados con una época menor a la de $t_1$.
+en el hash serán estampados con una época menor a la de los elementos en $t_1$.
 %
 Notemos que esto es completamente independiente del número de firmas que $h_l$ logre y la velocidad
 a la cual lo haga. El hash $h_l$ podría incluso consolidar (llegar a su firma \SPH)
@@ -1252,11 +1270,11 @@ a continuación.
 
 
 Dado que la época en FSEC es determinada por el momento en el cual el hash fue visto por primera vez, 
-la estrategia de alguna manera \textit{reserva} el número de época para la transacción específica.
+la estrategia de alguna manera \textit{reserva} el número de época para los elementos en la transacción específica.
 Si $v$ quiere que un hash $h_k$ consolide únicamente si puede hacerlo antes que otro hash
 $h_l$ (y no necesita conocer los elementos de $h_l$ desde antes), $v$ podría hacer lo siguiente.
 %
-Primero, difunde la transacción de modo que todos los validadores reservan el número de época para ella.
+Primero, difunde la transacción de modo que todos los validadores reserven el número de época para los elementos en ella.
 %
 Luego, $v$ no revierte el hash $h_k$ a nadie, porque quiere esperar hasta que el hash $h_l$ aparezca
 y obtenga suficientes firmas.

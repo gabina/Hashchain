@@ -35,8 +35,8 @@
                 \Comment{Obtener el lote de la base de datos local.}
               \Else
                 \State \texttt{public\_key} = \<RecoverPK>($s$)
-                \State \texttt{collector} = \texttt{BuildCollector(public\_key)}
-                \State \texttt{batch} = \texttt{collector}.\Call{\<Reverse>}{$h$, $s$}
+                \State \texttt{remote\_collector} = \texttt{BuildCollector(public\_key)}
+                \State \texttt{batch} = \texttt{remote\_collector}.\Call{\<Reverse>}{$h$, $s$}
                 \Comment{Obtener el lote mediante otro collector.}
                 \If {\<Hash>(\texttt{batch}) = $h$}
                   \State \texttt{DATA\_BASE}.Set($h$, \texttt{batch})
