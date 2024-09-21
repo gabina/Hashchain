@@ -34,7 +34,7 @@ en manos de validadores bizantinos sea menor a 1/3 del poder de voto total.
 
 Para lograr homogeneidad con el modelo de computación presentado en ~\ref{sec:model_system},
 consideramos que el poder de voto de cada validador es igual a 1, y por lo tanto existen exactamente
-$n$ procesos en total y $f$ procesos bizantinos.
+$n$ procesos en total y a lo sumo $f$ procesos bizantinos.
  
 \subsection{Propiedades nativas}
 Se presentan dos propiedades fundamentales de Tendermint, debidamente demostradas en \cite{Buchman.2018.Tendermint}.
@@ -356,7 +356,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   en el mismo orden en que lo hace $v$.
   % petición \<DeliverTx>($t$) en el mismo orden en que lo hace $v$, es decir,
   % durante la construcción de la época $i$,
-  Por lo tanto, de forma análoga, $w$ añadirá a $e$ a $w.\HISTORY(1)$.
+  Por lo tanto, de forma análoga, $w$ añadirá $e$ a $w.\HISTORY(1)$.
   Posteriormente, $w.\EPOCH$ será incrementado de 0 a 1 como parte del proceso de la petición
   \EndBlock.
   De esta forma, $e$ es estampado con el número de época 1 en $w$.
@@ -590,7 +590,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   en el mismo orden en que lo hace $v$.
   % petición \<DeliverTx>($t$) en el mismo orden en que lo hace $v$, es decir,
   % durante la construcción de la época $i$,
-  Por lo tanto, de forma análoga, $w$ añadirá a $e$ a $w.\HISTORY(1)$ y, posteriormente,
+  Por lo tanto, de forma análoga, $w$ añadirá $e$ a $w.\HISTORY(1)$ y, posteriormente,
   $w.\EPOCH$ será incrementado de 0 a 1.
   De esta forma, $e$ es estampado con el número de época 1 en $w$.
   Así queda demostrado $v.\HISTORY(1) \subseteq w.\HISTORY(1)$.
@@ -635,8 +635,8 @@ Para estas demostraciones consideramos que dos lotes de elementos distintos nunc
 tienen el mismo hash asociado, es decir, no se considera la posibilidad de colisiones.
 
 \subsubsection{Propiedades derivadas}
-Con el objetivo de hacer las demostraciones más sencillas, se definen y demuestran las siguientes
-propiedades derivadas.
+Con el objetivo de simplificar las pruebas, se definen y demuestran
+tres propiedades derivadas antes de proceder con la demostración de los lemas.
 
 \begin{property}[Haschain-Global-Consolidation]\label{tendermint:hashchain-global-consolidation}
   Si un hash $h$ consolida en un servidor correcto, a la larga consolidará en todos
@@ -733,8 +733,6 @@ propiedades derivadas.
   A su vez, por la propiedad \ref{tendermint:hashchain-local-consolidation} \textit{Haschain-Local-Consolidation} se añadirá
   $e$ a $v.\HISTORY$.
 \end{proof}
-
-\subsubsection{Lemas}
 
 \begin{lemma}\label{lemma:hashchain-consistent-set}
   La implementación \hashchain cumple la propiedad~\ref{api:consistent-set} \textit{Consistent Sets} de \setchain.
@@ -884,7 +882,7 @@ propiedades derivadas.
   Sea un elemento $e$ $\in v.\HISTORY(1)$.
   Por construcción de $\HISTORY$, necesariamente $e$ es válido y $v$ recibió al menos \SPH
   peticiones \<DeliverTx>($h, s$), donde $h$ es un hash asociado a un lote que contiene a $e$,
-  y $s$ es una firma válida de $h$ (generada con la clave priavada de un servidor).
+  y $s$ es una firma válida de $h$ (generada con la clave privada de un servidor).
   Esto produjo que \texttt{hash\_to\_signature[$h$]} acumulara firmas como se muestra en la línea
   \ref{alg:hash-new-sign} de la definición de \<DeliverTx>, y que en algún momento
   \<shouldConsolidateHash>($h$) retorne \texttt{True}, asignándole el número de época 1 al hash $h$
@@ -902,7 +900,7 @@ propiedades derivadas.
   A su vez, dado que $\SPH \geq f + 1$, podemos asegurar que al menos un servidor correcto firmó $h$.
   Con seguridad, dicho servidor correcto conoce el hash y, por lo tanto, garantiza que lo revertirá
   cuando $w$ procese su petición.
-  De esta forma, con certeza se añadirá a $e$ a $w.\HISTORY(1)$.
+  De esta forma, con certeza se añadirá $e$ a $w.\HISTORY(1)$.
   Así queda demostrado $v.\HISTORY(1) \subseteq w.\HISTORY(1)$.
   El mismo razonamiento se puede seguir para demostrar $w.\HISTORY(1) \subseteq v.\HISTORY(1)$.
   Luego, queda demostrada la propiedad para el caso base: $v.\HISTORY(1)=w.\HISTORY(1)$.
