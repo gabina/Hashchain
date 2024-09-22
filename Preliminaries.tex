@@ -47,6 +47,22 @@ acordada, ya sea por un error (por ejemplo, en la programación o en una red) o 
 malintencionado.
 Se profundizará en este punto en la siguiente sección. % ~\ref{subsubsec:consensus}.
 
+\subsection{Liveness y safety}
+Existen dos grandes clases de propiedades que son interesantes de enunciar cuando se describen sistemas
+(sean distribuidos o no): las propiedades de \textit{liveness} y las propiedades de \textit{safety}.
+Establecer estas propiedades ayuda principalmente en dos aspectos. Por un lado, al entendimiento del sistema.
+Por el otro, facilita la demostración de correctitud de los algoritmos que pretenden implementarlo.
+A lo largo de este trabajo veremos distintas propiedades que pueden ser clasificadas dentro
+de uno de estos dos conjuntos.
+Usualmente estas propiedades se definen en términos de las ejecuciones de un sistema o de un programa.
+
+Informalmente, las propiedades de liveness son aquellas que establecen que \emph{cosas buenas} ocurren
+en cada ejecución o, equivalentemente, describen algo que debe obligatoriamente pasar durante cada ejecución.
+Una vez satisfechas, lo son en cualquier extensión de la ejecución.
+
+Por su parte, las propiedades de safety son aquellas que proscriben \emph{cosas malas} durante
+la ejecución, caracterizando lo que está permitido al declarar lo que está
+prohibido. Una vez violadas, lo son en cualquier extensión de la ejecución.
 % Two main process failures models are considered in this book:
 % • Crash failures. A process commits a crash failure when it prematurely stops its execution. Until
 % it crashes (if it ever crashes), a process correctly executes its local algorithm.
@@ -590,6 +606,7 @@ nuevo bloque y de generar las respuestas a dichas peticiones.
   \caption{Flujo de mensajes mediante la ABCI.}
   \label{fig:abci_flow}
 \end{figure}
+
 
 \section{Modelo de computación}\label{sec:model_system}
 Habiendo presentado los conceptos preliminares básicos para este trabajo, se describe
