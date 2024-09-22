@@ -91,7 +91,7 @@ Así, los parámetros que se modifican en los experimentos son los siguientes:
 	\item \texttt{n\_nodes}: cantidad de nodos corriendo
 	\item \texttt{sleep\_time}: cantidad de tiempo que espera el cliente antes de añadir un nuevo elemento
 	\item \texttt{collector\_size}: cantidad de elementos que el correspondiente \collector aloja antes de generar
-	un lote (no válido para \vanilla).
+	un lote (no aplicable a \vanilla).
 \end{itemize}
 La idea es ajustar los valores de los parámetros \texttt{sleep\_time} y \texttt{collector\_size},
 de modo de obtener, para una cantidad determinada de nodos en la red, la máxima cantidad de elementos que pueden ser
@@ -199,7 +199,7 @@ elementos añadidos por segundo.
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{figures/vanilla_añadidos.pdf}
+	\includegraphics[scale=0.5]{figures/vanilla_results_scale.pdf}
 	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \vanilla.}
 	\label{fig:vanilla_results}
 \end{figure}
@@ -208,7 +208,7 @@ elementos añadidos por segundo.
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{figures/compresschain_results.pdf}
+	\includegraphics[scale=0.5]{figures/compresschain_results_scale.pdf}
 	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \compresschain.}
 	\label{fig:compresschain_results}
 \end{figure}
@@ -259,7 +259,7 @@ de elementos añadidos por los distintos nodos, lo que se hace aún más notable
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{figures/hashchain_results.pdf}
+	\includegraphics[scale=0.5]{figures/hashchain_results_scale.pdf}
 	\caption{Elementos añadidos a la \setchain por segundo según la cantidad de nodos para \hashchain.}
 	\label{fig:hashchain_results}
 \end{figure}
@@ -271,6 +271,15 @@ En la Figura~\ref{fig:hashchain_results} se muestra una comparación de la máxi
 \subsection{Conclusión}
 En la Figura~\ref{fig:resultados_comparados} se muestra la comparación de todos los resultados presentados previamente.
 Allí se puede observar que el rendimiento de \hashchain es mejor que para las otras alternativas en todos los casos. 
+
+Cabe señalar que estos resultados corresponden a un entorno controlado de laboratorio, en donde
+todos los procesos corren en una misma máquina física.
+En un escenario de red real, donde las máquinas están físicamente distribuidas, los recursos no son compartidos y tanto las
+latencias como el ancho de banda suelen ser mayores, es posible que Hashchain ofrezca un
+rendimiento aún más favorable.
+Esto se debe a que el consenso en Hashchain se realiza sobre fragmentos de datos considerablemente más
+pequeños en comparación con las otras alternativas, lo que podría, en condiciones reales de fallas en la red,
+representar mejoras más significativas. 
 
 \begin{figure}
 	\centering
