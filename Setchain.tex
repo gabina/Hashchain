@@ -141,7 +141,7 @@ donde:
 %\[ (v.\THESET, v.\HISTORY, v.\EPOCH) \]
 %donde
 \[ v.\THESET = \{x, y, z, w, m, n\},\]
-\[\ v.\HISTORY = \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\},\]
+\[\ v.\HISTORY = \{1: \color{gray}\{\color{black}x, y, z\color{gray}\}\color{black}, 2: \color{gray}\{\color{black}w\color{gray}\}\color{black}, 3: \color{gray}\{\color{black}m, n\color{gray}\}\color{black}\},\]
 \[\ v.\EPOCH = 3. \]
 
 
@@ -149,7 +149,7 @@ En la Figura ~\ref{subfig:setchain-api-1} y la Figura ~\ref{subfig:setchain-api-
 invocando $v$.\<add>(a) y $v$.\<add>(b), respectivamente.
 %
 Luego de añadir ambos elementos, se tiene:
-\[ v.\<get> = (\{x, y, z, w, m, n, a, b\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}\}, 3). \]
+\[ v.\<get> = (\ \{x, y, z, w, m, n, a, b\},\ \{1: \color{gray}\{\color{black}x, y, z\color{gray}\}\color{black}, 2: \color{gray}\{\color{black}w\color{gray}\}\color{black}, 3: \color{gray}\{\color{black}m, n\color{gray}\}\color{black}\},\ 3\ ). \]
 %
 Es decir, el único cambio se percibe en el valor de $v.\THESET$ (que ahora incluye a los elementos $a$ y $b$).
 
@@ -166,7 +166,7 @@ En este sentido, se puede suponer que un cliente invocó $w.\<add>(c)$ sobre un 
 $c$ pertenecía a $w.\THESET$.
 %
 De este modo, se tiene el nuevo punto de vista del servidor $v$:
-\[ v.\<get> = (\{x, y, z, w, m, n, a, b, c\}, \{1: \{x, y, z\}, 2: \{w\}, 3: \{m, n\}, 4: \{a, b, c\}\}, 4). \]
+\[ v.\<get> = (\ \{x, y, z, w, m, n, a, b, c\}, \ \{1: \color{gray}\{\color{black}x, y, z\color{gray}\}\color{black}, 2: \color{gray}\{\color{black}w\color{gray}\}\color{black}, 3: \color{gray}\{\color{black}m, n\color{gray}\}\color{black}, 4: \color{gray}\{\color{black}a, b, c\color{gray}\}\color{black}\}, \ 4 \ ). \]
 
 
 
@@ -191,13 +191,14 @@ de solo crecimiento.
 \end{property}
 %
 La segunda propiedad declara que todo elemento añadido a un servidor correcto $v$ con el tiempo es
-retornado en todas las llamadas futuras a $v$.\<get>.
+retornado en todas las llamadas futuras a $v$.\<get>. Es decir, asegura la existencia de un momento a partir
+del cual el elemento siempre forma parte de lo retornado por $v$.\<get>.
 %
 \begin{property}[Add-Get-Local]\label{api:history->theset-local}
   %Sea $e$ un elemento válido y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   Sea $e \in V$ y $v.\<add>(e)$ una operación invocada en un servidor correcto $v$.
   %
-  Con el tiempo todas las invocaciones $(S,H,h)=v.\<get>()$ 
+  Es seguro que a partir de algún instante todas las invocaciones $(S,H,h)=v.\<get>()$ 
   satisfacen $e\in S$.
 \end{property}
 La siguiente propiedad establece que los elementos presentes en un servidor correcto son propagados
@@ -212,7 +213,7 @@ a todos los servidores correctos.
 \end{property}
 %
 
-Como ya se mencionó anteriormente, a lo largo de este trabajo se asume que en cualquier momento
+Como ya se mencionó anteriormente, a lo largo de este trabajo se asume que en todo momento
 existe un instante futuro en el cual ocurre el próximo incremento de época.
 Esta suposición es razonable ya que puede ser garantizada usando \textit{timeouts} en cualquier escenario práctico.
 Luego, la siguiente propiedad establece que todos los elementos añadidos son finalmente estampados
@@ -221,7 +222,7 @@ con un número de época.
 \begin{property}[Eventual-Get]\label{api:theset->history}
   Sea $v$ un servidor correcto, $(S,H,h)=v.\<get>()$ y $e \in U$.
   % 
-  Si $e \in S$, con el tiempo todas las invocaciones
+  Si $e \in S$, es seguro que a partir de algún instante todas las invocaciones
   $(S',H',h')=v.\<get>()$ satisfacen que $e \in H'$.
 \end{property}
 

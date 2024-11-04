@@ -70,7 +70,7 @@ el conjunto de elementos válidos $V$ es $\{e \in U: \<isValidElement>(e)\}$.
 A continuación se presentan diferentes definiciones de métodos
 necesarios para que la aplicación corriendo sobre Tendermint implemente \setchain.
 Esto involucra, por un lado, los métodos presentados como parte de la API de
-\setchain y, por el otro, los perteniences a la interfaz de aplicación de
+\setchain y, por el otro, los pertenecientes a la interfaz de aplicación de
 blockchain ~(ver sección ~\ref{sec:tendermint}).
 Si bien el objetivo del capítulo es
 presentar las soluciones a nivel conceptual, detalles de implementación son dados a lo largo
@@ -730,7 +730,7 @@ mapean datos de longitud arbitraria a valores de tamaño fijo, los hashes son ir
 Esto significa que debe proveerse un método no trivial para recuperar el lote original de elementos.
 
 % Esto capaz debería sacarlo porque no es claro.
-La implementación de Hashcain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes
+La implementación de \hashchain involucra dos aspectos: una blockchain de Tendermint compuesta por hashes
 y una estrategia distribuida de inversión de hashes para obtener los lotes originales de elementos.
 %
 % We shouldn't mention "consolidated hashes" before explaining it:
@@ -1005,7 +1005,7 @@ estampados con un número de época) o los que no son nuevos, es decir, ya fuero
 con un número de época distinto.
 
 A diferencia de \compresschain, en donde hubiese sido sencillo implementar las épocas como
-un bloque de Tendermint completo (como se hizo para \vanilla), en \hashchain dicha implemtanción
+un bloque de Tendermint completo (como se hizo para \vanilla), en \hashchain dicha implementación
 no sería trivial, debido a que es posible que algunos lotes (transacciones de Tendermint)
 nunca consoliden.
 %
@@ -1071,7 +1071,7 @@ con la época $a$ y los elementos del hash $k$, con la época $a+1$.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.28]{figures/consolidation-example.png}
+  \includegraphics[scale=0.28]{figures/consolidation-example-2.png}
   \caption{Estrategias de consolidación de épocas}
   \label{fig:consolidation_epoch}
 \end{figure}
@@ -1308,7 +1308,7 @@ Si $v$ es un validador que quiere ganar este juego haciendo trampa, podría vota
 como por B justo antes del momento en el que se sabe que la compañía publicará el resultado ganador.
 %
 Dado que $v$ difundió dos transacciones (una votando por A y otra votando por B) antes de que la
-transacción con el resultado ganador aparezca, todos los validadores reserverán un número de época
+transacción con el resultado ganador aparezca, todos los validadores reservarán un número de época
 anterior al del resultado. Después de esto, $v$ no revertirá el hash asociado con estas transacciones
 hasta que esté seguro de cuál es el resultado ganador (que efectivamente será añadido a la \hashchain).
 %
@@ -1335,7 +1335,7 @@ texto plano de longitud arbitraria en un hash de longitud fija).
 Aunque reduzca el tráfico de la red (haciendo consenso sobre transacciones pequeñas
 y de tamaño fijo), el uso de funciones hash requiere una forma de
 invertirlos para así obtener los elementos originales.
-Para resovler esto, se diseñó
+Para resolver esto, se diseñó
 un algoritmo distribuido, tolerante a fallas bizantinas, que trabaja como un objeto
 distribuido de resolución de hashes.
 

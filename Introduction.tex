@@ -49,16 +49,16 @@ de pago electrónico.
 
 Las versiones más modernas de blockchains incorporan contratos inteligentes o
 \textit{smart contracts}~\cite{szabo96smart,wood2014ethereum},
-los cuales son programas de estado inmutable alojados en la blockchain. Dichos
+los cuales son programas inmutables alojados en la blockchain. Dichos
 programas describen la funcionalidad de las transacciones, incluyendo el intercambio
 de criptomonedas.
 %
 Los contratos inteligentes permiten describir funcionalidades sofisticadas, habilitando
 diversas aplicaciones en finanzas descentralizadas\footnote{En diciembre de 2021,
-el valor monetario alojado en finanzas decentralizadas (o \emph{DeFi}, abreviación de \emph{decentralized finance})
+el valor monetario alojado en finanzas descentralizadas (o \emph{DeFi}, abreviación de \emph{decentralized finance})
 estaba estimado en alrededor de \$100B, de acuerdo a Statista
 \url{https://www.statista.com/statistics/1237821/defi-market-size-value-crypto-locked-usd/}.},
-gobierno decentralizado, Web3, etc.
+gobierno descentralizado, Web3, etc.
 %
 
 Conceptualmente, la blockchain es un \textit{objeto distribuido}
@@ -68,11 +68,13 @@ ordenadas~\cite{anta2018formalizing,anta2021principles}.
 %
 En entornos reales, el objeto blockchain es mantenido por múltiples servidores
 sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
-\emph{ataques bizantinos}.
+\emph{ataques bizantinos},
+es decir, a ataques producidos por nodos que, en lugar de cooperar,
+envían información conflictiva o fallan de formas arbritarias.
 %
 
 %Las blockchains tomaron popularidad
-%con la implementación de Bitcoin, un sistema de pago electrónico decentralizado, 
+%con la implementación de Bitcoin, un sistema de pago electrónico descentralizado, 
 %propuesto por Nakamoto en 2009~\cite{nakamoto06bitcoin}.
 %Así, aquello que en sus orígenes fue parte de una herramienta de guía, que mostró
 %a los viajeros su rumbo, hoy representa un avance en una dirección que difícilmente se
@@ -86,7 +88,7 @@ sin una autoridad central, usando \emph{algoritmos de consenso} que son resilien
 
 Actualmente, uno de los principales obstáculos para la adopción rápida y generalizada
 de las tecnologías blockchain es su límite en la \emph{escalabilidad}, debido principalmente a los límites
-de \emph{rendimiento} inerentes a los algoritmos de consenso bizantinos
+de \emph{rendimiento} inherentes a los algoritmos de consenso bizantinos
 ~\cite{Tyagi@BlockchainScalabilitySol,Croman2016ScalingDecentralizedBlockchain}.
 
 En términos generales, la escalabilidad de un sistema es su habilidad para gestionar una
@@ -98,9 +100,12 @@ en contraposición a la escalabilidad \emph{vertical} que refiere a aumentar los
 En el caso específico de la tecnología blockchain, la escalabilidad horizontal consiste en añadir nuevos
 nodos a la red que participen del protocolo de consenso.
 %
-Por otro lado, un ejemplo de problema de escalabilidad vertical en este contexto es la creciente cantidad de datos
-que requiere almacenar un nodo en la blockchain para guardar transacciones desde el bloque más reciente
-hasta el bloque \emph{génesis} (inicial).
+Por otro lado, la escalabilidad vertical en la blockchain implica aumentar el poder de cómputo de los
+nodos existentes en la red, mediante la actualización de sus capacidades de hardware, como la mejora de
+GPUs o la ampliación de almacenamiento.
+% Por otro lado, un ejemplo de problema de escalabilidad vertical en este contexto es la creciente cantidad de datos
+% que requiere almacenar un nodo en la blockchain para guardar transacciones desde el bloque más reciente
+% hasta el bloque \emph{génesis} (inicial).
 
 En este trabajo nos enfocaremos en la escalabilidad de blockchains desde el punto de vista de su \emph{rendimiento}, medido
 en términos del número de transacciones añadidas por segundo.
@@ -278,7 +283,7 @@ favorecen a los nodos con mayor ancho de banda.
 
 \subsection{\emph{Inter-Blockchain Communication}}
 La tecnología blockchain está creciendo masivamente; el número de plataformas y
-aplicaciones decentralizadas se incrementó rápidamente en los últimos años.
+aplicaciones descentralizadas se incrementó rápidamente en los últimos años.
 %
 Sin embargo, la mayoría de las redes de blockchain operan en entornos autónomos aislados
 de los demás.
@@ -381,8 +386,8 @@ los estados de la base de datos en fragmentos independientes (o particiones).
 Al distribuir la carga sobre múltiples particiones, la capacidad global del sistema
 se incrementa.
 %
-La técnica de \emph{sharding}~\cite{Dang2019Sharding} requiere cierta coordinación para lograr propiedades
-básicas de atomocidad, consistencia, aislamiento y durabilidad para aquellas transacciones
+Esta ténica, conocida como \emph{sharding}~\cite{Dang2019Sharding}, requiere cierta coordinación para lograr propiedades
+básicas de atomicidad, consistencia, aislamiento y durabilidad para aquellas transacciones
 que acceden a múltiples fragmentos.
 %
 En la Figura ~\ref{fig:sharding} se representa la idea de \emph{sharding} como la combinación entre
@@ -515,7 +520,7 @@ Si bien distintos algoritmos bizantinos distribuidos que implementaban \setchain
 propuestos, no existía al momento ninguna implementacion eficiente compatible con
 los requerimientos de una aplicación del mundo real.
 Es decir, una aplicación capaz de soportar un \textit{deployment} con miles de nodos\footnote{Si bien
-es difícil saber con exactitud cuántos nodos existen en la red de Blockcahin o Ethereum, se estima
+es difícil saber con exactitud cuántos nodos existen en la red de Bitcoin o Ethereum, se estima
 que este número varía entre aproximadamente 10000 y 50000 nodos.}
 distribuidos geográficamente en todos los continentes, con clientes enviando peticiones para
 añadir nuevas transacciones a los servidores constantemente.

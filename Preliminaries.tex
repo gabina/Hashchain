@@ -10,8 +10,8 @@ contribuciones de este trabajo.
 
 La computación distribuida nació a fines de la década de 1970 cuando investigadores y profesionales
 comenzaron a tener en cuenta las características intrínsecas de los sistemas distribuidos físicamente.
-El campo luego emergió como un área de investigación especializada distinta al de redes, al de sistemas
-operativos, y al de computación paralela~\cite{raynal.dist.systems}.
+El campo luego emergió como un área de investigación especializada distinta a la de redes, a la de sistemas
+operativos, y a la de computación paralela~\cite{raynal.dist.systems}.
 
 La computación distribuida surge cuando se tiene que resolver un problema en términos de entidades
 distribuidas (usualmente llamadas procesos, nodos, actores, agentes, pares, etc) en donde cada
@@ -84,7 +84,7 @@ prohibido. Una vez violadas, lo son en cualquier extensión de la ejecución.
 % Fuente: Fault-Tolerant Message-Passing Distributed Systems An Algorithmic Approach
 
 \section{Algoritmos de consenso}\label{subsubsec:consensus}
-El problema de consenso es uno de los más celebrados en los sistemas de computación distribuida tolerante a fallas.
+El problema de consenso es uno de los más célebres en los sistemas de computación distribuida tolerante a fallas.
 %
 Abstrae diversos problemas en donde, de una manera u otra, los procesos deben ponerse de acuerdo.
 %
@@ -108,7 +108,7 @@ escenarios (cantidad de nodos, cantidad de nodos que pueden fallar, formas en la
 %
 
 Si bien a lo largo de este trabajo no se entrará en detalles sobre ningún algoritmo de consenso en particular,
-es pertienente discutir conceptos y nomenclatura básica.
+es pertinente discutir conceptos y nomenclatura básica.
 
 \subsection{El problema de los generales bizantinos}
 
@@ -126,8 +126,22 @@ Está demostrado que, usando solo mensajes orales, este problema es resoluble si
 de los generales son leales~\cite{byzantineproblem}.
 
 %
+% Con esta analogía de los generales bizantinos, Leslie Lamport inició el estudio de la tolerancia a máquinas que fallan de
+% formas arbitrarias, incluyendo aquellas maliciosas.
+% Esto es conocido como \emph{tolerancia a fallas bizantinas}.
 
-Con esta analogía de los generales bizantinos se instauraron nuevos conceptos que hoy son ampliamente utilizados.
+% de nuevos conceptos que hoy son ampliamente
+% utilizados.
+% En particular, dio pie al estudio de los algoritmos de consenso tolerantes a fallas
+% bizantinas (\textit{Byzantine fault-tolerant algorithms}), también conocidos como algoritmos de consenso BFT (por sus siglas en inglés).
+% La habilidad de tolerar máquinas que fallan de formas arbitrarias, incluyendo aquellas maliciosas,
+% es conocida como \emph{tolerancia a fallas bizantinas}.
+% Si bien la teoría de
+% BFT es de décadas pasadas, las implementaciones de software se han vuelto populares recientemente,
+% debido al amplio éxito de tecnologías blockchains como Bitcoin~\cite{nakamoto06bitcoin} y Ethereum~\cite{wood2014ethereum}.
+
+Con esta analogía de los generales bizantinos, presentada por Leslie Lamport en 1982,
+se instauraron nuevos conceptos que hoy son ampliamente utilizados.
 La habilidad de tolerar máquinas que fallan de formas arbitrarias, incluyendo aquellas maliciosas,
 es conocida como \emph{tolerancia a fallas bizantinas}.
 A su vez, se inició el estudio de los algoritmos de consenso tolerantes a fallas
@@ -194,7 +208,7 @@ Sin embargo, no se entrará en detalles sobre ellos.
 
 \section{Los orígenes de la blockchain: Bitcoin}
 % Fuente: Mastering Bitcoin. Programming the open blockchain.
-Las blockchains tomaron popularidad con la invención de Bitcoin en 2008, luego de la publicación
+Las blockchains tomaron popularidad con la invención de Bitcoin en 2009, luego de la publicación
 de un artículo llamado \textit{Bitcoin: A Peer-to-Peer
 Electronic Cash System}\footnote{Bitcoin: un sistema de dinero electrónico de par a par.}, escrito
 bajo el pseudónimo de Satoshi Nakamoto.
