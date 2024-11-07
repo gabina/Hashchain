@@ -38,7 +38,9 @@ Para las funciones criptográficas se utilizó el paquete \textit{crypto} de \te
 del protocolo de Ethereum en Golang). 
 
 %
-Cada instancia fue empaquetada en un contenedor Docker~\cite{docker} con uso limitado a 6 núcleos y 32GB de RAM.
+Cada instancia fue empaquetada en un contenedor Docker~\cite{docker},
+limitando los recursos totales asignados a Docker (independientemente de la cantidad de contenedores)
+a 6 núcleos y 32GB de RAM.
 %
 La cantidad de nodos utilizados varió según cada experimento.
 %
@@ -190,10 +192,12 @@ En la Figura~\ref{fig:vanilla_results} se muestra una comparación de la máxima
 %
 Se nota una clara degradación en la cantidad de elementos añadidos al aumentar la cantidad de nodos corriendo en el experimento.
 Esta baja es esperable, sin embargo, es importante notar el siguiente punto.
-Mientras más entidades (clientes y servidores) participen del consenso dentro de la red de Tendermint el experimento se hace más exigente en cuanto a recursos
-(procesador y memoria RAM).
-Dado que el límite de recursos destinados a Docker se mantiene constante durante todos los experimentos (independientemente de la cantidad de nodos),
-se genera una degradación en la cantidad de elementos que los clientes pueden enviar por segundo.
+Mientras más entidades (clientes y servidores) participen del consenso dentro de la red de Tendermint el experimento se hace más
+exigente en cuanto a recursos (procesador y memoria RAM).
+Dado que el límite de recursos totales destinados a Docker se mantiene constante durante todos los experimentos
+(independientemente de la cantidad de nodos),
+se genera una degradación en la cantidad de elementos que los clientes pueden enviar por segundo
+(puesto que los recursos destinados a cada contenedor disminuye cuando aumenta la cantidad de nodos).
 Naturalmente, y como ya se mencionó antes, al disminuir el ratio de elementos enviados por segundo, invariablemente también lo hace el ratio de
 elementos añadidos por segundo.
 

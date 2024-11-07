@@ -213,7 +213,7 @@ sea correcto.
 % An extension to Setchain presented an optimistic client with the following
 % approach.
 %
-Como ya se mencionó en el modelo de computación (ver Sección ~\ref{sec:model_system}),
+Como ya se mencionó en el modelo de computación (ver sección ~\ref{sec:model_system}),
 se asume que una cota superior $f$ de servidores
 bizantinos es conocida y, por lo tanto, se requiere invocar \<add> en $f+1$ servidores
 distintos para asegurar que al menos uno es correcto.
@@ -336,11 +336,11 @@ Provee una función \texttt{Sign} que cacula una firma ECDSA.
 La firma producida se encuentra en el formato $[R || S || V]$, donde $(R, S)$ son los componentes usuales
 de una firma ECDSA, y $V$ es 0 o 1.
 %
-El valor de $V$ es usualmente llamado \textit{bit de recuperación} y permite recuperar inequívocamente,
+El valor de $V$ es usualmente llamado \textit{id de recuperación} y permite recuperar inequívocamente,
 a partir de la firma y de un hash del mensaje firmado, la clave pública de quien realizó la firma.
 %
-Sin ese bit de recuperación, el proceso de recuperación de clave pública puede retornar potencialmente
-más de un candidato, motivo por el cual se añade dicho bit.
+Sin ese id de recuperación, el proceso de recuperación de clave pública puede retornar potencialmente
+más de un candidato, motivo por el cual se añade dicho id.
 % 
 Esta propiedad de recuperación de la clave pública que provee ECDSA es muy útil en contextos con limitaciones
 de ancho de banda, en donde la transmisión de la clave pública sería muy costosa.
@@ -529,10 +529,12 @@ la existencia del \collector es transparente para él.
 
 %
 
-En la Figura ~\ref{subfig:compress-flow-c} se muestra que el \collector recolecta elementos que envían los distintos clientes y los agrupa
-en un lote.
+En la Figura ~\ref{subfig:compress-flow-c} se muestra que el \collector recolecta elementos que envían los distintos
+clientes y los agrupa en un lote.
 Un lote contiene potencialmente varios elementos enviados por uno o más clientes a un mismo nodo servidor
 que corre el Tendermint Core, la aplicación y el \collector.
+Si bien se omite en la figura, el \collector valida los elementos que le llegan antes de insertarlos en un lote,
+con lo cual un lote construido por un \collector correcto contiene solo elementos válidos.
 Cuando el lote se encuentra listo, el \collector tiene una nueva transacción para inyectar en la red de Tendermint.
 Esta transacción se presenta en las figuras con un \textit{símbolo de carpeta} gris.
 
@@ -540,7 +542,8 @@ Esta transacción se presenta en las figuras con un \textit{símbolo de carpeta}
 
 Una vez que el lote fue comprimido, el flujo es el mismo que el explicado en la sección anterior para \vanilla: la transacción
 que representa al elemento $e$ (y a otros) se chequea contra \CheckTx para determinar si debe ser insertada
-en la mempool o descartada.
+en la mempool o descartada\footnote{El criterio con el cual una transacción es añadida a la mempool o descartada
+se explica con detalle en la sección ~\ref{subsec:compresschain-algorithms}}.
 %
 Si llega a la mempool, se espera que luego de un tiempo sea añadida a un bloque de Tendermint y que,
 tarde o temprano, mediante el algoritmo de consenso, este bloque se considere \textit{commited by the network}.
@@ -1051,7 +1054,7 @@ Para ver claramente la diferencia entre estas dos alternativas se presenta un ej
 En la Figura~\ref{fig:consolidation_epoch} se ilustran estas dos estrategias para asignar
 un número de época a un hash que consolidó cuando \SPH es 3.
 %
-Como se mencionó en la Sección ~\ref{subsec:hash-inversion}, las transacciones se representan
+Como se mencionó en la sección ~\ref{subsec:hash-inversion}, las transacciones se representan
 con una tupla $(h, s)$, donde $h$ es un hash y $s$ es una firma de dicho hash generada con la
 clave privada de un validador que afirma conocer los elementos de ese hash.
 %

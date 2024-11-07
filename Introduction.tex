@@ -390,8 +390,10 @@ Esta ténica, conocida como \emph{sharding}~\cite{Dang2019Sharding}, requiere ci
 básicas de atomicidad, consistencia, aislamiento y durabilidad para aquellas transacciones
 que acceden a múltiples fragmentos.
 %
-En la Figura ~\ref{fig:sharding} se representa la idea de \emph{sharding} como la combinación entre
-réplica y partición.
+%En la Figura ~\ref{fig:sharding} se representa la idea de \emph{sharding} como la combinación entre
+%réplica y partición.
+%
+La idea de \emph{sharding} se puede pensar como la combinación entre réplica y partición.
 %
 Cada partición se replica sobre múltiples réplicas, y su contenido se mantiene consistente
 mediante protocolos de consenso.
@@ -410,20 +412,20 @@ simplemente deja de enviar y responder peticiones.
 Por el otro lado, los sistemas de blockchain operan en ambientes más hostiles, asumiendo modelos de fallas
 más fuertes, conocidos como bizantinos, que tienen en cuenta a atacantes malintencionados.
 %
-La Figura ~\ref{fig:sharding} remarca las diferencias entre las bases de datos distribuidas y las blockchains fragmentadas,
-mostrando la necesidad de un protocolo de formación de particiones.
+%La Figura ~\ref{fig:sharding} remarca las diferencias entre las bases de datos distribuidas y las blockchains fragmentadas,
+%mostrando la necesidad de un protocolo de formación de particiones.
 
-\begin{figure}
-  \centering
-  \subfloat[Bases de datos distribuidas.]{\includegraphics[scale=0.13]{figures/sharding1.png}\label{subfig:sharding-a}}
+% \begin{figure}
+%   \centering
+%   \subfloat[Bases de datos distribuidas.]{\includegraphics[scale=0.13]{figures/sharding1.png}\label{subfig:sharding-a}}
   
-  \hspace{1.5cm}
-  \vspace{0.5cm}
+%   \hspace{1.5cm}
+%   \vspace{0.5cm}
 
-  \subfloat[Blockchains fragmentadas.]{\includegraphics[scale=0.13]{figures/sharding2.png}\label{subfig:sharding-b}}
-  \caption{Protocolos de fragmentación.}
-  \label{fig:sharding}
-\end{figure}
+%   \subfloat[Blockchains fragmentadas.]{\includegraphics[scale=0.13]{figures/sharding2.png}\label{subfig:sharding-b}}
+%   \caption{Protocolos de fragmentación.}
+%   \label{fig:sharding}
+% \end{figure}
 
 % Traditional databases assume the crash-failure model, in which a
 % faulty node simply stops sending and responding to requests. On
@@ -512,7 +514,7 @@ de barreras ocasionales.
 Una descripción más detallada del funcionamiento de \setchain y sus propiedades se da
 en el capítulo \ref{chapter:setchain}.
 
-\section{Contribuciones}
+\section{Contribuciones}\label{sec:contributions}
 En este trabajo se realiza una contribución al estudio de la escalabilidad en blockchain mediante 
 una familia de implementaciones robustas de \setchain.
 %

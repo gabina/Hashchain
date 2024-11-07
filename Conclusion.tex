@@ -50,27 +50,28 @@ entre las primitivas de la blockchain y la interfaz definida por el usuario.
 
 
 Como contribuciones originales de este trabajo se presentaron tres alternativas posibles para la implementación
-de \setchain construidas sobre Tendermint. Dado que los algoritmos de \setchain
+de \setchain construidas sobre Tendermint. Como se mencionó al inicio de la sección ~\ref{sec:contributions},
+los algoritmos de \setchain
 presentados en \cite{Capretto.2022.Setchain} emplean bloques primitivos como
-\emph{Set Byzantine Consensus}
-no es posible replicar los mismos comportamientos.
+\emph{Set Byzantine Consensus}.
+Por lo tanto, no es posible replicar los mismos comportamientos.
 Sin embargo, tomamos un enfoque ligeramente diferente,
 intentando obtener tanto como se pueda de lo que Tendermint es capaz de ofrecer.
 Cada alternativa presentada trata de acercarse a la implementación ideal de \setchain,
 explotando la idea de que cada época es un conjunto de elementos.
 
 %
-La primera solución (ver Sección~\ref{sec:vanilla}) presenta una simple y
+La primera solución (ver sección~\ref{sec:vanilla}) presenta una simple y
 correcta pero ineficiente implementación de \setchain donde Tendermint solo mantiene
 un conjunto de solo crecimiento.
 
 %
-La segunda solución (ver Sección~\ref{sec:compresschain}) mejora la alternativa anterior
+La segunda solución (ver sección~\ref{sec:compresschain}) mejora la alternativa anterior
 usando un algoritmo de compresión: las transacciones de Tendermint ahora son conjuntos
 comprimidos de elementos.
 
 %
-Finalmente, la tercera solución (ver Sección~\ref{sec:hashchain}) va más allá de la
+Finalmente, la tercera solución (ver sección~\ref{sec:hashchain}) va más allá de la
 segunda alternativa y usa funciones hash para reducir la sobrecarga en la red.
 Aunque reduzca el tráfico haciendo consenso sobre transacciones pequeñas
 y de tamaño fijo (es decir, sobre hashes), el uso de los mismos requiere de una forma de
@@ -104,7 +105,7 @@ mejora en comparación con el consenso usual, hecho sobre elementos individuales
 Una posible línea de trabajo futuro es la continuación del desarrollo
 de \hashchain.
 Esto se puede abordar, por un lado, implementando la versión de \hashchain que utiliza
-\textit{consolidación de época de primera vista} (ver Sección~\ref{subsubsec:consolidation}),
+\textit{consolidación de época de primera vista} (ver sección~\ref{subsubsec:consolidation}),
 ya que en este trabajo se implementó únicamente la versión
 de \textit{consolidación de época actual}, con la cual se realizó la evaluación
 empírica.
