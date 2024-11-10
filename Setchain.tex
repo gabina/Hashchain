@@ -78,7 +78,7 @@ Por lo tanto, en las siguientes secciones se hace referencia exclusivamente a el
 % asi q cuando explicas el flujo de elementos te estas referiendo solamente a elementos validos.
 
 \subsection{Incrementos de época}  
-Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain colaborativamente
+Cuando se impone una nueva barrera de sincronización, los nodos que mantienen la \setchain en forma colaborativa
 deciden cuáles elementos añadidos son estampados con la época actual, y se incrementa el número de época.
 %
 Es decir, se inicia un proceso en el cual se recolectan aquellos elementos, aún no estampados
@@ -159,7 +159,7 @@ incremento de época.
 Este evento tiene como consecuencia la creación de una nueva época que incluye a los elementos hasta entonces pendientes 
 de ser estampados, en este caso $a$, $b$ y $c$.
 %
-Si bien el elemento $c$ no era conocido por el servidor $v$ previamente, los nodos servidores deciden colaborativamente
+Si bien el elemento $c$ no era conocido por el servidor $v$ previamente, los nodos servidores deciden en forma colaborativa
 los nuevos elementos que son estampados.
 %
 En este sentido, se puede suponer que un cliente invocó $w.\<add>(c)$ sobre un servidor correcto $w$ y, por lo tanto,
@@ -171,7 +171,7 @@ De este modo, se tiene el nuevo punto de vista del servidor $v$:
 
 
 \section{Propiedades}\label{sec:setchain-properties}
-Para asegurar correctitud, las implementaciones de \setchain deben satisfacer ciertas propiedades que
+Para asegurar corrección, las implementaciones de \setchain deben satisfacer ciertas propiedades que
 proveen garantías eventuales para elementos añadidos y garantía de consistencia entre los servidores
 correctos.
 %

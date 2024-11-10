@@ -9,7 +9,7 @@ complejo que implementa \setchain utilizando funciones hash.
 %
 
 \section{Consideraciones generales}\label{sec:impl}
-Para evitar repeticiones, algunas definciones de métodos que permanezcan sin cambios
+Para evitar repeticiones, algunas definiciones de métodos que permanezcan sin cambios
 de una versión a la siguiente, no serán re-escritas.
 Esto será debidamente aclarado al momento de la presentación de los algoritmos.
 
@@ -262,20 +262,20 @@ sección~\ref{subsec:signatures}.
 Las claves públicas de los validadores necesitan ser públicamente conocidas para los usuarios.
 %
 Si un elemento $e$ pertenece a una época que tiene suficientes pruebas, los clientes pueden
-concluir que la época es correcta y que $e$ fue éxitosamente insertado en la \setchain.
+concluir que la época es correcta y que $e$ fue exitosamente insertado en la \setchain.
 %
 En caso de comunicarse con nodos correctos, solo se requieren una llamada a \<add> y
 una llamada a \<get> para estar seguros de que el elemento fue añadido a la \setchain.
 %
 
 En la Figura \ref{fig:epoch-proof} se muestra un ejemplo de este mecanismo, en un sistema que cuenta
-con un cliente y 4 servidores, de los cuales uno es bizantino (señado en rojo).
+con un cliente y 4 servidores, de los cuales uno es bizantino (señalado en rojo).
 %
 El cliente invoca $\<add>.(e)$ sobre un servidor cualquiera de la red, sin saber
 si es correcto o bizantino, con la intención de agregar un nuevo elemento a la \setchain.
 Esto se indica en la Figura \ref{subfig:epoch-proof-a}.
 %
-Los servidores deciden colaborativamente los elementos pertenecientes a la época $n$.
+Los servidores deciden en forma colaborativa los elementos pertenecientes a la época $n$.
 En la Figura \ref{subfig:epoch-proof-b} se puede ver que $e$ pertenece a dicha época.
 %
 En la Figura \ref{subfig:epoch-proof-c} se representa que todos los servidores correctos
@@ -331,7 +331,7 @@ del protocolo Ethereum en Golang~\footnote{Disponible en \url{https://pkg.go.dev
 Este paquete trabaja con el algoritmo de firma digital ECDSA, uno de los esquemas de firmas más
 utilizado~\cite{real.world.crypto}.
 %
-Provee una función \texttt{Sign} que cacula una firma ECDSA.
+Provee una función \texttt{Sign} que calcula una firma ECDSA.
 %
 La firma producida se encuentra en el formato $[R || S || V]$, donde $(R, S)$ son los componentes usuales
 de una firma ECDSA, y $V$ es 0 o 1.
@@ -480,7 +480,7 @@ entre elementos.
 
 \section{Segunda implementación: Compresschain}\label{sec:compresschain}
 
-Para acercanos al objetivo de \setchain, en esta sección proponemos
+Para acercarnos al objetivo de \setchain, en esta sección proponemos
 %empaquetar elementos en un lote y comprimir dicho lote
 %previamente a su difusión.
 %
@@ -559,7 +559,7 @@ Esto se observa en las Figuras ~\ref{subfig:compress-flow-d}. ~\ref{subfig:compr
 En el último paso de este flujo se agregan las nuevas épocas a la \setchain.
 En contraposición con lo visto en \vanilla, acá se agrega una nueva época por cada transacción (cada petición \DeliverTx).
 Las épocas contienen potencialmente más de un elemento porque, de hecho, las transacciones en este contexto representan a más de un elemento
-envíado por los clientes.
+enviado por los clientes.
 Estas transacciones sí tienen orden entre ellas, por lo que el número de época asociada a cada una está determinado por el mismo.
 En la Figura ~\ref{subfig:compress-flow-g} se muestra que la época $n$ se agregó a la \setchain y uno de sus elementos es $e$. Esta es, justamente, la época asociada
 a la transacción que contiene al elemento $e$.
@@ -615,7 +615,7 @@ algoritmos de codificación y de compresión podrían utilizarse de ser necesari
 
 %
 Un lote se considera \textit{listo} para ser enviado una vez que, o bien alcanza un tamaño máximo,
-o bien una cantidad razonable de tiempo transacurrió desde que el primer elemento llegó. 
+o bien una cantidad razonable de tiempo transcurrió desde que el primer elemento llegó. 
 %
 El Algoritmo~\ref{alg:api-brotli} presenta una nueva definición para la API de \setchain.
 En el Algoritmo ~\ref{alg:collector-brotli} se muestra una implementación posible para un
@@ -675,7 +675,7 @@ no fue agregado a la \setchain previamente).
 La elección de este criterio se basa en que, si bien se espera
 que un \collector correcto genere lotes de elementos válidos (puesto que chequea la validez de los elementos
 antes de agregarlos), no puede asegurarse que sean nuevos.
-A su vez, un \collector bizantino también podría incoporar elementos inválidos en un lote.
+A su vez, un \collector bizantino también podría incorporar elementos inválidos en un lote.
 %
 Por lo tanto, las transacciones se consideran válidas si al menos uno de sus elementos es válido y nuevo.
 % La elección de este criterio está relacionado con el hecho de que alguien enviando elementos inválidos
@@ -688,7 +688,7 @@ mientras que el resto simplemente se descarta.
 %
 
 La última diferencia a mencionar con respecto a \vanilla es que en Compresschain los bloques no delimitan épocas.
-Por esta razón no se peresenta una definición para el método \<EndBlock>.
+Por esta razón no se presenta una definición para el método \<EndBlock>.
 En este caso, las épocas se definen como transacciones: cada lote de elementos define una época.
 
 %
@@ -973,7 +973,7 @@ Durante la ejecución de \<DeliverTx> se chequea la validez de la firma.
 Si la firma es válida y nueva para el hash en cuestión, se incrementa el contador de
 firmas por hash.
 %
-Además, cada vez que un hash es invertido, se chequea la correctitud del lote original
+Además, cada vez que un hash es invertido, se chequea la corrección del lote original
 (es decir, $hash = Hash(originalBatch)$). En caso de éxito, el mapeo de hashes a lotes
 es actualizado con el nuevo descubrimiento.
 
@@ -1138,7 +1138,7 @@ consigan las \SPH firmas dentro del período de gracia.
 
 \subsection{Algoritmos}\label{subsec:hashchain-algorithms}
 
-Al igual que se hizo para \vanilla y \compresschain, en esta subsección se presentan los pseudocódigos
+Al igual que se hizo para \vanilla y \compresschain, en esta sub-sección se presentan los pseudocódigos
 para los distintos algoritmos. 
 
 %No definimos un nuevo \texttt{collector} para \hashchain dado que
@@ -1256,7 +1256,7 @@ antes que $h_k$.
 
 Por el otro lado, bajo el comportamiento CEC la situación es básicamente una carrera entre $h_k$ y
 $h_l$: el primero en obtener las \SPH firmas será el primero en consolidar y,
-por lo tanto, sus elementos serán estamapdos con una época más temprana.
+por lo tanto, sus elementos serán estampados con una época más temprana.
 %
 
 Como ya se mencionó, 
@@ -1264,11 +1264,11 @@ la estrategia FSEC toma en consideración no solo el momento en el cual los hash
 también el momento en que las transacciones fueron vistas por primera vez.
 %
 En principio, esta característica se puede considerar un aspecto valioso en la mitigación de ataques
-de front-running, dado que las transacciones observadas primero son probablmente las legítimas y
+de front-running, dado que las transacciones observadas primero son probablemente las legítimas y
 originales.
 %At girst glance, we could think that this property is an interesting point to go against
 %front-running attacks, as first-seen transactions are probably the legit original transactions.
-Sin embargo, la estrategia FSEC viene con algunos apesctos negativos no triviales que se presentan
+Sin embargo, la estrategia FSEC viene con algunos aspectos negativos no triviales que se presentan
 a continuación.
 
 

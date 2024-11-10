@@ -32,9 +32,9 @@ metáfora garantizando que continúe siendo un concepto de la navegación.
 
 En Ciencias de la Computación, las \textit{bitácoras distribuidas} son un tipo de
 base de datos que se comparte
-alrededor de mútiples lugares, países o instituciones, y que típicamente es de
+alrededor de múltiples lugares, países o instituciones, y que típicamente es de
 acceso público. Los registros pueden ser guardados usando distintas estructuras,
-y solo pueden agregarse cuando los participantes logran un \textit{quorum}. En
+y solo pueden agregarse cuando los participantes logran un \textit{quórum}. En
 contraste con un sistema centralizado, las bitácoras distribuidas no requieren
 un administrador central y, en consecuencia, no tienen un punto de falla central.
 Un caso particular de bitácora distribuida, en donde los registros se empaquetan
@@ -164,7 +164,7 @@ FastChain~\cite{fastchain} es un enfoque para mejorar la escalabilidad de los si
 \emph{proof-of-work} (PoW) refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
 que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
 Los PoWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
-Su traducción al español de conoce como \emph{prueba de trabajo}.})
+Su traducción al español se conoce como \emph{prueba de trabajo}.})
 que se basa en reducir el \emph{tiempo de propagación de los bloques}.
 %
 El algoritmo propuesto por FastChain trabaja sobre la red de pares de la blockchain.
@@ -173,7 +173,7 @@ El algoritmo propuesto por FastChain trabaja sobre la red de pares de la blockch
 % refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
 % que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
 % Los PoWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
-% Su traducción al español de conoce como \emph{prueba de trabajo}.},
+% Su traducción al español se conoce como \emph{prueba de trabajo}.},
 % como Bitcoin, el \emph{ratio de bloque}
 % se define como el número de bloques minados por segundo.
 % %
@@ -288,11 +288,11 @@ aplicaciones descentralizadas se incrementó rápidamente en los últimos años.
 Sin embargo, la mayoría de las redes de blockchain operan en entornos autónomos aislados
 de los demás.
 %
-La interoperabilidad de blockchains es la habilidad de conectar mútiples redes de
+La \textit{inter-operabilidad} de blockchains es la habilidad de conectar mútiples redes de
 blockchain entre sí, lo cual puede constituir un enfoque para mejorar la escalabilidad en
 las plataformas.
 %
-De esta forma múltiples blockchains paralelas pueden interoperar, manteniendo las
+De esta forma múltiples blockchains paralelas pueden operar entre ellas, manteniendo las
 propiedades de seguridad de las mismas.
 
 Una arquitectura novedosa de redes de blockchains es Cosmos~\cite{cosmos}, que conecta diversas
@@ -304,7 +304,7 @@ El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchain
 trabajan con modelos \emph{proof-of-stake}\footnote{El concepto de \emph{proof-of-stake} (traducido al español
 como \emph{prueba de participación}) surge como oposición a los esquemas de prueba de trabajo.
 En estos tipos de protocolos, en lugar de probarse que se realizó un esfuerzo computacional lo suficientemente
-costoso, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna cryptomoneda~\cite{King2012PPCoinPC}.}.
+costoso, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna criptomoneda~\cite{King2012PPCoinPC}.}.
 %
 Sin embargo, blockchains con modelos de consenso \emph{proof-of-work}, como Bitcoin o Ethereum,
 se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
@@ -317,7 +317,7 @@ se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
 % the current blockchain platforms as well as limiting the
 % blockchain adoption in industry ecosystems. In the current phase,
 % different blockchain networks don’t have mutual trust where they
-% cannot interact with each other and their capacity level has only
+% cannotot interact with each other and their capacity level has only
 % reached a level similar to LAN. Due to the high barriers between
 % the independent isolated blockchain platforms, researchers have
 % started to focus on the concept of Blockchain interoperability.
@@ -386,7 +386,7 @@ los estados de la base de datos en fragmentos independientes (o particiones).
 Al distribuir la carga sobre múltiples particiones, la capacidad global del sistema
 se incrementa.
 %
-Esta ténica, conocida como \emph{sharding}~\cite{Dang2019Sharding}, requiere cierta coordinación para lograr propiedades
+Esta técnica, conocida como \emph{sharding}~\cite{Dang2019Sharding}, requiere cierta coordinación para lograr propiedades
 básicas de atomicidad, consistencia, aislamiento y durabilidad para aquellas transacciones
 que acceden a múltiples fragmentos.
 %
@@ -467,7 +467,7 @@ más fuertes, conocidos como bizantinos, que tienen en cuenta a atacantes malint
 Los enfoques para incrementar el número de transacciones por segundo en las blockchains pueden
 ser categorizados según la \emph{capa} que involucran.
 %
-Las técnicas de capa 0 (\textit{layer 0}) son aquellas que trabajan sobre la instraestructura de la red.
+Las técnicas de capa 0 (\textit{layer 0}) son aquellas que trabajan sobre la infraestructura de la red.
 %
 Por ejemplo, apostando a decrementar la latencia de la misma.
 % 
@@ -519,7 +519,7 @@ En este trabajo se realiza una contribución al estudio de la escalabilidad en b
 una familia de implementaciones robustas de \setchain.
 %
 Si bien distintos algoritmos bizantinos distribuidos que implementaban \setchain fueron
-propuestos, no existía al momento ninguna implementacion eficiente compatible con
+propuestos, no existía al momento ninguna implementación eficiente compatible con
 los requerimientos de una aplicación del mundo real.
 Es decir, una aplicación capaz de soportar un \textit{deployment} con miles de nodos\footnote{Si bien
 es difícil saber con exactitud cuántos nodos existen en la red de Bitcoin o Ethereum, se estima

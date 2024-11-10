@@ -51,7 +51,7 @@ Se profundizará en este punto en la siguiente sección. % ~\ref{subsubsec:conse
 Existen dos grandes clases de propiedades que son interesantes de enunciar cuando se describen sistemas
 (sean distribuidos o no): las propiedades de \textit{liveness} y las propiedades de \textit{safety}.
 Establecer estas propiedades ayuda principalmente en dos aspectos. Por un lado, al entendimiento del sistema.
-Por el otro, facilita la demostración de correctitud de los algoritmos que pretenden implementarlo.
+Por el otro, facilita la demostración de corrección de los algoritmos que pretenden implementarlo.
 A lo largo de este trabajo veremos distintas propiedades que pueden ser clasificadas dentro
 de uno de estos dos conjuntos.
 Usualmente estas propiedades se definen en términos de las ejecuciones de un sistema o de un programa.
@@ -222,7 +222,7 @@ a la red descentralizada llegar a un consenso sobre el estado de las mismas. Est
 se guardan empaquetadas como bloques en una bitácora distribuida pública conocida como blockchain~\cite{mastering.bitcoin}.
 %
 Se dice que estas transacciones se encuentran totalmente ordenadas porque es posible determinar para
-dos transacciones cualesquieras en la blockchain cuál de ellas ocurrió antes.
+dos transacciones cualesquiera en la blockchain cuál de ellas ocurrió antes.
 
 %Esto resolvió de forma elegante el problema del doble gasto,
 %en el cual una misma unidad de moneda se utiliza dos veces. Previamente, el problema del doble gasto fue
@@ -422,7 +422,7 @@ estado.
 Las transacciones se reciben desde el cliente, quien se comunica, mediante una API, con una (o más) de las máquinas
 en la red.
 %
-Estas transacciones pasan a través del protocolo de consenso, quien es el encargado de ordernar dichas
+Estas transacciones pasan a través del protocolo de consenso, quien es el encargado de ordenar dichas
 transacciones en bloques, mediante una serie de pasos que involucran comunicación entre todas las máquinas
 (señalizada en la figura con líneas punteadas).
 %
@@ -434,13 +434,13 @@ orden en cada una de las máquinas en la red, resultando en un mismo estado a lo
 %
 Las figuras azules representan máquinas.
 %
-Las líneas punteadas representan la comunicación entre máquinas para llevar a cabo el protocolo de consenso para ordernar
+Las líneas punteadas representan la comunicación entre máquinas para llevar a cabo el protocolo de consenso para ordenar
 transacciones.
 
 Como motor de replicación de máquinas de estado, Tendermint es un sistema distribuido compuesto por un conjunto
 dinámico de procesos o nodos.
 %
-Estos nodos varian con el tiempo, a medida que se unen o abandonan la red subyacente del sistema.
+Estos nodos varían con el tiempo, a medida que se unen o abandonan la red subyacente del sistema.
 %
 Un subconjunto de estos nodos son quienes ejecutan el algoritmo de consenso de Tendermint.
 %
@@ -491,7 +491,7 @@ Para el presente trabajo, de la capa Tendermint Core, solo serán pertinentes lo
 En la capa inmediata superior se encuentra la ya mencionada interfaz de aplicación, que es quien se encarga de comunicarse
 con la aplicación en sí.
 %
-La aplicación reprsenta la capa superior de este sistema.
+La aplicación representa la capa superior de este sistema.
 %
 Como se puede observar en la figura, el cliente se comunica con la capa de Tendermint Core, por medio de los
 módulos de mempool o consenso. 
@@ -533,7 +533,7 @@ interfaz de aplicación. Es responsable de decidir el siguiente bloque de transa
 
 En la Figura~\ref{fig:tendermint-architecture} se ilustra mediante flechas la comunicación
 entre el cliente y el Tendermint Core.
-Simplificadamente, el cliente interactúa con el sistema mediante RPC al enviar transacciones
+De forma simplificada, el cliente interactúa con el sistema mediante RPC al enviar transacciones
 que (en caso de ser válidas) son añadidas al módulo de mempool,
 y en general recibe respuestas generadas por el módulo de consenso.
 Las transacciones enviadas por clientes que llegan al módulo de mempool se difunden a todos los nodos,
@@ -642,12 +642,12 @@ limitado por \textit{f}, y el número de servidores total, \textit{n}, es al men
 Se asumen \textit{canales confiables} entre procesos no bizantinos (correctos), por lo tanto ningún
 mensaje se pierde, se duplica o se modifica.
 Cada proceso (cliente o servidor) tiene un par de claves públicas y privadas.
-Las claves públicas fueron disribuidas confiablemente entre todos los procesos que pueden interactuar
+Las claves públicas fueron distribuidas de forma confiable entre todos los procesos que pueden interactuar
 con otros.
 Por lo tanto, se descarta la posibilidad de procesos espurios.
 Se asume que los mensajes son autenticados, de modo que mensajes corruptos o fabricados por
 procesos bizantinos son detectados y descartados por los procesos correctos.
-Como resultado, la comunicación entre procesos corrrectos es confiable pero asíncrona.
+Como resultado, la comunicación entre procesos correctos es confiable pero asíncrona.
 
 %%% Local Variables:
 %%% TeX-master: "article.tex"

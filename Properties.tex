@@ -1,12 +1,12 @@
 \section{Objetivo del capítulo}
-En este capítulo se exponen las pruebas de correctitud de los algoritmos presentados para
+En este capítulo se exponen las pruebas de corrección de los algoritmos presentados para
 \vanilla, \compresschain, y \hashchain en el capítulo~\ref{chapter:sol}.
 Es decir, se prueba que dichos algoritmos satisfacen las propiedades deseadas para una
 implementación de \setchain introducidas en~\ref{sec:setchain-properties}.
 
 \section{Propiedades de Tendermint}\label{sec:properties}
 Dado que todas las soluciones presentadas en este trabajo son construidas sobre Tendermint,
-para probar la correctitud de ellas, será necesario recapitular las propiedades que la
+para probar la corrección de ellas, será necesario recapitular las propiedades que la
 plataforma Tendermint garantiza.
 
 \subsection{Modelo de computación}
@@ -55,7 +55,7 @@ y de la concepción de Tendermint
 como máquina de replicación de estados.
 
 \begin{property}[Tendermint-Global-Requests]\label{tendermint:global-delivery}
-  Si un sevidor correcto recibe una cadena de peticiones
+  Si un servidor correcto recibe una cadena de peticiones
   \BeginBlock, [\DeliverTx, ...], \EndBlock, \Commit,
   entonces todos los servidores correctos reciben dichas peticiones en el mismo orden.
   Aún más, esta serie de peticiones arriban a todos los servidores correctos en
@@ -124,7 +124,7 @@ De aquí se desprenden las siguientes propiedades.
 %   $\<CheckTx>(t)$ en $v$ retornó \texttt{True}.
 % \end{property}
 
-\section{Pruebas de correctitud}
+\section{Pruebas de corrección}
 \subsection{Consideraciones generales}\label{subsection:proof-comments}
 Muchas propiedades de \setchain razonan sobre el resultado $(S, H, h)$ de una invocación
 a $v.\<get>$ sobre un servidor $v$.
@@ -185,7 +185,7 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Como $e \in $ \(V\), sabemos que $e$ es válido ($\bigstar$).
   %Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
   %Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
-  Por definción de \<add> en el algoritmo \ref{alg:api-vanilla}, la invocación
+  Por definición de \<add> en el algoritmo \ref{alg:api-vanilla}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \<broadcastTx>($t$) sobre el servidor $v$,
   donde $t = e$. Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx},
   $v$ recibirá con el tiempo la petición \<CheckTx>($t$).
@@ -418,13 +418,13 @@ mismo proceso que corre la ABCI correspondiente al servidor $w$.
   Como $e \in $ \(V\), sabemos que $e$ es válido ($\bigstar$).
   % Si $e \in v.\HISTORY$, entonces, por la propiedad anterior, $e \in v.\THESET$ y la demostración es trivial.
   % Suponemos entonces $e \notin v.\HISTORY$ ($\clubsuit$).
-  Por definción de \<add> en el algoritmo \ref{alg:api-brotli}, la invocación
+  Por definición de \<add> en el algoritmo \ref{alg:api-brotli}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \texttt{CompressCollector.AddElement($e$)}.
   Como se puede observar en el algoritmo ~\ref{alg:collector-brotli}, dado que $e$ es válido,
   será codificado adecuadamente y añadido a un lote $t$ que con el tiempo estará listo\footnote{Como
   se mencionó en la sección ~\ref{subsec:compresschain-algorithms},
   un lote se considera listo para ser enviado una vez que, o bien alcanza un tamaño
-  máximo, o bien una cantidad razonable de tiempo transacurrió desde que el primer
+  máximo, o bien una cantidad razonable de tiempo transcurrió desde que el primer
   elemento llegó. Por este motivo podemos asegurar que todo lote en algún momento será
   considerado listo.} y se invocará \<broadcastTx>($t$) sobre el servidor $v$.
   Por la propiedad~\ref{tendermint:eventual-checktx} \emph{Tendermint-Eventual-CheckTx}, $v$
@@ -673,7 +673,7 @@ tres propiedades derivadas antes de proceder con la demostración de los lemas.
   Sea $h$ un hash que consolida en $v$.
   Por lo tanto, \<shouldConsolidateHash>($h$) retornó \texttt{True}, es decir, se recolectaron
   \SPH firmas válidas y distintas para $h$.
-  Dado que $\SPH \geq f + 1$, podemos asegurar que al menos un servidor correcto (llamemoslo $w$) firmó $h$.
+  Dado que $\SPH \geq f + 1$, podemos asegurar que al menos un servidor correcto (llamémoslo $w$) firmó $h$.
   Con seguridad, dicho servidor correcto conoce el hash y, por lo tanto, garantiza que lo revertirá
   cuando $v$ procese la petición \<DeliverTx> asociada a $h$ y a la firma de $w$ (si es que $v$
   aún no tenía el lote asociado a $h$). 
@@ -766,7 +766,7 @@ tres propiedades derivadas antes de proceder con la demostración de los lemas.
 
 \begin{proof}
   Sea $e$ un elemento válido y $v$ un servidor correcto, para los cuales un cliente invoca $v.\<add>(e)$.
-  Por definción de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
+  Por definición de \<add> en el algoritmo \ref{alg:api-hashchain}, la invocación
   $v.\<add>(e)$ se traduce en la llamada \texttt{HashCollector.AddElement($e$)}.
   Como se puede observar en el algoritmo ~\ref{alg:collector-hash}, $e$ será codificado
   adecuadamente y añadido a un lote $l$ que a la larga estará listo, se hasheará,
@@ -935,6 +935,6 @@ tres propiedades derivadas antes de proceder con la demostración de los lemas.
 \end{proof}
 
 \section{Conclusión}
-Habiendo demostrado que \vanilla, \compresschain y \hashchain cumplen todas las propiedaes
+Habiendo demostrado que \vanilla, \compresschain y \hashchain cumplen todas las propiedades
 de \setchain presentadas en la sección \ref{sec:setchain-properties}, queda entonces probado
 que las tres soluciones propuestas en este trabajo son implementaciones correctas de \setchain.
