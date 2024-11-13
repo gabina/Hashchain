@@ -67,28 +67,79 @@ en nombre de los usuarios, empaquetadas en bloques, y totalmente
 ordenadas~\cite{anta2018formalizing,anta2021principles}.
 %
 En entornos reales, el objeto blockchain es mantenido por múltiples servidores
-sin una autoridad central, usando \emph{algoritmos de consenso} que son resilientes a los
-\emph{ataques bizantinos},
-es decir, a ataques producidos por nodos que, en lugar de cooperar,
-envían información conflictiva o fallan de formas arbritarias.
+sin una autoridad central, usando un \emph{algoritmo de consenso}, uno de los componentes
+principales de las blockchains.
 %
 
-%Las blockchains tomaron popularidad
-%con la implementación de Bitcoin, un sistema de pago electrónico descentralizado, 
-%propuesto por Nakamoto en 2008~\cite{nakamoto06bitcoin}.
-%Así, aquello que en sus orígenes fue parte de una herramienta de guía, que mostró
-%a los viajeros su rumbo, hoy representa un avance en una dirección que difícilmente se
-%pueda considerar certera.
+\section{Evolución de las blockchains}
+Si bien las blockchains son un campo de estudio relativamente joven, desde 2014 se publicaron en promedio 250 artículos por año
+en esta temática.
+%
+A su vez, la mayor parte del trabajo de blockchain se publica para plataformas industriales (sin necesidad de revisión
+por pares) o directamente como \textit{white papers}~\cite{consensus.blockchain}.
+%
+Por este motivo, la recopilación del universo blockchain es una tarea ardua
+y escapa al alcance de este trabajo.
+%
+Sin embargo, es interesante destacar que, a lo largo de la evolución de las blockchains, se han desarrollado distintos
+criterios de clasificación basados en sus características principales.
+%
+A continuación se presentan algunos de estos criterios, como un panorama general de diferentes aspectos
+relevantes en el análisis de las blockchains.
+Los conceptos pertinentes para este trabajo serán explicados en detalles en las siguientes secciones y
+capítulos de este informe.
 
-% Agregar alguna cita o reflexión de alguien sobre la humanidad creyendo o queriendo
-% conocer el destino
+En cuanto a su algoritmo de consenso, las blockchains pueden usar protocolos \textit{probabilísticos}
+como el esquema \emph{proof-of-work}\footnote{La noción de
+\emph{proof-of-work} (PoW) refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
+que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
+Los PoWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
+Su traducción al español se conoce como \emph{prueba de trabajo}.} de Bitcoin,
+o protocolos de consenso de la familia BFT (\textit{Byzantine Fault Tolerant}).
+Estos últimos suelen ser \textit{deterministas} y emplear esquemas \emph{proof-of-stake}\footnote{El concepto de \emph{proof-of-stake}
+(traducido al español
+como \emph{prueba de participación}) surge como oposición a los esquemas de prueba de trabajo.
+En estos tipos de protocolos, en lugar de probarse que se realizó un esfuerzo computacional lo suficientemente
+costoso, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna criptomoneda~\cite{King2012PPCoinPC}.}
+~\cite{consensus.blockchain}.
+%
+Mientras que los protocolos probabilísticos ofrecen solo \textit{consistencia débil}, ya que los nodos pueden terminar teniendo
+diferentes vistas de las blockchains, los procolos BFT clásicos ofrecen \textit{consistencia fuerte}~\cite{Vukolic2016EventuallyRT}.
+
+Las blockchains también pueden clasificarse como \textit{permissioned} o \textit{permissionless}.
+En los sistemas \textit{permissioned} las identidades de todos los nodos son conocidas,
+es decir, solo pueden acceder nodos que tengan permiso para hacerlo.
+Por otra parte, los sistemas \textit{permissionless}
+son completamente descentralizados: cualquiera puede correr un nodo y unirse a la red cuando lo desee.
+
+Otra posible clasificación distingue si la red sobre la que corre la blockchain es síncrona, asíncrona o
+parcialmente síncrona~\cite{sync.network.consensus}.
+%
+En una red síncrona los mensajes pueden sufrir retrasos acotados superiormente por un tiempo $\Delta$.
+Por otro lado, en una red asíncrona los mensajes pueden ser retrasados arbitrariamente, y no existe
+una cota confiable $\Delta$ para este retraso.
+Por último, las redes parcialmente síncronas asumen que la red tarde o temprano será
+síncrona, pese a potenciales períodos largos de asincronía.
+
+Independientemente de las características particulares que puede presentar una tecnología blockchain,
+hay conceptos fundamentales que permanecen centrales en todas sus variantes, como lo son
+la escalabilidad y el rendimiento.
+%
+En la siguiente sección se discuten estos aspectos.
 
 \section{El problema}
 % What is the problem. Justifiy that the problem is a problem.
 
+%Independientemente del tipo de blockchain, 
+% The major hurdle in the widespread adoption of blockchains
+% is their performance and scalability—while improvements
+% have been made, they are nowhere near as ubiquitous as
+% their traditional counterparts. These properties are deeply
+% related to the consensus protocol
+
 Actualmente, uno de los principales obstáculos para la adopción rápida y generalizada
 de las tecnologías blockchain es su límite en la \emph{escalabilidad}, debido principalmente a los límites
-de \emph{rendimiento} inherentes a los algoritmos de consenso bizantinos
+de \emph{rendimiento} inherentes a los algoritmos de consenso
 ~\cite{Tyagi@BlockchainScalabilitySol,Croman2016ScalingDecentralizedBlockchain}.
 
 En términos generales, la escalabilidad de un sistema es su habilidad para gestionar una
@@ -152,7 +203,8 @@ Por lo tanto, el rendimiento de las blockchains es un aspecto clave en la adopci
 Diversas técnicas están siendo desarrolladas para incrementar el rendimiento de las blockchains y
 aumentar la cantidad de transacciones añadidas por segundo.
 %
-A continuación se exploran distintas propuestas, intentando abarcar una gama de enfoques novedosos.
+A continuación se exploran distintas propuestas, intentando abarcar enfoques novedosos
+aplicados a diferentes tecnologías blockchains.
 
 \subsection{Desarrollo de algoritmos más rápidos}
 
@@ -160,11 +212,7 @@ En los sistemas blockchains existen múltiples parámetros que se tienen en cuen
 a la hora de querer calcular o mejorar su rendimiento.
 %
 FastChain~\cite{fastchain} es un enfoque para mejorar la escalabilidad de los sistemas blockchains
-(originalmente diseñado para aquellos que utilizan \emph{proof-of-work}\footnote{La noción de
-\emph{proof-of-work} (PoW) refiere a situaciones en las que un \emph{probador} demuestra a un \emph{verificador}
-que ha realizado una cierta cantidad de trabajo computacional en un intervalo de tiempo especificado.
-Los PoWs han servido como base de diversos protocolos de seguridad en la literatura~\cite{Jakobsson1999ProofsOW}.
-Su traducción al español se conoce como \emph{prueba de trabajo}.})
+(originalmente diseñado para aquellos que utilizan \emph{proof-of-work})
 que se basa en reducir el \emph{tiempo de propagación de los bloques}.
 %
 El algoritmo propuesto por FastChain trabaja sobre la red de pares de la blockchain.
@@ -288,7 +336,7 @@ aplicaciones descentralizadas se incrementó rápidamente en los últimos años.
 Sin embargo, la mayoría de las redes de blockchain operan en entornos autónomos aislados
 de los demás.
 %
-La \textit{inter-operabilidad} de blockchains es la habilidad de conectar mútiples redes de
+La \textit{inter-operabilidad} de blockchains es la habilidad de conectar múltiples redes de
 blockchain entre sí, lo cual puede constituir un enfoque para mejorar la escalabilidad en
 las plataformas.
 %
@@ -301,12 +349,9 @@ blockchains independientes, llamadas \emph{zonas}.
 Las zonas funcionan con Tendermint Core~\cite{Buchman.2018.Tendermint}, un motor de consenso de alto rendimiento.
 %
 El algoritmo de consenso del Tendermint Core es adecuado para escalar blockchains públicas que
-trabajan con modelos \emph{proof-of-stake}\footnote{El concepto de \emph{proof-of-stake} (traducido al español
-como \emph{prueba de participación}) surge como oposición a los esquemas de prueba de trabajo.
-En estos tipos de protocolos, en lugar de probarse que se realizó un esfuerzo computacional lo suficientemente
-costoso, el \emph{probador} demuestra la propiedad de algún bien valioso, en general, alguna criptomoneda~\cite{King2012PPCoinPC}.}.
+trabajan con modelos \emph{proof-of-stake}.
 %
-Sin embargo, blockchains con modelos de consenso \emph{proof-of-work}, como Bitcoin o Ethereum,
+Sin embargo, blockchains con modelos de consenso \emph{proof-of-work}, como Bitcoin,
 se pueden conectar a la red de Cosmos utilizando adaptadores de zonas.
 
 % Blockchain technology is growing massively where the number of
