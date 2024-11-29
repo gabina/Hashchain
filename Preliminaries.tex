@@ -45,7 +45,7 @@ información de una manera u otra. Es interesante notar que el hecho de que las 
 cooperen no significa la asunción de que todas las entidades se comportarán de la forma
 acordada, ya sea por un error (por ejemplo, en la programación o en una red) o por un comportamiento
 malintencionado.
-Se profundizará en este punto en la siguiente sección. % ~\ref{subsubsec:consensus}.
+Se profundizará en este punto más adelante. % ~\ref{subsubsec:consensus}.
 
 \subsection{Liveness y safety}
 Existen dos grandes clases de propiedades que son interesantes de enunciar cuando se describen sistemas
@@ -603,7 +603,8 @@ validez de una transacción.
 Por otro lado, la comunicación entre el módulo de consenso y la aplicación se da mediante la conexión de consenso.
 %
 Cuando a un nodo validador le toca el turno de ser proponente del próximo bloque a añadir en la blockchain,
-consulta a la mempool para recuperar la lista de transacciones que se utilizarán para la construcción dicho bloque.
+consulta a la mempool para recuperar la lista de transacciones que se utilizarán para la construcción 
+de dicho bloque.
 %
 Una vez que la lógica de consenso resuelve cuál es el nuevo bloque, se comunica con la aplicación para
 dar a conocerlo.
